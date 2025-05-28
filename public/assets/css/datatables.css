@@ -1,0 +1,220 @@
+#datatable_wrapper {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  /*padding: 20px;*/
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: solid 2px #fdfdfd;
+}
+
+/* DataTable Header */
+#datatable_wrapper .dt-layout-row .dt-layout-start {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-inline: 20px;
+  padding-block: 10px;
+}
+
+#datatable_wrapper .dt-layout-row .dt-layout-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-inline: 20px;
+  padding-block: 10px;
+}
+
+#datatable_wrapper .dt-length label {
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+#datatable_wrapper .dt-search label {
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+#datatable_wrapper .dt-input {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  width: auto;
+  outline: none;
+}
+
+#datatable_wrapper .dt-input:focus {
+  border-color: #007bff;
+}
+
+/* Table Styling */
+#datatable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#datatable_wrapper select {
+  margin-right: 10px;
+}
+
+#datatable th,
+#datatable td {
+  padding: 10px;
+  text-align: left;
+  /* border: 1px solid #ddd; */
+}
+
+#datatable th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+#datatable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+#datatable tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* DataTables Paging */
+#datatable_wrapper .dt-paging {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+#datatable_wrapper .dt-paging-button {
+  padding: 5px 10px;
+  margin: 0 2px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ddd;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#datatable_wrapper .dt-paging-button.disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+#datatable_wrapper .dt-paging-button:hover:not(.disabled) {
+  background-color: #0056b3;
+}
+
+#datatable_wrapper .dt-paging-button.current {
+  background-color: #0056b3;
+  color: #fff !important;
+  font-weight: bold;
+}
+
+/* Info Section */
+#datatable_wrapper .dt-info {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Processing Indicator */
+#datatable_processing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Buttons (if you use DataTables Buttons plugin) */
+.dt-buttons button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.dt-buttons button:hover {
+  background-color: #0056b3;
+}
+
+.dt-buttons button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.fade {
+  opacity: 0;
+  visibility: hidden;
+  display: none;
+  transition: opacity 0.2s ease-in-out, visibility 0.3s ease-in-out;
+  -webkit-transition: opacity 0.2s ease-in-out, visibility 0.3s ease-in-out;
+  -moz-transition: opacity 0.2s ease-in-out, visibility 0.3s ease-in-out;
+  -ms-transition: opacity 0.2s ease-in-out, visibility 0.3s ease-in-out;
+  -o-transition: opacity 0.2s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.fade.show {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-backdrop {
+  z-index: 1040 !important; 
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Responsif untuk layar kecil */
+@media (max-width: 768px) {
+  #datatable_wrapper {
+    overflow-x: auto;
+  }
+
+  #datatable {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    /* Mencegah teks terpotong */
+  }
+
+  #datatable th,
+  #datatable td {
+    white-space: nowrap;
+  }
+
+  .dt-paging {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* Responsif untuk tombol */
+@media (max-width: 576px) {
+  .dt-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .dt-paging-button {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
