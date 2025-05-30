@@ -55,7 +55,7 @@ class OnboardingController extends Controller
 
             //progress
 
-            $personal_status = $user->employeeDetail && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+            $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft == 0) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
             $personal_date = optional($user->employeeDetail)->created_at;
 
             $job = $user->employeeJob->first();
