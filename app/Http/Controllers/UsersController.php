@@ -82,8 +82,8 @@ class UsersController extends Controller
         ];
         $page = $pageTitles[$routeName] ?? 'User Management';
 
-        $userRole = Auth::user()->getRole();
-        $restrictedRoles = ['karyawan', 'pemagangan', 'internship'];
+        $userRole = Auth::user()->getRole() ?? 'guest';
+        $restrictedRoles = ['karyawan', 'pemagangan', 'internship', 'guest'];
 
         if (in_array($userRole, $restrictedRoles)) {
             $detailRoutes = [
@@ -272,8 +272,8 @@ class UsersController extends Controller
         $type = request()->route('role');
         $page = 'User Offboarding';
 
-        $userRole = Auth::user()->getRole();
-        $restrictedRoles = ['karyawan', 'pemagangan', 'internship'];
+        $userRole = Auth::user()->getRole() ?? 'guest';
+        $restrictedRoles = ['karyawan', 'pemagangan', 'internship', 'guest'];
 
         if (in_array($userRole, $restrictedRoles)) {
             $user = User::with('employeeJob', 'inventory.employeeJob', 'dakarRole', 'offboarding')->findOrFail(Auth::id());
@@ -388,7 +388,7 @@ class UsersController extends Controller
 
     public function create()
     {
-        $roles = DakarRole::where('role_name', '!=', 'admin')->get();
+        $roles = DakarRole::whereNotIn('role_name', ['admin', 'admin 2', 'admin 3'])->get();
         $divisions = Division::all();
         $departments = Department::all();
         $positions = Position::all();
@@ -529,7 +529,7 @@ class UsersController extends Controller
         $pass_eslip = EmployeeInventoryNumber::where('user_id', $user->id)->where('item_id', $pass_eslipItemId)->first() ?? null;
 
         if (
-            $employeeDetail &&
+            ($employeeDetail && $employeeDetail->is_draft == 0) &&
             $employeeEducation->isNotEmpty() &&
             $employeeBank &&
             $employeeDoc->isNotEmpty()
@@ -679,12 +679,11 @@ class UsersController extends Controller
                 'family_card_file'             => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'resume_file'                  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'photo_file'                   => 'nullable|file|mimes:jpeg|max:2048',
-                'bank_file'                    => 'nullable|file|mimes:jpeg|max:2048',
+                'bank_file'                    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'diploma_file'                 => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'sim_file'                     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'child_birth_certificate_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'marriage_certificate_file'    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-                'vaccine_certificate_file'     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             ]);
 
             // Mulai transaksi database
@@ -721,6 +720,7 @@ class UsersController extends Controller
                 'safety_shoes_size'     => $request->safety_shoes_size ?? null,
                 'esd_uniform_size'      => $request->esd_uniform_size ?? null,
                 'esd_shoes_size'        => $request->esd_shoes_size ?? null,
+                'is_draft'              => 0,
             ]);
 
             if (!empty($request->facebook)) {
@@ -993,7 +993,7 @@ class UsersController extends Controller
                 'family_card_file'             => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'resume_file'                  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'photo_file'                   => 'nullable|file|mimes:jpeg|max:2048',
-                'bank_file'                    => 'nullable|file|mimes:jpeg|max:2048',
+                'bank_file'                    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'diploma_file'                 => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'sim_file'                     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'child_birth_certificate_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
@@ -1033,6 +1033,7 @@ class UsersController extends Controller
                     'safety_shoes_size' => $request->safety_shoes_size ?? null,
                     'esd_uniform_size'  => $request->esd_uniform_size ?? null,
                     'esd_shoes_size'    => $request->esd_shoes_size ?? null,
+                    'is_draft'              => 0,
                 ]
             );
 
@@ -1528,5 +1529,248 @@ class UsersController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while deleting the Job Employment. ' . $e)->withInput();
         }
+    }
+
+    
+    public function autosavePersonal(Request $request, $id)
+    {
+        try {
+            $user = User::with('employeeDetail')->findOrFail($id);
+
+            $user->update([
+                'fullname' => $request->fullname,
+                'email'    => $request->email,
+            ]);
+
+            EmployeeDetail::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'gender'            => $request->gender,
+                    'blood_type'        => $request->blood_type,
+                    'birth_place'       => $request->birth_place,
+                    'birth_date'        => $request->birth_date,
+                    'religion'          => $request->religion,
+                    'no_jamsostek'      => $request->no_jamsostek,
+                    'no_npwp'           => $request->no_npwp,
+                    'no_ktp'            => $request->no_ktp,
+                    'no_phone_house'    => $request->phone_home,
+                    'no_phone'          => $request->phone_mobile,
+                    'ktp_address'       => $request->address_ktp,
+                    'current_address'   => $request->address_current,
+                    'emergency_contact' => $request->emergency_contact,
+                    'tax_status'        => $request->tax_status,
+                    'marital_status'    => $request->marital_status,
+                    'married_year'      => $request->married_year,
+                    'blue_uniform_size' => $request->blue_uniform_size,
+                    'polo_shirt_size'   => $request->polo_shirt_size,
+                    'safety_shoes_size' => $request->safety_shoes_size,
+                    'esd_uniform_size'  => $request->esd_uniform_size,
+                    'esd_shoes_size'    => $request->esd_shoes_size,
+                    'is_draft'          => $user->employeeDetail->is_draft ?? 1,
+                ]   
+            );
+
+            return response()->json(['message' => 'Draft saved.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to save draft.'], 500);
+        }
+    }
+
+    public function autosaveFamily(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->getRole() === 'internship') {
+            return response()->json(['message' => 'Intern tidak perlu data keluarga.'], 200);
+        }
+
+        // Hapus semua data keluarga sebelumnya (autosave akan ganti semua)
+        EmployeeFamily::where('user_id', $user->id)->delete();
+
+        $familyData = [];
+
+        // Ayah
+        if ($request->filled('father_name')) {
+            $familyData[] = [
+                'type' => 'ayah',
+                'name' => $request->father_name,
+                'birth_date' => $request->father_birth_date,
+                'education' => $request->father_education,
+                'occupation' => $request->father_occupation,
+            ];
+        }
+
+        // Ibu
+        if ($request->filled('mother_name')) {
+            $familyData[] = [
+                'type' => 'ibu',
+                'name' => $request->mother_name,
+                'birth_date' => $request->mother_birth_date,
+                'education' => $request->mother_education,
+                'occupation' => $request->mother_occupation,
+            ];
+        }
+
+        // Saudara
+        if ($request->filled('siblings_name')) {
+            $familyData[] = [
+                'type' => 'saudara',
+                'name' => $request->siblings_name,
+                'birth_date' => $request->siblings_birth_date,
+                'education' => $request->siblings_education,
+                'occupation' => $request->siblings_occupation,
+            ];
+        }
+
+        // Pasangan
+        if ($request->filled('spouse_name')) {
+            $familyData[] = [
+                'type' => 'pasangan',
+                'name' => $request->spouse_name,
+                'birth_date' => $request->spouse_birth_date,
+                'education' => $request->spouse_education,
+                'occupation' => $request->spouse_occupation,
+            ];
+        }
+
+        foreach ($familyData as $data) {
+            EmployeeFamily::create(array_merge(['user_id' => $user->id], $data));
+        }
+
+        // Anak-anak
+        if (!empty($request->child_name) && is_array($request->child_name)) {
+            foreach ($request->child_name as $key => $name) {
+                if (!empty($name)) {
+                    EmployeeFamily::create([
+                        'user_id' => $user->id,
+                        'type' => 'child',
+                        'name' => $name,
+                        'birth_date' => $request->child_birth_date[$key] ?? null,
+                        'education' => $request->child_education[$key] ?? null,
+                        'occupation' => $request->child_occupation[$key] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        // Simpan ulang semua data baru
+
+        return response()->json(['message' => 'Data keluarga berhasil disimpan (autosave).']);
+    }
+
+    public function autosaveSocmed(Request $request, $id)
+    {
+        $request->validate([
+            'type' => 'required|in:facebook,linkedin,instagram',
+            'account' => 'nullable|string|max:255',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        EmployeeSocmed::updateOrCreate(
+            ['user_id' => $user->id, 'type' => $request->type],
+            ['account' => $request->account]
+        );
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function autosaveEducation(Request $request, $id)
+    {
+
+        $user = User::findOrFail($id);
+
+        foreach ($request->education_level as $index => $level) {
+            EmployeeEducation::updateOrCreate([
+                'user_id' => $user->id,
+                'education_level' => $level,
+                'education_start_year' => $request->education_start_year[$index],
+                'education_end_year' => $request->education_end_year[$index],
+            ], [
+                'education_institution' => $request->education_institution[$index],
+                'education_city' => $request->education_city[$index],
+                'education_major' => $request->education_major[$index] ?? null,
+                'education_gpa' => $request->education_gpa[$index] ?? null,
+            ]);
+        }
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function autosaveTraining(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        if (!empty($request->training_institution) && is_array($request->training_institution)) {
+            foreach ($request->training_institution as $key => $institution) {
+                // Pastikan semua field wajib ada sebelum simpan
+                if (
+                    !empty($institution) &&
+                    !empty($request->training_year[$key]) &&
+                    !empty($request->training_duration[$key]) &&
+                    !empty($request->training_certificate[$key])
+                ) {
+                    EmployeeTraining::updateOrCreate(
+                        [
+                            'user_id' => $user->id,
+                            'training_institution' => $institution,
+                            'training_year' => $request->training_year[$key],
+                        ],
+                        [
+                            'training_duration' => $request->training_duration[$key],
+                            'training_certificate' => $request->training_certificate[$key],
+                        ]
+                    );
+                }
+            }
+        }
+
+        return response()->json(['message' => 'Autosave success']);
+    }
+
+    public function autosaveBank(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        EmployeeBank::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'bank_name' => $request->bank_name,
+                'account_name' => $request->account_name,
+                'account_number' => $request->account_number,
+            ]
+        );
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function autosaveDocs(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $documents = [
+            'ktp_file'                     => 'KTP',
+            'npwp_file'                    => 'NPWP',
+            'family_card_file'             => 'Kartu Keluarga',
+            'resume_file'                  => 'Resume',
+            'photo_file'                   => 'Pas Foto',
+            'vaccine_certificate_file'     => 'Sertifikat Vaksin',
+            'diploma_file'                 => 'Ijazah dan Transkrip',
+            'sim_file'                     => 'SIM',
+            'child_birth_certificate_file' => 'Akte Kelahiran Anak',
+            'marriage_certificate_file'    => 'Buku Nikah',
+            'bank_file'                    => 'Buku Rekening',
+        ];
+        foreach ($documents as $fieldName => $docType) {
+            if ($request->hasFile($fieldName)) {
+                $path = $request->file($fieldName)->store("documents/$docType", 'public');
+
+                EmployeeDoc::updateOrCreate(
+                    ['user_id' => $user->id, 'doc_type' => $docType],
+                    ['doc_path' => $path]
+                );
+            }
+        }
+        return response()->json(['status' => 'success', 'message' => 'Documents autosaved successfully.']);
     }
 }

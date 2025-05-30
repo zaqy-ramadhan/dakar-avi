@@ -6,37 +6,38 @@
             <div class="card-header">
                 <p class="fs-8 fw-bold">{{ $page ?? '-' }}</p>
             </div>
-            <div class="card-body">
-                <div
-                    class="d-flex @if (!Request::is('*karyawan*') && !Request::is('*boarding*')) justify-content-end @else justify-content-between @endif align-items-center">
+           <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                     @if (Request::is('*karyawan*'))
-                        <select id="statusFilter" class="form-control" style="height: fit-content; width: fit-content;">
-                            <option value="">Tampilkan semua karyawan</option>
-                            @foreach ($jobStatus as $status)
-                                <option value="{{ $status->job_status_name }}">{{ Str::ucfirst($status->job_status_name) }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="flex-grow-2 me-2" style="min-width: 200px;">
+                            <select id="statusFilter" class="form-control w-100">
+                                <option value="">Tampilkan semua karyawan</option>
+                                @foreach ($jobStatus as $status)
+                                    <option value="{{ $status->job_status_name }}">
+                                        {{ Str::ucfirst($status->job_status_name) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     @endif
 
                     @if (!Request::is('*boarding*'))
-                        <div class="d-flex align-items-center">
-                            <div class="col mb-3 me-2">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <div class="flex-grow-2" style="min-width: 150px;">
                                 <select name="activeFilter" class="form-control" id="activeFilter">
                                     <option value="">Tampilkan Semua</option>
                                     <option value="true" selected>Aktif</option>
                                     <option value="false">Nonaktif</option>
                                 </select>
                             </div>
-                            {{-- <a class="btn btn-primary me-2 mb-3" href="{{ route('admin.user.create') }}">Add Karyawan</a> --}}
 
-                            <a class="btn btn-primary mb-3" href="{{ route('import.index') }}">
+                            <a class="btn btn-primary" href="{{ route('import.index') }}">
                                 <i class="ti ti-file-spreadsheet me-2"></i>Import Excel
                             </a>
                         </div>
                     @elseif (Request::is('*onboarding*') || Request::is('*offboarding*'))
-                        <div class="d-flex align-items-center">
-                            <ul class="nav nav-pills me-3" id="statusTabs">
+                        <div class="d-flex flex-wrap align-items-center gap-2 w-100">
+                            <ul class="nav nav-pills me-3 flex-wrap" id="statusTabs">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-status="" href="#">Tampilkan Semua</a>
                                 </li>
@@ -49,17 +50,19 @@
                                 @endforeach
                             </ul>
                             @if (Request::is('*onboarding*'))
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="progressFilterCheckbox"
-                                        @if ((bool) request()->input('progressFilter')) checked @endif>
-                                    <label class="form-check-label" for="progressFilterCheckbox">Filter Onboarding
-                                        Progress</label>
+                                <div class="mt-2 mt-lg-0 ms-auto">
+                                    <a class="btn btn-primary" href="{{ route('admin.user.create') }}">Add Karyawan</a>
                                 </div>
                             @endif
                         </div>
                     @endif
+
                     @if (Request::is('*onboarding*'))
-                        <a class="btn btn-primary me-2 mb-3" href="{{ route('admin.user.create') }}">Add Karyawan</a>
+                        <div class="form-check form-switch ms-auto">
+                            <input class="form-check-input" type="checkbox" id="progressFilterCheckbox"
+                                @if ((bool) request()->input('progressFilter')) checked @endif>
+                            <label class="form-check-label" for="progressFilterCheckbox">Filter Onboarding Progress</label>
+                        </div>
                     @endif
                 </div>
             </div>

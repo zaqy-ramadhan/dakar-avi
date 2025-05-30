@@ -12,6 +12,8 @@ class Group extends Model
         'group_name',
     ];
 
+    public $timestamps = false;
+
     public function employeeJob()
     {
         return $this->hasMany(EmployeeJob::class);

@@ -6,7 +6,7 @@
     @if ($employeeTraining->count() > 0)
         @foreach ($employeeTraining as $index => $training)
             <div class="training-entry" id="training_{{ $index + 1 }}">
-                <div class="row mb-3">
+                <div class="row mb-3 border-bottom border-black">
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
                         <label for="training_institution_{{ $index }}" class="form-label">NAMA LEMBAGA
                             TRAINING</label>
@@ -49,7 +49,7 @@
         @endforeach
     @else
         <div class="training-entry" id="training_1">
-            <div class="row mb-3">
+            <div class="row mb-3 border-bottom border-black">
                 <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
                     <label for="training_institution_1" class="form-label">NAMA LEMBAGA TRAINING</label>
                     <input type="text" class="form-control" id="training_institution_1" name="training_institution[]"
@@ -86,8 +86,62 @@
         </div>
     @endif
 </div>
-<button type="button" id="remove-training" class="btn btn-danger mb-3 me-2" @if(Auth::user()->id != $user->id) hidden @endif style="display: none;">Hapus Data
+<button type="button" id="remove-training" class="btn btn-danger mb-3 me-2"
+    @if (Auth::user()->id != $user->id) hidden @endif style="display: none;">Hapus Data
     Training</button>
 <button type="button" id="add-training" class="btn btn-primary mb-3" @if ($user->id != Auth::user()->id) hidden @endif>
     Tambah Data Training
 </button>
+
+@push('scripts')
+    <script>
+        function debounce(func, delay) {
+            let timer;
+            return function() {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, arguments), delay);
+            };
+        }
+
+        function autosaveTraining() {
+            console.log('⏳ Autosaving training...');
+            const token = '{{ csrf_token() }}';
+
+            let data = {
+                _token: token,
+                training_institution: [],
+                training_year: [],
+                training_duration: [],
+                training_certificate: [],
+            };
+
+            $('.training-entry').each(function() {
+                data.training_institution.push($(this).find('input[name="training_institution[]"]').val());
+                data.training_year.push($(this).find('input[name="training_year[]"]').val());
+                data.training_duration.push($(this).find('input[name="training_duration[]"]').val());
+                data.training_certificate.push($(this).find('input[name="training_certificate[]"]').val());
+            });
+
+            $.ajax({
+                url: "{{ route('autosave.training', $user->id) }}",
+                method: 'POST',
+                data: data,
+                success: function(res) {
+                    console.log('✅ Training autosave success');
+                },
+                error: function(xhr) {
+                    console.error('❌ Training autosave failed');
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            const debouncedTraining = debounce(autosaveTraining, 1000);
+
+            $(document).on('input change', 'input[name^="training_"]', function() {
+                console.log('🟡 Training field changed:', this.name);
+                debouncedTraining();
+            });
+        });
+    </script>
+@endpush

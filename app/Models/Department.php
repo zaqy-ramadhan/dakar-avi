@@ -22,6 +22,7 @@ class Department extends Model
         'division_id'
     ];
 
+    public $timestamps = false; 
     public function users()
     {
         return $this->hasMany(User::class);

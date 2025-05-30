@@ -305,7 +305,7 @@
                                                 <span>
                                                     <i class="ti ti-building-warehouse"></i>
                                                 </span>
-                                                <span class="hide-menu">Inventaris</span>
+                                            <span class="hide-menu">Inventaris Rule</span>
                                             </a>
                                         </li>
                                         {{-- <li class="sidebar-item">

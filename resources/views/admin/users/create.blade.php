@@ -11,19 +11,6 @@
     <div class="card p-4 mt-5">
         <h2>Create New Karyawan</h2>
 
-        <!-- Tampilkan pesan sukses atau error -->
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissable fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @elseif (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
         <form id="usersForm" action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 

@@ -178,7 +178,7 @@ class User extends Authenticatable
 
         $progress = 0;
 
-        $personal_status = $user->employeeDetail && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+        $personal_status = ($user->employeeDetail ? $user->employeeDetail->is_draft == 0 : false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
         if ($personal_status) {
             $progress = 10;
         } else {

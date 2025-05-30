@@ -12,6 +12,8 @@ class Line extends Model
         'line_name',
     ];
 
+    public $timestamps = false;
+
     public function employeeJob()
     {
         return $this->hasMany(EmployeeJob::class);

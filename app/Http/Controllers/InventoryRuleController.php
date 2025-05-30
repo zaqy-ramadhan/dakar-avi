@@ -23,7 +23,7 @@ class InventoryRuleController extends Controller
 
     public function create()
     {
-        $roles = DakarRole::all();
+        $roles = DakarRole::whereNotIn('role_name', ['admin', 'admin 2', 'admin 3'])->get();
         $departments = Department::all();
         // $levels = Level::all();
         // $jobStatus = JobStatus::all();
@@ -35,7 +35,7 @@ class InventoryRuleController extends Controller
     public function edit($id)
     {
         $rule = InventoryRule::findOrFail($id);
-        $roles = DakarRole::all();
+        $roles = DakarRole::whereNotIn('role_name', ['admin', 'admin 2', 'admin 3'])->get();
         $departments = Department::all();
         // $jobStatus = JobStatus::all();
         // $levels = Level::all();
