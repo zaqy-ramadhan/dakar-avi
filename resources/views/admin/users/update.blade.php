@@ -327,14 +327,14 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let trainingCount = @json($employeeTraining->count() ?? 1);
-            const maxTraining = 3;
+            const maxTraining = 2;
 
             const trainingContainer = document.getElementById("training-container");
             const addTrainingButton = document.getElementById("add-training");
             const removeTrainingButton = document.getElementById("remove-training");
 
             // Tampilkan tombol hapus jika lebih dari 1 item
-            removeTrainingButton.style.display = trainingCount > 1 ? "inline-block" : "none";
+            removeTrainingButton.style.display = trainingCount > 0 ? "inline-block" : "none";
 
             // Sembunyikan tombol tambah jika sudah maksimal
             if (trainingCount === maxTraining) {
@@ -375,7 +375,7 @@
 
             removeTrainingButton.addEventListener("click", function() {
                 let trainingItems = trainingContainer.querySelectorAll(".training-entry");
-                if (trainingItems.length > 1) {
+                if (trainingItems.length > 0) {
                     trainingItems[trainingItems.length - 1].remove();
                     trainingCount--;
 
@@ -383,7 +383,7 @@
                     addTrainingButton.style.display = "inline-block";
 
                     // Sembunyikan tombol hapus jika hanya 1 item tersisa
-                    if (trainingCount === 1) removeTrainingButton.style.display = "none";
+                    if (trainingCount === 0) removeTrainingButton.style.display = "none";
                 }
             });
         });

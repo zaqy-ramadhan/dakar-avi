@@ -34,6 +34,7 @@ class EmployeeDetail extends Model
         'safety_shoes_size',
         'esd_uniform_size',
         'esd_shoes_size',
+        'is_draft',
     ];
 
     public function user()

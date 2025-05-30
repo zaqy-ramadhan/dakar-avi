@@ -171,4 +171,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/form/profile', [UsersController::class, 'details'])->name('users.details');
     Route::post('users/{id}/details', [UsersController::class, 'storeDetails'])->name('admin.users.details.store');
     Route::post('users/{id}/details/update', [UsersController::class, 'storeUpdateDetails'])->name('admin.users.details.update');
+
+    Route::post('users/autosave-personal/{id}', [UsersController::class, 'autosavePersonal'])->name('users.autosave.personal');
+    Route::post('users/autosave-family/{id}', [UsersController::class, 'autosaveFamily']);
+    Route::post('users/autosave-socmed/{id}', [UsersController::class, 'autosaveSocmed'])->name('autosave.socmed');
+    Route::post('users/autosave-education/{id}', [UsersController::class, 'autosaveEducation'])->name('autosave.education');
+    Route::post('users/autosave-training/{id}', [UsersController::class, 'autosaveTraining'])->name('autosave.training');
+    Route::post('users/autosave-bank/{id}', [UsersController::class, 'autosaveBank'])->name('autosave.bank');
+    Route::post('users/autosave-docs/{id}', [UsersController::class, 'autosaveDocs'])->name('autosave.document');
+
 });

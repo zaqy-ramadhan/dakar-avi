@@ -1,3 +1,4 @@
+<div id="family">
 <!-- PARTNER (Pasangan) -->
 <div id="partner">
     @php
@@ -25,7 +26,7 @@
         </div>
     </div>
 
-    <div class="row mb-3">
+    <div class="row mb-3 border-bottom border-black">
         <div class="col-sm-6 col-md-6 col-lg-4 mb-3">
             <label for="spouse_birth_date" class="form-label">Tanggal Lahir Suami/Istri</label>
             <input type="date" class="form-control" id="spouse_birth_date" name="spouse_birth_date"
@@ -44,7 +45,7 @@
             @enderror
         </div>
 
-        <div class="col-sm-6 col-md-6 col-lg-4 mb-3">
+        <div class="col-sm-6 col-md-6 col-lg-4 mb-3 ">
             <label for="spouse_occupation" class="form-label">Pekerjaan Suami/Istri</label>
             <input type="text" class="form-control" id="spouse_occupation" name="spouse_occupation"
                 value="{{ old('spouse_occupation', $spouse->occupation ?? '') }}">
@@ -66,7 +67,7 @@
             @php $count = 0; @endphp
             @foreach ($children as $index => $child)
                 @php $count++ @endphp
-                <div class="children-entry row mb-3" id="child_{{ $count }}">
+                <div class="children-entry row mb-3 border-bottom border-black" id="child_{{ $count }}">
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
                         <label class="form-label">Nama Anak</label>
                         <input type="text" class="form-control child-name" name="child_name[{{ $index }}]"
@@ -94,7 +95,7 @@
             @endforeach
         @else
             <!-- Jika tidak ada data anak, tampilkan satu entri kosong -->
-            <div class="children-entry row mb-3" id="child_1">
+            <div class="children-entry row mb-3 border-bottom border-black" id="child_1">
                 <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
                     <label class="form-label">Nama Anak</label>
                     <input type="text" class="form-control child-name" name="child_name[0]" value="">
@@ -117,28 +118,30 @@
 
         @endif
     </div>
-    <button type="button" id="remove-child" class="btn btn-danger mb-3 me-2" style="display: none" @if (Auth::user()->id != $user->id) hidden @endif >Hapus Data
+    <button type="button" id="remove-child" class="btn btn-danger mb-3 me-2" style="display: none"
+        @if (Auth::user()->id != $user->id) hidden @endif>Hapus Data
         Anak</button>
-    <button type="button" class="btn btn-primary mb-3" id="add-child" @if ($user->id != Auth::user()->id) hidden @endif>Tambah Data Anak</button>
+    <button type="button" class="btn btn-primary mb-3" id="add-child"
+        @if ($user->id != Auth::user()->id) hidden @endif>Tambah Data Anak</button>
 </div>
 
 
 <!-- FATHER -->
-<div class="row mb-3">
+<div class="row mb-3 border-bottom border-black">
     @php
         $father = $employeeFamily->where('type', 'ayah')->first() ?? null;
     @endphp
     <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
         <label for="father_name" class="form-label">Nama Bapak<span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="father_name" name="father_name"
-            value="{{ old('father_name', $father->name ?? '') }}" >
+            value="{{ old('father_name', $father->name ?? '') }}">
         <small class="text-muted">Wajib diisi</small>
         @error('father_name')
             <div class="text-danger">{{ $message }}</div>
         @enderror
     </div>
 
-    <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+    <div class="col-sm-6 col-md-4 col-lg-3 mb-3 ">
         <label for="father_birth_date" class="form-label">Tanggal Lahir (Bapak)</label>
         <input type="date" class="form-control" id="father_birth_date" name="father_birth_date"
             value="{{ old('father_birth_date', $father->birth_date ?? '') }}">
@@ -159,7 +162,7 @@
     <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
         <label for="father_occupation" class="form-label">Pekerjaan (Bapak)<span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="father_occupation" name="father_occupation"
-            value="{{ old('father_occupation', $father->occupation ?? '') }}" >
+            value="{{ old('father_occupation', $father->occupation ?? '') }}">
         <small class="text-muted">Wajib diisi</small>
         @error('father_occupation')
             <div class="text-danger">{{ $message }}</div>
@@ -168,14 +171,14 @@
 </div>
 
 <!-- MOTHER -->
-<div class="row mb-3">
+<div class="row mb-3 border-bottom border-black">
     @php
         $mother = $employeeFamily->where('type', 'ibu')->first() ?? null;
     @endphp
     <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
         <label for="mother_name" class="form-label">Nama Ibu<span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="mother_name" name="mother_name"
-            value="{{ old('mother_name', $mother->name ?? '') }}" >
+            value="{{ old('mother_name', $mother->name ?? '') }}">
         <small class="text-muted">Wajib diisi</small>
         @error('mother_name')
             <div class="text-danger">{{ $message }}</div>
@@ -212,7 +215,7 @@
 </div>
 
 <!-- SIBLINGS (Saudara) -->
-<div class="row mb-3">
+<div class="row mb-3 border-bottom border-black">
     @php
         $sibling = $employeeFamily->where('type', 'saudara')->first() ?? null;
     @endphp
@@ -252,3 +255,70 @@
         @enderror
     </div>
 </div>
+
+</div>
+
+@push('scripts')
+    <script>
+        let autosaveTimeout;
+
+        function autosaveFamilyData() {
+            clearTimeout(autosaveTimeout);
+            autosaveTimeout = setTimeout(function() {
+                const data = {
+                    father_name: $('#father_name').val(),
+                    father_birth_date: $('#father_birth_date').val(),
+                    father_education: $('#father_education').val(),
+                    father_occupation: $('#father_occupation').val(),
+
+                    mother_name: $('#mother_name').val(),
+                    mother_birth_date: $('#mother_birth_date').val(),
+                    mother_education: $('#mother_education').val(),
+                    mother_occupation: $('#mother_occupation').val(),
+
+                    siblings_name: $('#siblings_name').val(),
+                    siblings_birth_date: $('#siblings_birth_date').val(),
+                    siblings_education: $('#siblings_education').val(),
+                    siblings_occupation: $('#siblings_occupation').val(),
+
+                    spouse_name: $('#spouse_name').val(),
+                    spouse_birth_date: $('#spouse_birth_date').val(),
+                    spouse_education: $('#spouse_education').val(),
+                    spouse_occupation: $('#spouse_occupation').val(),
+
+                    child_name: [],
+                    child_birth_date: [],
+                    child_education: [],
+                    child_occupation: [],
+                };
+
+                // Ambil data anak-anak (jika field bisa lebih dari satu)
+                $('.children-entry').each(function() {
+                    data.child_name.push($(this).find('.child-name').val());
+                    data.child_birth_date.push($(this).find('.child-birth-date').val());
+                    data.child_education.push($(this).find('.child-education').val());
+                    data.child_occupation.push($(this).find('.child-occupation').val());
+                });
+
+                $.ajax({
+                    url: '/users/autosave-family/{{ $user->id }}',
+                    method: 'POST',
+                    data: data,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        console.log('Autosave Family Data:', response.message);
+                    },
+                    error: function(xhr) {
+                        console.error('Autosave gagal:', xhr.responseText);
+                    }
+                });
+            }, 1500); // 1.5 detik debounce
+        }
+
+        $(document).on('input change', '#family input', function() {
+            autosaveFamilyData();
+        });
+    </script>
+@endpush

@@ -289,7 +289,7 @@
             });
 
             document.getElementById("remove-training").addEventListener("click", function() {
-                if (trainingCount > 1) {
+                if (trainingCount >= 1) {
                     trainingContainer.lastChild.remove();
                     trainingCount--;
 
