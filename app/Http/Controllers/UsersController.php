@@ -530,6 +530,7 @@ class UsersController extends Controller
 
         if (
             ($employeeDetail && $employeeDetail->is_draft == 0) &&
+            ($employeeDetail && $employeeDetail->is_draft == 0) &&
             $employeeEducation->isNotEmpty() &&
             $employeeBank &&
             $employeeDoc->isNotEmpty()
@@ -607,7 +608,7 @@ class UsersController extends Controller
                 'email'             => 'required|string',
                 'no_jamsostek'      => 'nullable|string',
                 'no_npwp'           => 'nullable|string',
-                'no_ktp'            => 'required|string|max:16|unique:dakar_employee_details,no_ktp',
+                'no_ktp'            => 'required|string|max:16',
                 'phone_home'        => 'nullable|string',
                 'phone_mobile'      => 'required|string',
                 'address_ktp'       => 'required|string|max:255',
@@ -680,6 +681,7 @@ class UsersController extends Controller
                 'resume_file'                  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'photo_file'                   => 'nullable|file|mimes:jpeg|max:2048',
                 'bank_file'                    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'bank_file'                    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'diploma_file'                 => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'sim_file'                     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'child_birth_certificate_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
@@ -697,8 +699,10 @@ class UsersController extends Controller
             $user->update();
 
             // Simpan detail karyawan
-            EmployeeDetail::create([
+            $employeeDetail = EmployeeDetail::updateOrCreate([
                 'user_id'           => $user->id,
+            ], [
+                'no_ktp'            => $request->no_ktp,
                 'gender'            => $request->gender,
                 'blood_type'        => $request->blood_type,
                 'birth_place'       => $request->birth_place,
@@ -706,7 +710,6 @@ class UsersController extends Controller
                 'religion'          => $request->religion,
                 'no_jamsostek'      => $request->no_jamsostek ?? null,
                 'no_npwp'           => $request->no_npwp ?? null,
-                'no_ktp'            => $request->no_ktp,
                 'no_phone_house'    => $request->phone_home ?? null,
                 'no_phone'          => $request->phone_mobile,
                 'ktp_address'       => $request->address_ktp,
@@ -723,65 +726,113 @@ class UsersController extends Controller
                 'is_draft'              => 0,
             ]);
 
+
+
+        // dd($employeeDetail->is_draft);
+
+
             if (!empty($request->facebook)) {
-                EmployeeSocmed::create([
-                    'user_id'  => $user->id,
-                    'type'     => 'facebook',
-                    'account'  => $request->facebook,
-                ]);
+                EmployeeSocmed::updateOrCreate(
+                    [
+                        'user_id'  => $user->id,
+                        'type'     => 'facebook',
+                    ],
+                    [
+                        'account'  => $request->facebook,
+                    ]
+                );
             }
 
             if (!empty($request->linkedin)) {
-                EmployeeSocmed::create([
-                    'user_id'  => $user->id,
-                    'type'     => 'linkedin',
-                    'account'  => $request->linkedin,
-                ]);
+                EmployeeSocmed::updateOrCreate(
+                    [
+                        'user_id'  => $user->id,
+                        'type'     => 'linkedin',
+                    ],
+                    [
+                        'account'  => $request->linkedin,
+                    ]
+                );
             }
 
             if (!empty($request->instagram)) {
-                EmployeeSocmed::create([
-                    'user_id'  => $user->id,
-                    'type'     => 'instagram',
-                    'account'  => $request->instagram,
-                ]);
+                EmployeeSocmed::updateOrCreate(
+                    [
+                        'user_id'  => $user->id,
+                        'type'     => 'instagram',
+                    ],
+                    [
+                        'account'  => $request->instagram,
+                    ]
+                );
             }
 
             // Simpan data keluarga
             if ($user->getRole() !== 'internship') {
-                $familyData = [
-                    ['type' => 'ayah', 'name' => $request->father_name, 'birth_date' => $request->father_birth_date, 'education' => $request->father_education, 'occupation' => $request->father_occupation],
-                    ['type' => 'ibu', 'name' => $request->mother_name, 'birth_date' => $request->mother_birth_date, 'education' => $request->mother_education, 'occupation' => $request->mother_occupation],
-                    ['type' => 'saudara', 'name' => $request->siblings_name, 'birth_date' => $request->siblings_birth_date, 'education' => $request->siblings_education, 'occupation' => $request->siblings_occupation],
-                ];
-
-                foreach ($familyData as $data) {
-                    if (!empty($data['name'])) {
-                        EmployeeFamily::create(array_merge(['user_id' => $user->id], $data));
-                    }
+                // Ayah
+                if (!empty($request->father_name)) {
+                    EmployeeFamily::updateOrCreate(
+                        ['user_id' => $user->id, 'type' => 'ayah'],
+                        [
+                            'name'       => $request->father_name,
+                            'birth_date' => $request->father_birth_date,
+                            'education'  => $request->father_education,
+                            'occupation' => $request->father_occupation,
+                        ]
+                    );
                 }
 
-                if ($request->has('spouse_name')) {
-                    $spouseData = [
-                        ['type' => 'pasangan', 'name' => $request->spouse_name, 'birth_date' => $request->spouse_birth_date, 'education' => $request->spouse_education, 'occupation' => $request->spouse_occupation],
-                    ];
-
-                    foreach ($spouseData as $data) {
-                        if (!empty($data['name'])) {
-                            EmployeeFamily::create(array_merge(['user_id' => $user->id], $data));
-                        }
-                    }
+                // Ibu
+                if (!empty($request->mother_name)) {
+                    EmployeeFamily::updateOrCreate(
+                        ['user_id' => $user->id, 'type' => 'ibu'],
+                        [
+                            'name'       => $request->mother_name,
+                            'birth_date' => $request->mother_birth_date,
+                            'education'  => $request->mother_education,
+                            'occupation' => $request->mother_occupation,
+                        ]
+                    );
                 }
 
+                // Saudara
+                if (!empty($request->siblings_name)) {
+                    EmployeeFamily::updateOrCreate(
+                        ['user_id' => $user->id, 'type' => 'saudara'],
+                        [
+                            'name'       => $request->siblings_name,
+                            'birth_date' => $request->siblings_birth_date,
+                            'education'  => $request->siblings_education,
+                            'occupation' => $request->siblings_occupation,
+                        ]
+                    );
+                }
+
+                // Pasangan
+                if (!empty($request->spouse_name)) {
+                    EmployeeFamily::updateOrCreate(
+                        ['user_id' => $user->id, 'type' => 'pasangan'],
+                        [
+                            'name'       => $request->spouse_name,
+                            'birth_date' => $request->spouse_birth_date,
+                            'education'  => $request->spouse_education,
+                            'occupation' => $request->spouse_occupation,
+                        ]
+                    );
+                }
+
+                // Anak-anak
                 if (!empty($request->child_name) && is_array($request->child_name)) {
+                    // Hapus data anak sebelumnya agar tidak duplikat
+                    EmployeeFamily::where('user_id', $user->id)->where('type', 'child')->delete();
                     foreach ($request->child_name as $key => $name) {
                         if (!empty($name)) {
                             EmployeeFamily::create([
-                                'user_id' => $user->id,
-                                'type' => 'child',
-                                'name' => $name,
+                                'user_id'    => $user->id,
+                                'type'       => 'child',
+                                'name'       => $name,
                                 'birth_date' => $request->child_birth_date[$key] ?? null,
-                                'education' => $request->child_education[$key] ?? null,
+                                'education'  => $request->child_education[$key] ?? null,
                                 'occupation' => $request->child_occupation[$key] ?? null,
                             ]);
                         }
@@ -820,14 +871,17 @@ class UsersController extends Controller
                         !empty($institution) && !empty($request->training_year[$key]) &&
                         !empty($request->training_duration[$key]) && !empty($request->training_certificate[$key])
                     ) {
-
-                        EmployeeTraining::create([
-                            'user_id' => $user->id,
-                            'training_institution' => $institution,
-                            'training_year' => $request->training_year[$key],
-                            'training_duration' => $request->training_duration[$key],
-                            'training_certificate' => $request->training_certificate[$key],
-                        ]);
+                        EmployeeTraining::updateOrCreate(
+                            [
+                                'user_id' => $user->id,
+                                'training_institution' => $institution,
+                                'training_year' => $request->training_year[$key],
+                            ],
+                            [
+                                'training_duration' => $request->training_duration[$key],
+                                'training_certificate' => $request->training_certificate[$key],
+                            ]
+                        );
                     }
                 }
             }
@@ -867,7 +921,6 @@ class UsersController extends Controller
                         'doc_path' => $path,
                     ]);
                 } else {
-                    // Jika field termasuk yang required dan belum pernah diupload sebelumnya, tolak
                     if (in_array($fieldName, $requiredDocuments)) {
                         $existing = EmployeeDoc::where('user_id', $user->id)
                             ->where('doc_type', $docType)
@@ -889,7 +942,7 @@ class UsersController extends Controller
             // return redirect()->route('users.index')->with('success', 'User detail created successfully');
 
             return response()->json([
-                'message' => 'User detail created successfully.',
+                'message' => 'User detail created successfully',
                 'success' => 'User detail created successfully.'
             ], 200);
         } catch (\Exception $e) {
@@ -993,6 +1046,7 @@ class UsersController extends Controller
                 'family_card_file'             => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'resume_file'                  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'photo_file'                   => 'nullable|file|mimes:jpeg|max:2048',
+                'bank_file'                    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'bank_file'                    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'diploma_file'                 => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'sim_file'                     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
@@ -1513,7 +1567,7 @@ class UsersController extends Controller
             $user = User::findOrFail($id);
             $user->delete();
 
-            return redirect()->route('users.index')->with('success', 'user deleted successfully');
+            return redirect()->back()->with('success', 'user deleted successfully');
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while deleting the user. ' . $e)->withInput();
         }

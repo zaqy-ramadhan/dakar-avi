@@ -19,9 +19,21 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="flex-grow-2 me-2" style="min-width: 200px;">
+                            <select id="statusFilter" class="form-control w-100">
+                                <option value="">Tampilkan semua karyawan</option>
+                                @foreach ($jobStatus as $status)
+                                    <option value="{{ $status->job_status_name }}">
+                                        {{ Str::ucfirst($status->job_status_name) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     @endif
 
                     @if (!Request::is('*boarding*'))
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <div class="flex-grow-2" style="min-width: 150px;">
                         <div class="d-flex flex-wrap align-items-center gap-2">
                             <div class="flex-grow-2" style="min-width: 150px;">
                                 <select name="activeFilter" class="form-control" id="activeFilter">
@@ -32,10 +44,13 @@
                             </div>
 
                             <a class="btn btn-primary" href="{{ route('import.index') }}">
+                            <a class="btn btn-primary" href="{{ route('import.index') }}">
                                 <i class="ti ti-file-spreadsheet me-2"></i>Import Excel
                             </a>
                         </div>
                     @elseif (Request::is('*onboarding*') || Request::is('*offboarding*'))
+                        <div class="d-flex flex-wrap align-items-center gap-2 w-100">
+                            <ul class="nav nav-pills me-3 flex-wrap" id="statusTabs">
                         <div class="d-flex flex-wrap align-items-center gap-2 w-100">
                             <ul class="nav nav-pills me-3 flex-wrap" id="statusTabs">
                                 <li class="nav-item">
@@ -52,12 +67,20 @@
                             @if (Request::is('*onboarding*'))
                                 <div class="mt-2 mt-lg-0 ms-auto">
                                     <a class="btn btn-primary" href="{{ route('admin.user.create') }}">Add Karyawan</a>
+                                <div class="mt-2 mt-lg-0 ms-auto">
+                                    <a class="btn btn-primary" href="{{ route('admin.user.create') }}">Add Karyawan</a>
                                 </div>
                             @endif
                         </div>
                     @endif
 
+
                     @if (Request::is('*onboarding*'))
+                        <div class="form-check form-switch ms-auto">
+                            <input class="form-check-input" type="checkbox" id="progressFilterCheckbox"
+                                @if ((bool) request()->input('progressFilter')) checked @endif>
+                            <label class="form-check-label" for="progressFilterCheckbox">Filter Onboarding Progress</label>
+                        </div>
                         <div class="form-check form-switch ms-auto">
                             <input class="form-check-input" type="checkbox" id="progressFilterCheckbox"
                                 @if ((bool) request()->input('progressFilter')) checked @endif>
@@ -66,6 +89,7 @@
                     @endif
                 </div>
             </div>
+
         </div>
         <div class="card" style="overflow-x: auto; width: 100%; border-radius: 20px">
             {!! $dataTable->table() !!}
