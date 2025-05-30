@@ -22,7 +22,7 @@ yarn-error.log
 /.vscode
 /.zed
 
-./public/web.config
+/public/web.config
 
 **/caddy
 frankenphp
