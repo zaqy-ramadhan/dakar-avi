@@ -12,6 +12,8 @@ class Division extends Model
         'id'
     ];
 
+    public $timestamps = false;
+
     protected $fillable = [
         'division_name'
     ];

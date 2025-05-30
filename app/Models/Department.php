@@ -17,6 +17,8 @@ class Department extends Model
         'id'
     ];
 
+    public $timestamps = false;
+
     protected $fillable = [
         'department_name',
         'division_id'

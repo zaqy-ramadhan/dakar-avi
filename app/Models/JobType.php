@@ -12,6 +12,8 @@ class JobType extends Model
         'job_type_name',
     ];
 
+    public $timestamps = false;
+
     public function employeeJob()
     {
         return $this->hasMany(EmployeeJob::class);
