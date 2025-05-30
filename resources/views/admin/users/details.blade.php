@@ -101,7 +101,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" id="submitBtn" class="btn btn-primary">Save User</button>
+                        <button type="submit" id="submitBtn" class="btn btn-primary">Submit Data</button>
                     </div>
             </form>
 

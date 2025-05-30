@@ -81,7 +81,7 @@
                         @include('admin.users.form.document')
 
                         <button type="submit" id="submitBtn" class="btn btn-primary"
-                            @if ($user->id != Auth::user()->id) hidden @endif>Update User</button>
+                            @if ($user->id != Auth::user()->id) hidden @endif>Update Data</button>
                     </div>
 
                 </div>
