@@ -20,8 +20,6 @@ class Position extends Model
         'cost_center_id'
     ];
 
-    public $timestamps = false;
-
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
