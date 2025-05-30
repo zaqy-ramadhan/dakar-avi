@@ -530,7 +530,6 @@ class UsersController extends Controller
 
         if (
             ($employeeDetail && $employeeDetail->is_draft == 0) &&
-            ($employeeDetail && $employeeDetail->is_draft == 0) &&
             $employeeEducation->isNotEmpty() &&
             $employeeBank &&
             $employeeDoc->isNotEmpty()
