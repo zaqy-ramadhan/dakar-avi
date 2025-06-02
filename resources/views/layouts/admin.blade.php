@@ -70,7 +70,7 @@
                                 <span class="hide-menu">User Data</span>
                             </li>
 
-                            @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+                            @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
                                 <li class="sidebar-item">
                                     <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
                                         <span class="sidebar-icon">
@@ -104,7 +104,7 @@
                                     </ul>
                                 </li>
                             @endif
-                            @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+                            @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
                                 <li class="sidebar-item">
                                     <a class="sidebar-link {{ Request::is('*form*') ? 'active' : '' }}"
                                         href="{{ route('users.details') }}" aria-expanded="false">
@@ -116,6 +116,9 @@
                                 </li>
                             @endif
                         </ul>
+                        
+                        @if(Auth::user()->getRole() != 'admin 4')
+
                         <ul id="sidebarnav">
                             <li class="nav-small-cap">
                                 <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -171,6 +174,9 @@
                                 </a>
                             </li> --}}
                         </ul>
+
+                        @endif
+
                         @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
                             <ul id="sidebarnav">
                                 <li class="nav-small-cap">

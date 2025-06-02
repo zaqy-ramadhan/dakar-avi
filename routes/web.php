@@ -45,7 +45,7 @@ Route::get('kp', function () {
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::middleware(['role:admin,admin 2,admin 3'])->group(function () {
+    Route::middleware(['role:admin,admin 2,admin 3,admin 4'])->group(function () {
 
         Route::get('/admin/users', [UsersController::class, 'index'])->name('users.index');
         Route::get('/admin/users/view/{role?}', [UsersController::class, 'index'])->name('users.index');

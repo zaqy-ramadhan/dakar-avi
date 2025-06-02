@@ -33,7 +33,7 @@ class HomeController extends Controller
     public function index()
     {
         try {
-            if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])){
+            if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4'])){
                 $user = User::query()
                     ->with(['department', 'employeeJob.position'])
                     ->select('users.*');

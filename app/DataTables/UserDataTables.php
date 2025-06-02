@@ -102,8 +102,8 @@ class UserDataTables extends DataTable
                 $jobDocsUrl = route('users.index.job.documents.details', $row->id);
                 $currentRoute = request()->route()->getName();
 
-                if ($currentRoute === 'users.index.job.documents') {
-                    $buttons = '<a href="' . $jobDocsUrl . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-4"></i></a>';
+                if (Auth::user()->getRole() == 'admin 4') {
+                    $buttons = '<a href="' . $employmentUrl . '" class="btn btn-sm btn-outline-primary m-1" title="Employment"><i class="ti ti-script fs-4" ></i><a/>';
                 } else {
                     $buttons = '
                     <a href="' . $detailUrl . '" class="btn btn-sm btn-outline-success m-1" title="User Details"><i class="ti ti-list-details fs-4"></i></a>

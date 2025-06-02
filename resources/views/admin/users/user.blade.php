@@ -30,10 +30,11 @@
                                     <option value="false">Nonaktif</option>
                                 </select>
                             </div>
-
-                            <a class="btn btn-primary" href="{{ route('import.index') }}">
-                                <i class="ti ti-file-spreadsheet me-2"></i>Import Excel
-                            </a>
+                            @if (Auth::user()->getRole() != 'admin 4')
+                                <a class="btn btn-primary" href="{{ route('import.index') }}">
+                                    <i class="ti ti-file-spreadsheet me-2"></i>Import Excel
+                                </a>
+                            @endif
                         </div>
                     @elseif (Request::is('*onboarding*') || Request::is('*offboarding*'))
                         <div class="d-flex flex-wrap align-items-center gap-2 w-100">

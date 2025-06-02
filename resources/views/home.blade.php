@@ -65,7 +65,7 @@
 
 @section('content')
     <div class="row">
-        @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+        @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
             <p class="fs-8 fw-bold">Welcome {{ Auth::user()->fullname }}</p>
             <div class="col-lg-5 col-md-12 col-sm-12">
                 <div class="card" style="border-radius: 20px">
@@ -357,7 +357,7 @@
 @endsection
 
 @push('scripts')
-    @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+    @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
         <script>
             const ctx = document.getElementById('jobCategoryChart').getContext('2d');
             const jobCategoryChart = new Chart(ctx, {

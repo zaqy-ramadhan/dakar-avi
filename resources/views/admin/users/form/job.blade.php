@@ -112,45 +112,59 @@
 
 
 <ul class="nav nav-tabs" id="myTab" role="tablist">
-    @if (!$user->employeeDetail)
-        <li class="nav-item" role="presentation">
-            <button class="nav-link disabled" type="button" aria-disabled="true">
-                Karyawan Belum Mengisi Data Pribadi.
-            </button>
-        </li>
-    @else
+    @if (Auth::user()->getRole() === 'admin 4')
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="contract-tab" data-bs-toggle="tab" data-bs-target="#contract"
                 type="button" role="tab" aria-controls="contract" aria-selected="true">Employment</button>
         </li>
-    @endif
-    @if (Request::is('*onboarding*') && in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
-        @if ($user->firstEmployeeJob)
+        <li class="nav-item" role="presentation">
+            @if (optional($user->employeeJob)->isNotEmpty() && $user->employeeDetail)
+                <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#inventory"
+                    type="button" role="tab" aria-controls="inventory" aria-selected="false">Starter Kit</button>
+            @endif
+        </li>
+    @else
+        @if (!$user->employeeDetail)
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="wage-tab" data-bs-toggle="tab" data-bs-target="#wage" type="button"
-                    role="tab" aria-controls="wage" aria-selected="false">Wage/Allowance</button>
+                <button class="nav-link disabled" type="button" aria-disabled="true">
+                    Karyawan Belum Mengisi Data Pribadi.
+                </button>
+            </li>
+        @else
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="contract-tab" data-bs-toggle="tab" data-bs-target="#contract"
+                    type="button" role="tab" aria-controls="contract" aria-selected="true">Employment</button>
             </li>
         @endif
-    @endif
-    <li class="nav-item" role="presentation">
-        @if (optional($user->employeeJob)->isNotEmpty() && $user->employeeDetail)
-            <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button"
-                role="tab" aria-controls="inventory" aria-selected="false">Starter Kit</button>
+        @if (Request::is('*onboarding*') && in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+            @if ($user->firstEmployeeJob)
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="wage-tab" data-bs-toggle="tab" data-bs-target="#wage" type="button"
+                        role="tab" aria-controls="wage" aria-selected="false">Wage/Allowance</button>
+                </li>
+            @endif
         @endif
-    </li>
-    @if (Request::is('*onboarding*'))
-        @if (optional($user->firstEmployeeJob)->user_dakar_role === 'karyawan')
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#ga" type="button"
-                    role="tab" aria-controls="ga" aria-selected="false">Kepesertaan & Akun Digital</button>
-            </li>
-        @endif
-    @elseif(Request::is('*employment*'))
-        @if (optional($user->latestEmployeeJob)->user_dakar_role === 'karyawan')
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#ga" type="button"
-                    role="tab" aria-controls="ga" aria-selected="false">Kepesertaan & Akun Digital</button>
-            </li>
+        <li class="nav-item" role="presentation">
+            @if (optional($user->employeeJob)->isNotEmpty() && $user->employeeDetail)
+                <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#inventory"
+                    type="button" role="tab" aria-controls="inventory" aria-selected="false">Starter Kit</button>
+            @endif
+        </li>
+        @if (Request::is('*onboarding*'))
+            @if (optional($user->firstEmployeeJob)->user_dakar_role === 'karyawan')
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#ga" type="button"
+                        role="tab" aria-controls="ga" aria-selected="false">Kepesertaan & Akun Digital</button>
+                </li>
+            @endif
+        @elseif(Request::is('*employment*'))
+            @if (optional($user->latestEmployeeJob)->user_dakar_role === 'karyawan')
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#ga"
+                        type="button" role="tab" aria-controls="ga" aria-selected="false">Kepesertaan & Akun
+                        Digital</button>
+                </li>
+            @endif
         @endif
     @endif
 </ul>

@@ -90,7 +90,7 @@
     </div>
 
     <div class="col-sm-4 col-md-4 col-lg-4 mb-3">
-        <label for="child_birth_certificate_file" class="form-label">Akte Kelahiran Anak Anda (kalau ada)</label>
+        <label for="child_birth_certificate_file" class="form-label">Akte Kelahiran Anak Anda (jika ada)</label>
         <input type="file" class="form-control" id="child_birth_certificate_file"
             name="child_birth_certificate_file">
         @if ($childBirthCert)
