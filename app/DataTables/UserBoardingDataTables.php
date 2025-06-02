@@ -90,7 +90,7 @@ class UserBoardingDataTables extends DataTable
             ->with(['employeeJob.position', 'latestEmployeeJob'])
             ->select('users.*')
             ->whereDoesntHave('dakarRole', function ($q) {
-                $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3']);
+                $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4']);
             });
 
         $users = $query;
