@@ -388,7 +388,7 @@ class UsersController extends Controller
 
     public function create()
     {
-        $roles = DakarRole::whereNotIn('role_name', ['admin', 'admin 2', 'admin 3'])->get();
+        $roles = DakarRole::whereNotIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4'])->get();
         $divisions = Division::all();
         $departments = Department::all();
         $positions = Position::all();
