@@ -283,8 +283,8 @@ class JobEmploymentDataTables extends DataTable
                     } elseif ($currentRoute === 'users.index.onboarding.detail') {
                         return '
                             <div class="d-flex">
-                                    ' . $kontrakButton . '
-                                <a title="Kompensasi" href="' . route("user.kompensasi-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-presentation-analytics fs-4"></i></a>
+                                ' . $kontrakButton . '
+                                ' . $kompensasiButton . '
                                 ' . $deleteButton . '
                             </div>
                         ';
