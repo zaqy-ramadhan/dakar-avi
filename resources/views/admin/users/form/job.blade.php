@@ -63,6 +63,7 @@
                 <div class="circle @if ($personal_status) active @endif"><i class="ti ti-user"></i></div>
                 <div class="label">
                     Personal Data
+                    {{-- @dd($personal_date) --}}
                     @if ($personal_status && !empty($personal_date))
                         <div class="text-muted small">{{ \Carbon\Carbon::parse($personal_date)->format('d M Y') }}
                         </div>

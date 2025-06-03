@@ -62,7 +62,7 @@ return $request->only($this->username(), 'password');
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.

@@ -90,7 +90,6 @@ class UsersController extends Controller
                 'users.index.onboarding' => 'users.index.onboarding.detail',
             ];
             if (isset($detailRoutes[$routeName])) {
-                // return redirect()->route($detailRoutes[$routeName], ['id' => Auth::id()]);
                 $user = User::with('employeeJob', 'inventory.employeeJob', 'dakarRole', 'firstEmployeeJob', 'latestEmployeeJob')->findOrFail(Auth::user()->id);
                 $jobWageAllowance = JobWageAllowance::where('employee_job_id', optional($user->firstEmployeeJob)->id)->get();
 
@@ -110,7 +109,7 @@ class UsersController extends Controller
                 }
 
                 $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft == 0) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
-                $personal_date = optional($user->employeeDetail)->created_at;
+                $personal_date = optional($user->employeeDocs)->last()->created_at;
 
                 $job = $user->employeeJob->first();
                 $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id)->isNotEmpty();
@@ -119,19 +118,14 @@ class UsersController extends Controller
                 $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
                 $inventories_status = false;
                 if ($job && $job->inventory->isNotEmpty()) {
-                    // dd($job->inventory);
                     $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
-                        // dd($item->item->item_name);
                         return !in_array(strtolower($item->item->item_name), $specificItems);
                     });
-                    // dd($nonSpecificInventories);
                     $inventories_status = $nonSpecificInventories->where('status', '-')->isEmpty();
                 }
-                // dd($nonSpecificInventories);
                 $inventories_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->updated_at ?? null;
 
                 $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
-                // dd($user->employeeInventoryNumber->isNotEmpty());
                 $inumber_date = optional($user->employeeInventoryNumber)->last()?->created_at;
 
                 $inventories = $user->inventory->map(function ($inventory) {
@@ -680,7 +674,6 @@ class UsersController extends Controller
                 'resume_file'                  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'photo_file'                   => 'nullable|file|mimes:jpeg|max:2048',
                 'bank_file'                    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-                'bank_file'                    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'diploma_file'                 => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'sim_file'                     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'child_birth_certificate_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
@@ -727,7 +720,7 @@ class UsersController extends Controller
 
 
 
-        // dd($employeeDetail->is_draft);
+            // dd($employeeDetail->is_draft);
 
 
             if (!empty($request->facebook)) {
@@ -924,11 +917,8 @@ class UsersController extends Controller
                         $existing = EmployeeDoc::where('user_id', $user->id)
                             ->where('doc_type', $docType)
                             ->exists();
-
                         if (!$existing) {
-                            return redirect()->back()->withErrors([
-                                $fieldName => "$docType wajib diunggah minimal satu kali.",
-                            ])->withInput();
+                            abort(422, "$docType wajib diunggah.");
                         }
                     }
                 }
@@ -1477,8 +1467,6 @@ class UsersController extends Controller
         ));
     }
 
-
-
     public function edit($id)
     {
         $Users = user::findOrFail($id);
@@ -1584,7 +1572,7 @@ class UsersController extends Controller
         }
     }
 
-    
+
     public function autosavePersonal(Request $request, $id)
     {
         try {
@@ -1620,7 +1608,7 @@ class UsersController extends Controller
                     'esd_uniform_size'  => $request->esd_uniform_size,
                     'esd_shoes_size'    => $request->esd_shoes_size,
                     'is_draft'          => $user->employeeDetail->is_draft ?? 1,
-                ]   
+                ]
             );
 
             return response()->json(['message' => 'Draft saved.'], 200);
@@ -1691,6 +1679,7 @@ class UsersController extends Controller
         }
 
         // Anak-anak
+        EmployeeFamily::where('type', 'child')->where('user_id', $user->id)->delete();
         if (!empty($request->child_name) && is_array($request->child_name)) {
             foreach ($request->child_name as $key => $name) {
                 if (!empty($name)) {
@@ -1733,6 +1722,7 @@ class UsersController extends Controller
 
         $user = User::findOrFail($id);
 
+        EmployeeEducation::where('user_id', $user->id)->delete();
         foreach ($request->education_level as $index => $level) {
             EmployeeEducation::updateOrCreate([
                 'user_id' => $user->id,
@@ -1754,6 +1744,7 @@ class UsersController extends Controller
     {
         $user = User::findOrFail($id);
 
+        EmployeeTraining::where('user_id', $user->id)->delete();
         if (!empty($request->training_institution) && is_array($request->training_institution)) {
             foreach ($request->training_institution as $key => $institution) {
                 // Pastikan semua field wajib ada sebelum simpan
@@ -1799,31 +1790,50 @@ class UsersController extends Controller
 
     public function autosaveDocs(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $request->validate([
+            'ktp_file'                     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'npwp_file'                    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'family_card_file'             => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'resume_file'                  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'photo_file'                   => 'nullable|file|mimes:jpeg|max:2048',
+            'vaccine_certificate_file'     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'diploma_file'                 => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'sim_file'                     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'child_birth_certificate_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'marriage_certificate_file'    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'bank_file'                    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
 
-        $documents = [
-            'ktp_file'                     => 'KTP',
-            'npwp_file'                    => 'NPWP',
-            'family_card_file'             => 'Kartu Keluarga',
-            'resume_file'                  => 'Resume',
-            'photo_file'                   => 'Pas Foto',
-            'vaccine_certificate_file'     => 'Sertifikat Vaksin',
-            'diploma_file'                 => 'Ijazah dan Transkrip',
-            'sim_file'                     => 'SIM',
-            'child_birth_certificate_file' => 'Akte Kelahiran Anak',
-            'marriage_certificate_file'    => 'Buku Nikah',
-            'bank_file'                    => 'Buku Rekening',
-        ];
-        foreach ($documents as $fieldName => $docType) {
-            if ($request->hasFile($fieldName)) {
-                $path = $request->file($fieldName)->store("documents/$docType", 'public');
+        try {
 
-                EmployeeDoc::updateOrCreate(
-                    ['user_id' => $user->id, 'doc_type' => $docType],
-                    ['doc_path' => $path]
-                );
+            $user = User::findOrFail($id);
+
+            $documents = [
+                'ktp_file'                     => 'KTP',
+                'npwp_file'                    => 'NPWP',
+                'family_card_file'             => 'Kartu Keluarga',
+                'resume_file'                  => 'Resume',
+                'photo_file'                   => 'Pas Foto',
+                'vaccine_certificate_file'     => 'Sertifikat Vaksin',
+                'diploma_file'                 => 'Ijazah dan Transkrip',
+                'sim_file'                     => 'SIM',
+                'child_birth_certificate_file' => 'Akte Kelahiran Anak',
+                'marriage_certificate_file'    => 'Buku Nikah',
+                'bank_file'                    => 'Buku Rekening',
+            ];
+            foreach ($documents as $fieldName => $docType) {
+                if ($request->hasFile($fieldName)) {
+                    $path = $request->file($fieldName)->store("documents/$docType", 'public');
+
+                    EmployeeDoc::updateOrCreate(
+                        ['user_id' => $user->id, 'doc_type' => $docType],
+                        ['doc_path' => $path]
+                    );
+                }
             }
+            return response()->json(['status' => 'success', 'message' => 'Documents autosaved successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to validate files.'], 500);
         }
-        return response()->json(['status' => 'success', 'message' => 'Documents autosaved successfully.']);
     }
 }

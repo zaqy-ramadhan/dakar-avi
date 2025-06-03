@@ -132,7 +132,7 @@
     <div class="col-sm-6 col-md-6 col-lg-4 mb-3">
         <label for="photo_file" class="form-label">Pas Foto dalam bentuk .jpeg <span
                 class="text-danger">*</span></label>
-        <input type="file" class="form-control" id="photo_file" name="photo_file">
+        <input type="file" class="form-control" id="photo_file" name="photo_file" accept=".jpeg">
         <small class="text-muted">Wajib diisi</small>
         @if ($photo)
             <p>File yang ada: <a href="{{ asset('storage/' . $photo->doc_path) }}" target="_blank">Lihat File</a></p>

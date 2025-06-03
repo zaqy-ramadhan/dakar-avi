@@ -30,7 +30,7 @@ class OnboardingController extends Controller
     public function index(JobEmploymentDataTables $dataTable, Request $request, $id)
     {
         try {
-            $user = User::with('employeeJob.jobDoc', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item', 'inventory.employeeJob')->findOrFail($id);
+            $user = User::with('employeeJob.jobDoc', 'dakarRole', 'employeeDetail', 'employeeDocs', 'firstEmployeeJob', 'employeeJob.inventory.item', 'inventory.employeeJob')->findOrFail($id);
             $jobWageAllowance = JobWageAllowance::where('employee_job_id', optional($user->firstEmployeeJob)->id)->get();
 
             if ($jobWageAllowance === null || $jobWageAllowance->count() <= 0) {
@@ -56,7 +56,8 @@ class OnboardingController extends Controller
             //progress
 
             $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft == 0) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
-            $personal_date = optional($user->employeeDetail)->created_at;
+            $personal_date = optional($user->employeeDocs)->last()->created_at;
+            // dd($personal_date);
 
             $job = $user->employeeJob->first();
             $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id);
