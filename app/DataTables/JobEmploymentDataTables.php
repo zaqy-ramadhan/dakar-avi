@@ -324,6 +324,8 @@ class JobEmploymentDataTables extends DataTable
                             ';
                         }
                     }
+                } elseif (Auth::user()->getRole() === 'admin 4') {
+                    return '';
                 } else {
 
                     if ($currentRoute === 'users.index.offboarding') {
