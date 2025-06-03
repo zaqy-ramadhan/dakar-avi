@@ -138,11 +138,33 @@
             </li>
         @endif
         @if (Request::is('*onboarding*') && in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
-            @if ($user->firstEmployeeJob)
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="wage-tab" data-bs-toggle="tab" data-bs-target="#wage" type="button"
-                        role="tab" aria-controls="wage" aria-selected="false">Wage/Allowance</button>
-                </li>
+            @php
+            $subGolongan = optional(optional($user->firstEmployeeJob)->subGolongan)->sub_golongan_name;
+            $userRole = Auth::user()->getRole();
+            $allowWageTab = false;
+
+            if (in_array($subGolongan, ['4 A'])) {
+                if (in_array($userRole, ['admin', 'admin 2'])) {
+                $allowWageTab = true;
+                }
+            } elseif (in_array($subGolongan, [
+                '4 B', '4 C', '4 D', '4 E', '4 F', '5 A', '5 B', '5 C', '5 D',
+                '6 A', '6 B', '6 C', '6 D'
+            ])) {
+                if ($userRole === 'admin') {
+                $allowWageTab = true;
+                }
+            } else {
+                if (in_array($userRole, ['admin', 'admin 1', 'admin 2'])) {
+                $allowWageTab = true;
+                }
+            }
+            @endphp
+            @if ($user->firstEmployeeJob && $allowWageTab)
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="wage-tab" data-bs-toggle="tab" data-bs-target="#wage" type="button"
+                role="tab" aria-controls="wage" aria-selected="false">Wage/Allowance</button>
+            </li>
             @endif
         @endif
         <li class="nav-item" role="presentation">
