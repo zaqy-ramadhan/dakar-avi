@@ -10,7 +10,7 @@
                             <label for="type_{{ $index }}" class="form-label">Type</label>
                             <input type="text" class="form-control" id="type_{{ $index }}" name="type[]"
                                 value="{{ old('type.' . $index, $allowance['type']) }}"
-                                @if (Auth::user()->getRole() !== 'admin') disabled @endif>
+                                @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])) disabled @endif>
                             @error('type.' . $index)
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -24,7 +24,7 @@
 
                             <input type="text" class="form-control amount-input" id="amount_{{ $index }}"
                                 name="amount[]" value="{{ number_format($amountValue, 0, ',', '.') }}"
-                                @if (Auth::user()->getRole() !== 'admin') disabled @endif>
+                                @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])) disabled @endif>
 
                             @error('amount.' . $index)
                                 <div class="text-danger">{{ $message }}</div>
@@ -33,7 +33,7 @@
                         <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
                             <label for="calculation_{{ $index }}" class="form-label">Calculation</label>
                             <select class="form-select" id="calculation_{{ $index }}" name="calculation[]"
-                                @if (Auth::user()->getRole() !== 'admin') disabled @endif>
+                                @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])) disabled @endif>
                                 <option value="Per Hari"
                                     {{ old('calculation.' . $index, $allowance['calculation']) == 'Per Hari' ? 'selected' : '' }}>
                                     Per Hari</option>
@@ -48,7 +48,7 @@
                         <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
                             <label for="status_{{ $index }}" class="form-label">Status</label>
                             <select class="form-select" id="status_{{ $index }}" name="status[]"
-                                @if (Auth::user()->getRole() !== 'admin') disabled @endif>
+                                @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])) disabled @endif>
                                 <option value="Gross"
                                     {{ old('status.' . $index, $allowance['status']) == 'Gross' ? 'selected' : '' }}>
                                     Gross
