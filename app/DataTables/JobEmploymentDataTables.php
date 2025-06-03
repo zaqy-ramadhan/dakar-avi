@@ -202,18 +202,19 @@ class JobEmploymentDataTables extends DataTable
 
                 $kontrakButton = '';
                 if ($showKontrakButton) {
-                    $kontrakButton =  $job->id === $job->user->firstEmployeeJob->id
-                        ? '
-                        <a title="Kontrak" href="' . route("user.kontrak-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-4"></i></a>
-                        <a title="Pernyataan Kerahasiaan" href="' . route("user.kerahasiaan-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-lock fs-4"></i></a>
-                        '
-                        : '<a title="Kontrak" href="' . route("user.kontrak-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-4"></i></a>';
+                    $kontrakButton = '<a title="Kontrak" href="' . route("user.kontrak-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-4"></i></a>';
                 }
 
                 $kompensasiButton = '';
                 if ($showKompensasiButton) {
                     $kompensasiButton = '<a title="Kompensasi" href="' . route("user.kompensasi-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-presentation-analytics fs-4"></i></a>';
                 }
+
+                $kerahasiaanButton =  $job->id === $job->user->firstEmployeeJob->id
+                        ? '
+                        <a title="Pernyataan Kerahasiaan" href="' . route("user.kerahasiaan-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-lock fs-4"></i></a>
+                        '
+                        : '';
 
                 // dd($job->jobDoc, $job->jobDoc->isNotEmpty(), $job->employment_status);
                 if ($job->jobDoc->isNotEmpty() || $job->employment_status == false) {
@@ -281,13 +282,14 @@ class JobEmploymentDataTables extends DataTable
                             ';
                         }
                     } elseif ($currentRoute === 'users.index.onboarding.detail') {
-                        return '
-                            <div class="d-flex">
-                                ' . $kontrakButton . '
-                                ' . $kompensasiButton . '
-                                ' . $deleteButton . '
-                            </div>
-                        ';
+                            return '
+                                <div class="d-flex">
+                                    ' . $kontrakButton . '
+                                    ' . $kompensasiButton . '
+                                    ' . $kerahasiaanButton . '
+                                    ' . $deleteButton . '
+                                </div>
+                            ';
                     } elseif ($currentRoute === 'users.index.offboarding.detail') {
                         return '
                             <div class="d-flex">
@@ -306,6 +308,7 @@ class JobEmploymentDataTables extends DataTable
                                 <div class="d-flex">
                                     ' . $wageButton . '
                                     ' . $kontrakButton . '
+                                    ' . $kerahasiaanButton . '
                                     ' . $kompensasiButton . '                                    
                                     ' . $skhkButton . '
                                     ' . $offboardButton . '
@@ -317,6 +320,7 @@ class JobEmploymentDataTables extends DataTable
                                 <div class="d-flex">
                                     ' . $wageButton . '                                    
                                     ' . $kontrakButton . '
+                                    ' . $kerahasiaanButton . '
                                     ' . $sertifButton . '
                                     ' . $offboardButton . '
                                     ' . $deleteButton . '
@@ -336,18 +340,21 @@ class JobEmploymentDataTables extends DataTable
                         </div>';
                     }
 
-                    if ($job->id === $job->user->firstEmployeeJob->id) {
+                    // if ($job->id === $job->user->firstEmployeeJob->id) {
+                    //     return '
+                    //     <div class="d-flex">
+                    //         ' . $kontrakButton . '
+                    //         ' . $kerahasiaanButton . '
+                    //         ' . $skhkButton . '
+                    //         ' . $sertifButton .  '
+                    //     </div>
+                    // ';
+                    // } 
+                    else {
                         return '
                         <div class="d-flex">
                             ' . $kontrakButton . '
-                            ' . $skhkButton . '
-                            ' . $sertifButton .  '
-                        </div>
-                    ';
-                    } else {
-                        return '
-                        <div class="d-flex">
-                            ' . $kontrakButton . '
+                            ' . $kerahasiaanButton . '
                             ' . $skhkButton . '
                             ' . $sertifButton .  '
                         </div>
