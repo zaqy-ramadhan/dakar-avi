@@ -9,9 +9,9 @@
                     <div class="card mb-0">
                         <div class="card-body">
                             <a href="{{ url('/') }}" class="text-nowrap logo-img text-center d-block py-3 w-100">
-                                <img src="../assets/images/logos/logo-avi.png" width="180" alt="Logo">
+                                <img src="../assets/images/logos/awork-logo.png" width="180" alt="Logo">
                             </a>
-                            <p class="text-center">Dakar Management System</p>
+                            <p class="text-center">AVI Workforce Onboarding & Record Keeper</p>
                             <form method="POST" action="{{ route('login') }}">
                                 @csrf
                                 <div class="mb-3">
