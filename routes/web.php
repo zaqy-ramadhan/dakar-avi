@@ -30,6 +30,8 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UniversalCrudController;
 use App\Http\Controllers\WorkHourController;
+use App\Http\Controllers\Api\v1\ApiDepartmentController;
+use App\Http\Controllers\Api\v1\ApiUsersController;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 Auth::routes();
@@ -42,6 +44,12 @@ Route::get('kp', function () {
     $pdf = Pdf::loadView('documents.sertif')->setPaper('a4', 'landscape');
     return $pdf->stream('kp.pdf');
 });
+
+// Route::get('api/v1/users', [ApiUsersController::class, 'index']);
+// Route::get('api/v1/users/{id}', [ApiUsersController::class, 'show']);
+
+Route::get('api/v1/department', [ApiDepartmentController::class, 'index']);
+Route::get('api/v1/department/{id}', [ApiDepartmentController::class, 'show']);
 
 Route::middleware(['auth'])->group(function () {
 
