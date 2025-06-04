@@ -11,6 +11,7 @@ class EmployeeJob extends Model
 
     // Nama tabel yang terkait dengan model
     protected $table = 'dakar_employee_job';
+    public $timestamps = false;
 
     // Kolom yang dapat diisi (mass assignable)
     protected $fillable = [
