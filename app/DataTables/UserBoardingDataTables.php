@@ -109,9 +109,12 @@ class UserBoardingDataTables extends DataTable
         });
 
         if (request()->input('progressFilter') === 'true') {
-            $users->whereHas('firstEmployeeJob', function ($qu) {
-                $qu->where('employment_status', true)
-                ->where('is_onboarding_completed', false);
+            // $users->whereHas('firstEmployeeJob', function ($qu) {
+            //     $qu->where('employment_status', true)
+            //     ->where('is_onboarding_completed', false);
+            // });
+            $users->whereHas('employeeDetail', function ($q) {
+                $q->where('is_draft', 0);
             });
 
             $users = $users->get();
