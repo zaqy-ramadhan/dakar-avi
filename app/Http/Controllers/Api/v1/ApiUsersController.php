@@ -21,7 +21,7 @@ class ApiUsersController extends Controller
                 ->whereHas('dakarRole', function ($q) {
                     $q->whereNotIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4']);
                 })
-                ->with(['latestEmployeeJob'])
+                ->with(['latestEmployeeJob', 'firstEmployeeJob'])
                 ->get();
 
             $data = $users->map(function ($user) {
@@ -44,6 +44,10 @@ class ApiUsersController extends Controller
                     'level' => $job->level->level_name ?? null,
                     'work_hour' => $job->workHour->work_hour ?? null,
                     'job_status' => $job->job_status ?? null,
+                    'join_date' => $user->join_date ? \Carbon\Carbon::parse($user->join_date)->format('Y-m-d') : ($user->firstEmployeeJob->start_date ? $user->firstEmployeeJob->start_date->format('Y-m-d') : null),
+                    'start_date' => $job->start_date ? $job->start_date->format('Y-m-d') : null,
+                    'end_date' => $job->end_date ? $job->end_date->format('Y-m-d') : null,
+                    'contract' => $job->contract ?? null,
                 ];
             });
 
@@ -65,7 +69,8 @@ class ApiUsersController extends Controller
         try {
             $user = User::with([
                 'latestEmployeeJob',
-            ])->findOrFail($id);
+                'firstEmployeeJob'
+            ])->where('npk', $id)->firstOrFail();
 
             $job = $user->latestEmployeeJob;
 
@@ -87,6 +92,10 @@ class ApiUsersController extends Controller
                 'level' => $job->level->level_name ?? null,
                 'work_hour' => $job->workHour->work_hour ?? null,
                 'job_status' => $job->job_status ?? null,
+                'join_date' => $user->join_date ? \Carbon\Carbon::parse($user->join_date)->format('Y-m-d') : ($user->firstEmployeeJob->start_date ? $user->firstEmployeeJob->start_date->format('Y-m-d') : null),
+                'start_date' => $job->start_date ? $job->start_date->format('Y-m-d') : null,
+                'end_date' => $job->end_date ? $job->end_date->format('Y-m-d') : null,
+                'contract' => $job->contract ?? null,
             ];
 
             return response()->json(

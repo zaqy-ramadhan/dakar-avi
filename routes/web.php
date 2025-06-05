@@ -32,6 +32,7 @@ use App\Http\Controllers\UniversalCrudController;
 use App\Http\Controllers\WorkHourController;
 use App\Http\Controllers\Api\v1\ApiDepartmentController;
 use App\Http\Controllers\Api\v1\ApiUsersController;
+use App\Http\Controllers\Api\v1\ApiPositionController;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 Auth::routes();
@@ -45,11 +46,14 @@ Route::get('kp', function () {
     return $pdf->stream('kp.pdf');
 });
 
-// Route::get('api/v1/users', [ApiUsersController::class, 'index']);
-// Route::get('api/v1/users/{id}', [ApiUsersController::class, 'show']);
+Route::get('api/v1/users', [ApiUsersController::class, 'index']);
+Route::get('api/v1/users/{id}', [ApiUsersController::class, 'show']);
 
 Route::get('api/v1/department', [ApiDepartmentController::class, 'index']);
 Route::get('api/v1/department/{id}', [ApiDepartmentController::class, 'show']);
+
+Route::get('api/v1/position', [ApiPositionController::class, 'index']);
+Route::get('api/v1/position/{id}', [ApiPositionController::class, 'show']);
 
 Route::middleware(['auth'])->group(function () {
 
