@@ -354,13 +354,13 @@
                         searchable: true,
                         orderable: true
                     },
-                    {
-                        data: 'section',
-                        name: 'section',
-                        title: 'Section',
-                        searchable: true,
-                        orderable: true
-                    },
+                    // {
+                    //     data: 'section',
+                    //     name: 'section',
+                    //     title: 'Section',
+                    //     searchable: true,
+                    //     orderable: true
+                    // },
                     {
                         data: 'position',
                         name: 'position',
@@ -447,7 +447,7 @@
                     {
                         data: 'actions',
                         name: 'actions',
-                        title: 'Actions',
+                        title: 'Documents',
                         searchable: false,
                         orderable: false
                     }
