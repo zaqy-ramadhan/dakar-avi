@@ -48,10 +48,10 @@ class UsersController extends Controller
         $type = request()->route('role');
 
         $pageTitles = [
-            'users.index.onboarding' => 'User Onboarding',
-            'users.index.offboarding' => 'User Offboarding',
+            'users.index.onboarding' => 'Employee Onboarding',
+            'users.index.offboarding' => 'Employee Offboarding',
         ];
-        $page = $pageTitles[$routeName] ?? 'User Management';
+        $page = $pageTitles[$routeName] ?? 'Employee Management';
 
         $userRole = Auth::user()->getRole();
         $restrictedRoles = ['karyawan', 'pemagangan', 'internship'];
@@ -78,9 +78,9 @@ class UsersController extends Controller
         $type = request()->route('role');
 
         $pageTitles = [
-            'users.index.onboarding' => 'User Onboarding',
+            'users.index.onboarding' => 'Employee Onboarding',
         ];
-        $page = $pageTitles[$routeName] ?? 'User Management';
+        $page = $pageTitles[$routeName] ?? 'Employee Management';
 
         $userRole = Auth::user()->getRole() ?? 'guest';
         $restrictedRoles = ['karyawan', 'pemagangan', 'internship', 'guest'];
@@ -273,7 +273,7 @@ class UsersController extends Controller
         $roles = DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get();
         $jobStatus = JobStatus::all();
         $type = request()->route('role');
-        $page = 'User Offboarding';
+        $page = 'Employee Offboarding';
 
         $userRole = Auth::user()->getRole() ?? 'guest';
         $restrictedRoles = ['karyawan', 'pemagangan', 'internship', 'guest'];
