@@ -183,6 +183,15 @@
                                         <span class="hide-menu">Joined Employee</span>
                                     </a>
                                 </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link {{ Request::is('*employee-birthday*') ? 'active' : '' }}"
+                                        href="/admin/reporting/joined-employee" aria-expanded="false">
+                                        <span>
+                                            <i class="ti ti-cake"></i>
+                                        </span>
+                                        <span class="hide-menu">Employee Birthday</span>
+                                    </a>
+                                </li>
                             </ul>
                             <ul id="sidebarnav">
                                 <li class="nav-small-cap">
