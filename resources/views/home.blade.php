@@ -220,7 +220,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        Karyawan Habis Kontrak - {{ now()->translatedFormat('F Y') }}
+                        Karyawan Habis Kontrak - {{ now()->addMonths(2)->translatedFormat('F Y') }}
                     </div>
                     <div class="card-body table-responsive">
                         <a href="{{ route('expiredContract') }}" class="btn btn-outline-primary mb-3">

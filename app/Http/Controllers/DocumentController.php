@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\DataTables\UserDataTables;
 use App\Exports\ContractExpiredExport;
+use App\Exports\JoinedThisMonthExport;
 use App\Exports\uniformRefreshExport;
 use App\Models\DakarRole;
 use App\Models\JobDoc;
@@ -445,7 +446,7 @@ class DocumentController extends Controller
                 $pdf = PDF::loadView('documents.pkwt', compact('kontrak', 'hr', 'jobDoc', 'wages', 'first_signature'));
             }
 
-            return $pdf->stream('preview_kontrak.pdf'); 
+            return $pdf->stream('preview_kontrak.pdf');
         } catch (\Exception $e) {
             return back()->with('error', 'Error generating preview: ' . $e->getMessage());
         }
@@ -673,10 +674,18 @@ class DocumentController extends Controller
 
     public function expiredContract(Request $request)
     {
-        $month = $request->query('month') ?? Carbon::now()->month;
+        $month = $request->query('month') ?? Carbon::now()->addMonths(2)->month;
         // dd($month);
         $year = $request->query('year') ?? Carbon::now()->year;
         return Excel::download(new ContractExpiredExport($month, $year), 'bulan-' . $month . '-' . $year . '-expired-contract.xlsx');
+    }
+
+    public function joinedThisMonth(Request $request)
+    {
+        $month = $request->query('month') ?? Carbon::now()->month;
+        // dd($month);
+        $year = $request->query('year') ?? Carbon::now()->year;
+        return Excel::download(new JoinedThisMonthExport($month, $year), 'bulan-' . $month . '-' . $year . '-join.xlsx');
     }
 
     public function uniformRefresh()

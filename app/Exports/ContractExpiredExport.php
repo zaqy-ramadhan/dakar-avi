@@ -42,7 +42,11 @@ class ContractExpiredExport implements FromCollection, WithHeadings
                                 'npk' => $job->user ? $job->user->npk : 'N/A',
                                 'name' => $job->user ? $job->user->fullname : 'N/A',
                                 'department' => $job->department ? $job->department->department_name : 'N/A',
-                                'join_date' => $job->user->join_date ?? 'N/A',
+                                'join_date' => $job->user && $job->user->join_date
+                                    ? \Carbon\Carbon::parse($job->user->join_date)->isoFormat('D MMMM Y')
+                                    : ($job->user && $job->user->firstEmployeeJob && $job->user->firstEmployeeJob->start_date
+                                        ? \Carbon\Carbon::parse($job->user->firstEmployeeJob->start_date)->isoFormat('D MMMM Y')
+                                        : 'N/A'),
                                 'start_date' => $job->start_date ? \Carbon\Carbon::parse($job->start_date)->isoFormat('D MMMM Y') : 'N/A',
                                 'end_date' => $job->end_date ? \Carbon\Carbon::parse($job->end_date)->isoFormat('D MMMM Y') : 'N/A',
                                 'status' => $job->contract,

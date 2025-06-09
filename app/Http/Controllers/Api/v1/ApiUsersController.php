@@ -66,6 +66,7 @@ class ApiUsersController extends Controller
 
     public function show($id)
     {
+        #$id = NPK
         try {
             $user = User::with([
                 'latestEmployeeJob',

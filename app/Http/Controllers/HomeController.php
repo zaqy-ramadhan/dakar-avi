@@ -74,7 +74,7 @@ class HomeController extends Controller
                     ->groupBy('dakar_departments.department_name')
                     ->pluck('total', 'dakar_departments.department_name');
 
-                $now = Carbon::now();
+                $now = Carbon::now()->addMonth(2);
                 $expiredThisMonth = EmployeeJob::with(['department', 'user'])
                     ->where('employment_status', true)
                     ->where('job_status', 'kontrak')

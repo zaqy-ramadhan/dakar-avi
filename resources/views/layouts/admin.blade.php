@@ -31,7 +31,7 @@
             <!-- Sidebar scroll-->
             <div>
                 <div class="brand-logo d-flex align-items-center justify-content-center">
-                    <a href="index.html" class="text-nowrap logo-img">
+                    <a href="/" class="text-nowrap logo-img">
                         <img src="/assets/images/logos/awork-logo.png"
                             style="height: 50px; width: auto; object-fit:cover; margin-top: 16px;" alt="" />
                     </a>

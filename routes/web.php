@@ -46,6 +46,7 @@ Route::get('kp', function () {
     return $pdf->stream('kp.pdf');
 });
 
+#api routes
 Route::get('api/v1/users', [ApiUsersController::class, 'index']);
 Route::get('api/v1/users/{id}', [ApiUsersController::class, 'show']);
 
@@ -111,13 +112,14 @@ Route::middleware(['auth'])->group(function () {
             // Route::put('disnaker/{nip}', [DisnakerController::class, 'update'])->name(('disnaker.update'));
         });
 
+        #export pdf and excel
         Route::get('kompensasi/{id}', [DocumentController::class, 'kompensasiPDF'])->name('user.kompensasi-pdf');
         Route::get('preview/kompensasi/{id}', [DocumentController::class, 'kompensasiPreview'])->name('kompensasi.preview');
         Route::get('preview/paklaring/{id}', [DocumentController::class, 'paklaringPreview'])->name('paklaring.preview');
         Route::get('birthday', [DocumentController::class, 'exportBirthday'])->name('birthday');
         Route::get('uniform-refresh', [DocumentController::class, 'uniformRefresh'])->name('uniform-refresh');
         Route::get('expired-contract', [DocumentController::class, 'expiredContract'])->name('expiredContract');
-
+        Route::get('joined', [DocumentController::class, 'joinedThisMonth'])->name('joinedThisMonth');
 
         Route::post('/employee-inventory-number', [EmployeeInventoryNumberController::class, 'store'])->name('employee-inventory-number.store');
 
@@ -128,6 +130,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('assign-role', [UsersController::class, 'assignRole']);
     });
 
+    #export pdf
     Route::get('signature/{id}', [DocumentController::class, 'index'])->name('signature.index');
     Route::post('signature/{id}/store', [DocumentController::class, 'store'])->name('signature.store');
     Route::get('kontrak/{id}', [DocumentController::class, 'KontrakPDF'])->name('user.kontrak-pdf');
@@ -138,8 +141,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/preview/skhk/{id}', [DocumentController::class, 'skhkPreview'])->name('skhk.preview');
     Route::get('sertif/{id}', [DocumentController::class, 'sertif'])->name('sertif.pdf');
     Route::get('paklaring/{id}', [DocumentController::class, 'paklaringPDF'])->name('user.paklaring-pdf');
-
-    
 
     Route::get('/job-wage-allowance/{jobEmploymentId}', [JobWageAllowanceController::class, 'index'])->name('job.wage.allowance');
     Route::post('/job-wage-allowance/{jobEmploymentId}', [JobWageAllowanceController::class, 'store'])->name('job.wage.allowance.store');
@@ -155,8 +156,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/employment', [EmploymentController::class, 'index'])->name('users.index.employment');
     // Route::get('/admin/onboarding/uncomplete', [UsersController::class, 'indexBoarding'])->name('users.index.uncomplete');
 
-    Route::get('/admin/job-docs', [DocumentController::class, 'indexJobDocs'])->name('users.index.job.documents');
-    Route::get('/admin/job-docs/detail/{id}', [DocumentController::class, 'JobDocsDetail'])->name('users.index.job.documents.details');
+    // Route::get('/admin/job-docs', [DocumentController::class, 'indexJobDocs'])->name('users.index.job.documents');
+    // Route::get('/admin/job-docs/detail/{id}', [DocumentController::class, 'JobDocsDetail'])->name('users.index.job.documents.details');
     Route::post('/import', [ImportController::class, 'import'])->name('import');
     Route::get('/import', [ImportController::class, 'index'])->name('import.index');
 
@@ -176,14 +177,13 @@ Route::middleware(['auth'])->group(function () {
         return $dataTable->render('admin.users.user');
     })->name('user.offboarding');
 
-    // Route::get('accept-status/{id}', [InventoryController::class, 'status'])->name('accept-status');
-    // Route::get('return-status/{id}', [InventoryController::class, 'status'])->name('return-status');
 
     //dakar form
     Route::get('/admin/form/profile', [UsersController::class, 'details'])->name('users.details');
     Route::post('users/{id}/details', [UsersController::class, 'storeDetails'])->name('admin.users.details.store');
     Route::post('users/{id}/details/update', [UsersController::class, 'storeUpdateDetails'])->name('admin.users.details.update');
 
+    #autosave user personal data
     Route::post('users/autosave-personal/{id}', [UsersController::class, 'autosavePersonal'])->name('users.autosave.personal');
     Route::post('users/autosave-family/{id}', [UsersController::class, 'autosaveFamily']);
     Route::post('users/autosave-socmed/{id}', [UsersController::class, 'autosaveSocmed'])->name('autosave.socmed');
