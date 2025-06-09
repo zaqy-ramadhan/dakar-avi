@@ -34,6 +34,7 @@ class ContractExpiredExport implements FromCollection, WithHeadings
         $employeeJob = EmployeeJob::with(['department', 'user'])
                         ->where('job_status', 'kontrak')
                         ->where('user_dakar_role', 'karyawan')
+                        ->where('employment_status', true)
                         ->whereMonth('end_date', $month)
                         ->whereYear('end_date', $year)
                         ->get()

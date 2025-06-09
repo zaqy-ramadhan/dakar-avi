@@ -117,67 +117,73 @@
                             @endif
                         </ul>
 
-                        @if(Auth::user()->getRole() != 'admin 4')
+                        @if (Auth::user()->getRole() != 'admin 4')
 
-                        <ul id="sidebarnav">
-                            <li class="nav-small-cap">
-                                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                                <span class="hide-menu">User Career</span>
-                            </li>
-                            <li class="sidebar-item">
-                                <a class="sidebar-link {{ Request::is('*onboarding*') ? 'active' : '' }}"
-                                    href="/admin/onboarding" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-briefcase"></i>
-                                    </span>
-                                    <span class="hide-menu">Onboarding</span>
-                                </a>
-                            </li>
-
-                            @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+                            <ul id="sidebarnav">
+                                <li class="nav-small-cap">
+                                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                                    <span class="hide-menu">User Career</span>
+                                </li>
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link {{ Request::is('*employment*') ? 'active' : '' }}"
-                                        href="{{ route('users.index.employment') }}" aria-expanded="false">
+                                    <a class="sidebar-link {{ Request::is('*onboarding*') ? 'active' : '' }}"
+                                        href="/admin/onboarding" aria-expanded="false">
                                         <span>
-                                            <i class="ti ti-script"></i>
+                                            <i class="ti ti-briefcase"></i>
                                         </span>
-                                        <span class="hide-menu">Employment</span>
+                                        <span class="hide-menu">Onboarding</span>
                                     </a>
                                 </li>
-                            @endif
 
-                            <li class="sidebar-item">
-                                <a class="sidebar-link {{ Request::is('*offboarding*') ? 'active' : '' }}"
-                                    href="/admin/offboarding" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-briefcase-off"></i>
-                                    </span>
-                                    <span class="hide-menu">Offboarding</span>
-                                </a>
-                            </li>
-                            {{-- <li class="sidebar-item">
-                                <a class="sidebar-link {{ Request::is('*job-docs*') ? 'active' : '' }}"
-                                    href="/admin/job-docs" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-script"></i>
-                                    </span>
-                                    <span class="hide-menu">Documents</span>
-                                </a>
-                            </li> --}}
-                            {{-- <li class="sidebar-item">
-                                <a class="sidebar-link {{ Request::is('*offboarding*') ? 'active' : '' }}"
-                                    href="/admin/offboarding" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-building-warehouse"></i>
-                                    </span>
-                                    <span class="hide-menu">Inventaris</span>
-                                </a>
-                            </li> --}}
-                        </ul>
+                                @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+                                    <li class="sidebar-item">
+                                        <a class="sidebar-link {{ Request::is('*employment*') ? 'active' : '' }}"
+                                            href="{{ route('users.index.employment') }}" aria-expanded="false">
+                                            <span>
+                                                <i class="ti ti-script"></i>
+                                            </span>
+                                            <span class="hide-menu">Employment</span>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link {{ Request::is('*offboarding*') ? 'active' : '' }}"
+                                        href="/admin/offboarding" aria-expanded="false">
+                                        <span>
+                                            <i class="ti ti-briefcase-off"></i>
+                                        </span>
+                                        <span class="hide-menu">Offboarding</span>
+                                    </a>
+                                </li>
+                            </ul>
 
                         @endif
 
                         @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+                            <ul id="sidebarnav">
+                                <li class="nav-small-cap">
+                                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                                    <span class="hide-menu">Reporting</span>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link {{ Request::is('*expired-contract*') ? 'active' : '' }}"
+                                        href="/admin/reporting/expired-contract" aria-expanded="false">
+                                        <span>
+                                            <i class="ti ti-calendar-off"></i>
+                                        </span>
+                                        <span class="hide-menu">Expired Contract</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link {{ Request::is('*joined-employee*') ? 'active' : '' }}"
+                                        href="/admin/reporting/joined-employee" aria-expanded="false">
+                                        <span>
+                                            <i class="ti ti-calendar-plus"></i>
+                                        </span>
+                                        <span class="hide-menu">Joined Employee</span>
+                                    </a>
+                                </li>
+                            </ul>
                             <ul id="sidebarnav">
                                 <li class="nav-small-cap">
                                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -311,7 +317,7 @@
                                                 <span>
                                                     <i class="ti ti-building-warehouse"></i>
                                                 </span>
-                                            <span class="hide-menu">Inventaris Rule</span>
+                                                <span class="hide-menu">Inventaris Rule</span>
                                             </a>
                                         </li>
                                         {{-- <li class="sidebar-item">

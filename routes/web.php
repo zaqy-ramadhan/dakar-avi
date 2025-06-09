@@ -33,6 +33,8 @@ use App\Http\Controllers\WorkHourController;
 use App\Http\Controllers\Api\v1\ApiDepartmentController;
 use App\Http\Controllers\Api\v1\ApiUsersController;
 use App\Http\Controllers\Api\v1\ApiPositionController;
+use App\Http\Controllers\ExpiredContractController;
+use App\Http\Controllers\JoinedEmployeeController;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 Auth::routes();
@@ -87,6 +89,11 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/employee-jobs/{id}/edit', [UsersController::class, 'editJob'])->name('employee-jobs.edit');
         Route::put('/employee-jobs/{id}/', [UsersController::class, 'updateJob'])->name('employee-jobs.update');
+
+        //reporting
+        Route::get('/admin/reporting/expired-contract', [ExpiredContractController::class, 'index'])->name('expired-contract.index');
+        Route::get('/admin/reporting/joined-employee', [JoinedEmployeeController::class, 'index'])->name('joined-employee.index');
+
 
 
         //master data
@@ -157,7 +164,7 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/admin/onboarding/uncomplete', [UsersController::class, 'indexBoarding'])->name('users.index.uncomplete');
 
     // Route::get('/admin/job-docs', [DocumentController::class, 'indexJobDocs'])->name('users.index.job.documents');
-    // Route::get('/admin/job-docs/detail/{id}', [DocumentController::class, 'JobDocsDetail'])->name('users.index.job.documents.details');
+    Route::get('/admin/job-docs/detail/{id}', [DocumentController::class, 'JobDocsDetail'])->name('users.index.job.documents.details');
     Route::post('/import', [ImportController::class, 'import'])->name('import');
     Route::get('/import', [ImportController::class, 'index'])->name('import.index');
 

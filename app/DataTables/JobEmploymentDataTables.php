@@ -230,7 +230,7 @@ class JobEmploymentDataTables extends DataTable
                 }
 
                 $offboardButton = $job->employment_status == true
-                    ? '<button type="button" class="btn btn-sm btn-outline-warning m-1" data-bs-toggle="modal" data-bs-target="#offboardingModal' . $job->id . '" title="Add Resign Date"><i class="ti ti-briefcase-off fs-4"></i></button>
+                    ? '<button type="button" class="btn btn-sm btn-outline-warning m-1" data-bs-toggle="modal" data-bs-target="#offboardingModal' . $job->id . '" title="Add Resign Date"><i class="ti ti-briefcase-off fs-4"></i> Resign</button>
                         
                         <!-- Offboarding Modal -->
                         <div class="modal fade" id="offboardingModal' . $job->id . '" tabindex="-1" aria-labelledby="offboardingModalLabel' . $job->id . '" aria-hidden="true">

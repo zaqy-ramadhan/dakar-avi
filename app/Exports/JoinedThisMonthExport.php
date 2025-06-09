@@ -25,6 +25,7 @@ class JoinedThisMonthExport implements FromCollection, WithHeadings
 
         $employeeJob = EmployeeJob::with(['department', 'user'])
             ->whereHas('user')
+            ->where('is_onboarding_completed', true)
             ->whereBetween('start_date', [
                 Carbon::createFromDate($year, $month, 1)->startOfMonth(),
                 Carbon::createFromDate($year, $month, 1)->endOfMonth()
