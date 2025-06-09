@@ -127,67 +127,6 @@
             });
 
 
-
-
-            // $(document).on("change", ".accept-status", function() {
-            //     const row = $(this).closest("tr");
-            //     const returnCheckbox = row.find(".return-status");
-            //     const hiddenStatus = row.find(".status-hidden");
-
-            //     if ($(this).is(":checked")) {
-            //         $(this).closest("tr").find(".return-status").prop("checked", false);
-            //         $(this).closest("tr").find(".status-hidden").prop("checked", false);
-
-            //     } else {
-            //         if (!returnCheckbox.is(":checked")) {
-            //             hiddenStatus.prop("checked", true);
-            //         }
-            //     }
-            // });
-
-            // $(document).on("change", ".return-status", function() {
-            //     const row = $(this).closest("tr");
-            //     const acceptCheckbox = row.find(".accept-status");
-            //     const hiddenStatus = row.find(".status-hidden");
-
-            //     if ($(this).is(":checked")) {
-            //         $(this).closest("tr").find(".accept-status").prop("checked", false);
-            //         $(this).closest("tr").find(".status-hidden").prop("checked", false);
-            //     } else {
-            //         if (!acceptCheckbox.is(":checked")) {
-            //             hiddenStatus.prop("checked", true);
-            //         }
-            //     }
-            // });
-
-            // $(document).on("change", ".accept-status", function() {
-            //     const row = $(this).closest("tr");
-            //     const returnCheckbox = row.find(".return-status");
-            //     const hiddenStatus = row.find(".status-hidden");
-
-            //     if ($(this).is(":checked")) {
-            //         returnCheckbox.prop("checked", false);
-            //         hiddenStatus.val("Diterima");
-            //     } else if (!returnCheckbox.is(":checked")) {
-            //         hiddenStatus.val("-");
-            //     }
-            // });
-
-            // $(document).on("change", ".return-status", function() {
-            //     const row = $(this).closest("tr");
-            //     const acceptCheckbox = row.find(".accept-status");
-            //     const hiddenStatus = row.find(".status-hidden");
-
-            //     if ($(this).is(":checked")) {
-            //         acceptCheckbox.prop("checked", false);
-            //         hiddenStatus.val("Dikembalikan");
-            //     } else if (!acceptCheckbox.is(":checked")) {
-            //         hiddenStatus.val("-");
-            //     }
-            // });
-
-
-
             let sizeOptions = {
                 'baju': ['-', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'],
                 'sepatu': ['-', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'],
@@ -373,12 +312,13 @@
                             addItem("{{ $item['id'] }}", "{{ $item['size'] }}");
                         @endforeach
                     @endif
+                }else{
+                    userInventory.forEach(item => {
+                        addItem(item.item_id, item.size, item.status, item.due_date, item.acc_date, item
+                            .return_date, item.employee_job_id, item.contract, item.item_name, item
+                            .return_notes);
+                    });
                 }
-                userInventory.forEach(item => {
-                    addItem(item.item_id, item.size, item.status, item.due_date, item.acc_date, item
-                        .return_date, item.employee_job_id, item.contract, item.item_name, item
-                        .return_notes);
-                });
             } else {
                 @if ($rule && $rule->items)
                     @foreach ($items as $item)

@@ -58,7 +58,7 @@ class EmploymentController extends Controller
                     'employee_job_id' => $inventory->employee_job_id,
                     'contract' => $inventory->employeeJob ? $inventory->employeeJob->contract : $inventory->user->employeeJob->last()->contract ?? null,
                 ];
-            })->sortBy('due_date')->values();
+            })->sortBy('item_id')->values();
             // dd($inventories);
 
             $rule = null;
@@ -174,128 +174,6 @@ class EmploymentController extends Controller
                 'eslip',
                 'pass_greatday',
                 'pass_eslip',
-            ));
-        } catch (\Exception $e) {
-            // Log error
-            Log::error($e->getMessage());
-            // Redirect back with error message
-            return back()->with('error', 'Terjadi kesalahan saat mengambil data.' . $e->getMessage());
-        }
-    }
-
-    public function show(JobEmploymentDataTables $dataTable, Request $request, $id)
-    {
-        try {
-            $user = User::with('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail')->findOrFail($id);
-
-            $inventories = $user->inventory->map(function ($inventory) {
-                return [
-                    'id' => $inventory->id,
-                    'item_id' => $inventory->item_id,
-                    'item_name' => $inventory->item_name,
-                    'size' => $inventory->size,
-                    'status' => $inventory->status,
-                    'due_date' => $inventory->due_date,
-                    'acc_date' => $inventory->acc_date,
-                    'return_date' => $inventory->return_date,
-                    'employee_job_id' => $inventory->employee_job_id,
-                    'contract' => $inventory->employeeJob ? $inventory->employeeJob->contract : $inventory->user->employeeJob->last()->contract ?? null,
-                ];
-            });
-
-            $rule = null;
-            if ($user->dakarRole) {
-                $employeeJob = optional($user->employeeJob)->last();
-                if ($employeeJob) {
-                    $ruleQuery = InventoryRule::where('dakar_role_id', $user->getRoleId());
-                    if ($employeeJob->department_id) {
-                        $ruleQuery->whereHas('department', function ($q) use ($employeeJob) {
-                            $q->where('dakar_departments.id', $employeeJob->department_id);
-                        });
-                    }
-                    // if ($employeeJob->department_id) {
-                    //     $ruleQuery->where('department_id', $employeeJob->department_id);
-                    // }
-                    // if ($employeeJob->role_level_id) {
-                    //     $ruleQuery->Where('level_id', $employeeJob->role_level_id);
-                    // }
-                    // if ($employeeJob->job_status) {
-                    //     $ruleQuery->Where('job_status', $employeeJob->job_status);
-                    // }
-                    $rule = $ruleQuery->first();
-                }
-            }
-
-            $items = $rule ? $rule->items->map(function ($item) use ($user) {
-                $size = '';
-                if (strpos(strtolower($item->item_name), 'eragam esd') !== false) {
-                    $size = $user->employeeDetail->esd_uniform_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'sepatu esd') !== false) {
-                    $size = $user->employeeDetail->esd_shoes_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'biru') !== false) {
-                    $size = $user->employeeDetail->blue_uniform_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'polo') !== false) {
-                    $size = $user->employeeDetail->polo_shirt_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'safety') !== false) {
-                    $size = $user->employeeDetail->safety_shoes_size ?? 'Default Size';
-                } else {
-                    $size = '-';
-                }
-                return [
-                    'id' => $item->id,
-                    'name' => $item->item_name,
-                    'size' => $size,
-                ];
-            }) : [];
-
-            $costCenters = CostCenter::all();
-            $levels = Level::all();
-            $types = JobType::all();
-            $golongans = Golongan::all();
-            $sub_golongans = SubGolongan::all();
-            $groups = Group::all();
-            $lines = Line::all();
-            $jobStatus = JobStatus::all();
-            $positions = Position::with(['department.division'])->get();
-            $workHour = WorkHour::get();
-            $sections = Section::with(['department.division'])->get();
-            $departments = Department::with('division')->get();
-            $divisions = Division::all();
-            $roles = DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get();
-            $allItems = Item::all();
-            // $lastContractInventory = optional(optional($user->employeeJob->last())->inventory)->isEmpty() ?? true;
-            $previousRole = false;
-            if ($user->employeeJob && $user->employeeJob->count() > 1) {
-                $previousJob = $user->employeeJob->slice(-2, 1)->first();
-                $role = optional($previousJob)->user_dakar_role;
-                $previousRole = in_array(strtolower($role), ['pemagangan', 'internship']);
-            }
-            $acceptedItems = collect($inventories ?? [])->where('status', 'Diterima');
-            $groupedItems = $acceptedItems->groupBy('item_name');
-
-            return $dataTable->render('admin.onboarding.onboarding', compact(
-                'user',
-                'divisions',
-                'departments',
-                'positions',
-                 'sections',
-                'costCenters',
-                'levels',
-                'types',
-                'golongans',
-                'sub_golongans',
-                'groups',
-                'lines',
-                'workHour',
-                'jobStatus',
-                'roles',
-                'items',
-                'allItems',
-                'inventories',
-                // 'lastContractInventory',
-                'previousRole',
-                'rule',
-                'groupedItems',
             ));
         } catch (\Exception $e) {
             // Log error

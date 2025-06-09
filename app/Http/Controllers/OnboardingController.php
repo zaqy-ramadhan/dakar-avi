@@ -46,18 +46,12 @@ class OnboardingController extends Controller
                         ['type' => 'Uang Saku', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
                     ]);
                 }
-                // $jobWageAllowance = collect([
-                //     ['type' => 'Gaji Pokok', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
-                //     ['type' => 'Tunjangan Transport', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
-                //     ['type' => 'Tunjangan Makan', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
-                // ]);
             }
 
             //progress
 
             $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft == 0) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
             $personal_date = optional($user->employeeDocs)->last()?->created_at;
-            // dd($personal_date);
 
             $job = $user->employeeJob->first();
             $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id);
@@ -66,19 +60,14 @@ class OnboardingController extends Controller
             $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
             $inventories_status = false;
             if ($job && $job->inventory->isNotEmpty()) {
-                // dd($job->inventory);
                 $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
-                    // dd($item->item->item_name);
                     return !in_array(strtolower($item->item->item_name), $specificItems);
                 });
-                // dd($nonSpecificInventories);
                 $inventories_status = $nonSpecificInventories->where('status', '-')->isEmpty();
             }
-            // dd($nonSpecificInventories);
             $inventories_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->updated_at ?? null;
 
             $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
-            // dd($user->employeeInventoryNumber->isNotEmpty());
             $inumber_date = optional($user->employeeInventoryNumber)->last()?->created_at;
 
 
@@ -96,8 +85,15 @@ class OnboardingController extends Controller
                     'employee_job_id' => $inventory->employee_job_id,
                     'contract' => $inventory->employeeJob ? $inventory->employeeJob->contract : $inventory->user->employeeJob->last()->contract ?? null,
                 ];
-            })->sortBy('due_date')->values();
+            })->sortBy('item_id')->values();
             // dd($inventories);
+
+            $previousRole = false;
+            if ($user->employeeJob && $user->employeeJob->count() > 1) {
+                $previousJob = $user->employeeJob->slice(-2, 1)->first();
+                $role = optional($previousJob)->user_dakar_role;
+                $previousRole = in_array(strtolower($role), ['pemagangan', 'internship']);
+            }
 
             $rule = null;
             if ($user->dakarRole) {
@@ -109,15 +105,6 @@ class OnboardingController extends Controller
                             $q->where('dakar_departments.id', $employeeJob->department_id);
                         });
                     }
-                    // if ($employeeJob->department_id) {
-                    //     $ruleQuery->where('department_id', $employeeJob->department_id);
-                    // }
-                    // if ($employeeJob->role_level_id) {
-                    //     $ruleQuery->Where('level_id', $employeeJob->role_level_id);
-                    // }
-                    // if ($employeeJob->job_status) {
-                    //     $ruleQuery->Where('job_status', $employeeJob->job_status);
-                    // }
                     $rule = $ruleQuery->first();
                 }
             }
@@ -215,6 +202,7 @@ class OnboardingController extends Controller
                 'inventories_date',
                 'inumber_status',
                 'inumber_date',
+                'previousRole',
             ));
         } catch (\Exception $e) {
             // Log error

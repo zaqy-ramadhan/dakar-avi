@@ -151,7 +151,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users/{id}/details/update', [UsersController::class, 'updateDetails'])->name('users.details.update');
 
     Route::get('/admin/onboarding', [UsersController::class, 'indexBoarding'])->name('users.index.onboarding');
-    Route::get('/admin/employment', [UsersController::class, 'indexBoarding'])->name('users.index.employment');
+    // Route::get('/admin/employment', [UsersController::class, 'indexBoarding'])->name('users.index.employment');
     Route::get('/admin/offboarding', [UsersController::class, 'indexOffboarding'])->name('users.index.offboarding');
     Route::get('/admin/employment', [EmploymentController::class, 'index'])->name('users.index.employment');
     // Route::get('/admin/onboarding/uncomplete', [UsersController::class, 'indexBoarding'])->name('users.index.uncomplete');

@@ -44,7 +44,14 @@ class OffboardingController extends Controller
                     'employee_job_id' => $inventory->employee_job_id,
                     'contract' => $inventory->employeeJob ? $inventory->employeeJob->contract : $inventory->user->employeeJob->last()->contract ?? null,
                 ];
-            });
+            })->sortBy('item_id')->values();
+
+            $previousRole = false;
+            if ($user->employeeJob && $user->employeeJob->count() > 1) {
+                $previousJob = $user->employeeJob->slice(-2, 1)->first();
+                $role = optional($previousJob)->user_dakar_role;
+                $previousRole = in_array(strtolower($role), ['pemagangan', 'internship']);
+            }
 
             $rule = null;
             if ($user->dakarRole) {
@@ -56,15 +63,6 @@ class OffboardingController extends Controller
                             $q->where('dakar_departments.id', $employeeJob->department_id);
                         });
                     }
-                    // if ($employeeJob->department_id) {
-                    //     $ruleQuery->where('department_id', $employeeJob->department_id);
-                    // }
-                    // if ($employeeJob->role_level_id) {
-                    //     $ruleQuery->Where('level_id', $employeeJob->role_level_id);
-                    // }
-                    // if ($employeeJob->job_status) {
-                    //     $ruleQuery->Where('job_status', $employeeJob->job_status);
-                    // }
                     $rule = $ruleQuery->first();
                 }
             }
@@ -132,6 +130,7 @@ class OffboardingController extends Controller
                 'lastContractInventory',
                 'rule',
                 'groupedItems',
+                'previousRole',
             ));
         } catch (\Exception $e) {
             // Log error
