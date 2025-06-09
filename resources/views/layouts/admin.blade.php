@@ -185,7 +185,7 @@
                                 </li>
                                 <li class="sidebar-item">
                                     <a class="sidebar-link {{ Request::is('*employee-birthday*') ? 'active' : '' }}"
-                                        href="/admin/reporting/joined-employee" aria-expanded="false">
+                                        href="/admin/reporting/employee-birthday" aria-expanded="false">
                                         <span>
                                             <i class="ti ti-cake"></i>
                                         </span>
