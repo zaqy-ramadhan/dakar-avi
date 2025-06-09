@@ -54,7 +54,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">Tidak ada karyawan masuk untuk bulan ini.</td>
+                            <td colspan="6" class="text-center">Tidak ada karyawan ulang tahun bulan ini.</td>
                         </tr>
                     @endforelse
                 </tbody>

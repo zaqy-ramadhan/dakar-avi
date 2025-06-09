@@ -230,14 +230,14 @@ class JobEmploymentDataTables extends DataTable
                 }
 
                 $offboardButton = $job->employment_status == true
-                    ? '<button type="button" class="btn btn-sm btn-outline-warning m-1" data-bs-toggle="modal" data-bs-target="#offboardingModal' . $job->id . '" title="Add Resign Date"><i class="ti ti-briefcase-off fs-4"></i> Resign</button>
+                    ? '<button type="button" class="btn btn-sm btn-outline-warning m-1" data-bs-toggle="modal" data-bs-target="#offboardingModal' . $job->id . '" title="Add Out Date"><i class="ti ti-briefcase-off fs-4"></i> Out Date</button>
                         
                         <!-- Offboarding Modal -->
                         <div class="modal fade" id="offboardingModal' . $job->id . '" tabindex="-1" aria-labelledby="offboardingModalLabel' . $job->id . '" aria-hidden="true">
                           <div class="modal-dialog">
                             <div class="modal-content">
                               <div class="modal-header">
-                                <h5 class="modal-title" id="offboardingModalLabel' . $job->id . '">Add Resign Date</h5>
+                                <h5 class="modal-title" id="offboardingModalLabel' . $job->id . '">Add Out Date</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                               </div>
                               <div class="modal-body">
@@ -246,7 +246,6 @@ class JobEmploymentDataTables extends DataTable
                                   method="post">
                                   ' . csrf_field() . '
                                   <div class="col-sm-12 mb-3">
-                                    <label for="resign_date_' . $job->id . '" class="form-label">Termination date</label>
                                     <input type="date" class="form-control" id="resign_date_' . $job->id . '" name="resign_date"
                                       value="' . (optional(optional($job->user->offboarding)->resign_date)->format('Y-m-d') ?? '') . '"
                                       ' . (Auth::user()->getRole() != 'admin' ? 'readonly' : '') . '>
@@ -295,11 +294,6 @@ class JobEmploymentDataTables extends DataTable
                             <div class="d-flex">
                                 <a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-4"></i> Paklaring</a>
                                 <a title="SKSMK" href="' . route("user.skhk-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-hourglass-off fs-4"></i> SKSMK</a>
-                                <form action="' . route('job.destroy', $job->id) . '" method="POST">
-                                    ' . csrf_field() . '
-                                    ' . method_field('POST') . '
-                                    <button type="submit" class="btn btn-sm btn-outline-danger m-1" onclick="return confirm(\'Are you sure?\')"><i class="ti ti-trash fs-4"></i>Delete</button>
-                                </form>
                             </div>
                         ';
                     } elseif ($currentRoute === 'users.index.employment.detail') {
