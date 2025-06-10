@@ -67,7 +67,7 @@
 
                             <li class="nav-small-cap">
                                 <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                                <span class="hide-menu">User Data</span>
+                                <span class="hide-menu">Employee Data</span>
                             </li>
 
                             @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
@@ -76,7 +76,7 @@
                                         <span class="sidebar-icon">
                                             <i class="ti ti-users"></i>
                                         </span>
-                                        <span class="hide-menu">Users</span>
+                                        <span class="hide-menu">Employee</span>
                                         <i class="ti ti-chevron-down toggle-arrow"></i>
                                     </a>
                                     <ul class="collapse first-level">
