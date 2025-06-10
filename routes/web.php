@@ -34,6 +34,7 @@ use App\Http\Controllers\Api\v1\ApiDepartmentController;
 use App\Http\Controllers\Api\v1\ApiUsersController;
 use App\Http\Controllers\Api\v1\ApiPositionController;
 use App\Http\Controllers\EmployeeBirthdayController;
+use App\Http\Controllers\EmployeeDetailReportController;
 use App\Http\Controllers\ExpiredContractController;
 use App\Http\Controllers\JoinedEmployeeController;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -95,6 +96,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/reporting/expired-contract', [ExpiredContractController::class, 'index'])->name('expired-contract.index');
         Route::get('/admin/reporting/joined-employee', [JoinedEmployeeController::class, 'index'])->name('joined-employee.index');
         Route::get('/admin/reporting/employee-birthday', [EmployeeBirthdayController::class, 'index'])->name('employee-birthday.index');
+        Route::get('/admin/reporting/employee', [EmployeeDetailReportController::class, 'index'])->name('employee-detail');
+
 
 
         //master data
