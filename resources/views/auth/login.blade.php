@@ -48,38 +48,19 @@
             </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsencrypt@3.3.1/bin/jsencrypt.min.js"></script>
+
     <script>
-        function encryptToJsonString(message, passphrase) {
-            const salt = CryptoJS.lib.WordArray.random(128 / 8);
-            const key = CryptoJS.PBKDF2(passphrase, salt, {
-                keySize: 256 / 32,
-                iterations: 999,
-                hasher: CryptoJS.algo.SHA512
-            });
-
-            const iv = CryptoJS.lib.WordArray.random(128 / 8);
-            const encrypted = CryptoJS.AES.encrypt(message, key, {
-                iv: iv
-            });
-
-            return JSON.stringify({
-                ct: encrypted.ciphertext.toString(CryptoJS.enc.Base64),
-                iv: iv.toString(),
-                s: salt.toString()
-            });
-        }
-
         document.querySelector("form").addEventListener("submit", function(e) {
             const npk = document.querySelector("#npk").value;
             const password = document.querySelector("#password").value;
-            const n_key = @json($npk_key);
-            const p_key = @json($pass_key);
+            const pub_key = @json($public_key);
 
-            document.querySelector("#npk_encrypted").value = encryptToJsonString(npk,
-                n_key);
-            document.querySelector("#password_encrypted").value = encryptToJsonString(password,
-                p_key);
+            const encrypt = new JSEncrypt();
+            encrypt.setPublicKey(pub_key);
+
+            document.querySelector("#npk_encrypted").value = encrypt.encrypt(npk)
+            document.querySelector("#password_encrypted").value = encrypt.encrypt(password)
 
             document.querySelector("#npk").disabled = true;
             document.querySelector("#password").disabled = true;

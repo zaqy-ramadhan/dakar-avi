@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A - WORK</title>
-    {{-- <link rel="shortcut icon" type="image/png" href="/assets/images/logos/favicon.png" /> --}}
     <link rel="stylesheet" href="/assets/css/styles.min.css" />
     <link rel="stylesheet" href="/assets/css/datatables.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.0/css/dataTables.dataTables.min.css">
@@ -439,7 +438,7 @@
     </div>
     <!-- DataTables JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/sidebarmenu.js"></script>
     <script src="/assets/js/app.min.js"></script>

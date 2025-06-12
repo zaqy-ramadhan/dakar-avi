@@ -28,28 +28,37 @@ class LoginController extends Controller
     {
         $npk_key = env('NPK_ENCRYPTION_KEY');
         $pass_key = env('PASS_ENCRIPTION_KEY');
-        return view('auth.login', compact('npk_key', 'pass_key'));
+        $public_key = env('PUBLIC_KEY');
+        return view('auth.login', compact('npk_key', 'pass_key', 'public_key'));
     }
 
     protected function validateLogin(Request $request)
     {
-        $decryptedNpk = CryptoJS::decrypt(
-            env('NPK_ENCRYPTION_KEY'),
-            $request->input('npk')
-        );
+        $npkEncrypted = base64_decode($request->npk);
+        $passwordEncrypted = base64_decode($request->password);
+        $privateKeyPath = base_path(env('PRIVATE_KEY_PATH'));
+        $privateKey = file_get_contents($privateKeyPath);
 
-        $decryptedPassword = CryptoJS::decrypt(
-            env('PASS_ENCRIPTION_KEY'),
-            $request->input('password')
-        );
+        $npkDecrypted = '';
+        $passwordDecrypted = '';
+
+        if (!openssl_private_decrypt($npkEncrypted, $npkDecrypted, $privateKey)) {
+            abort(400, "Unable to decrypt NPK");
+        }
+
+        if (!openssl_private_decrypt($passwordEncrypted, $passwordDecrypted, $privateKey)) {
+            abort(400, "Unable to decrypt password");
+        }
 
         $request->merge([
-            'npk' => $decryptedNpk,
-            'password' => $decryptedPassword,
+            'npk' => $npkDecrypted,
+            'password' => $passwordDecrypted,
         ]);
 
+        // dd($request);
+
         $request->validate([
-            'npk' => 'required|numeric',
+            'npk' => 'required|string',
             'password' => 'required|string',
         ]);
     }
