@@ -36,8 +36,7 @@ class LoginController extends Controller
     {
         $npkEncrypted = base64_decode($request->npk);
         $passwordEncrypted = base64_decode($request->password);
-        $privateKeyPath = base_path(env('PRIVATE_KEY_PATH'));
-        $privateKey = file_get_contents($privateKeyPath);
+        $privateKey = env('PRIVATE_KEY');
 
         $npkDecrypted = '';
         $passwordDecrypted = '';
