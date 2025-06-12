@@ -39,7 +39,9 @@ use App\Http\Controllers\ExpiredContractController;
 use App\Http\Controllers\JoinedEmployeeController;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-Auth::routes();
+Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home.index');

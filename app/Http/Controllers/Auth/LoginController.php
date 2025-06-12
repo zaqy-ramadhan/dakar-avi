@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\CryptoJS;
+
 
 class LoginController extends Controller
 {
@@ -22,35 +24,47 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
 
-    // public function login(Request $request)
-    // {
-    //     $request->validate([
-    //         'npk' => 'required|string',
-    //         'password' => 'required|min:6',
-    //     ]);
-
-    //     $user = \App\Models\User::where('npk', $request->npk)->first();
-
-    //     if ($user && $user->password === $request->password) {
-    //         Auth::login($user->with('dakarRole'));
-    //         return redirect()->intended($this->redirectTo);
-    //     }
-
-    //     return back()->withErrors(['error' => 'npk atau password salah.']);
-    // }
+    public function showLoginForm()
+    {
+        $npk_key = env('NPK_ENCRYPTION_KEY');
+        $pass_key = env('PASS_ENCRIPTION_KEY');
+        return view('auth.login', compact('npk_key', 'pass_key'));
+    }
 
     protected function validateLogin(Request $request)
     {
-        $validate = $request->validate([
-            $this->username() => 'required|numeric',
+        $decryptedNpk = CryptoJS::decrypt(
+            env('NPK_ENCRYPTION_KEY'),
+            $request->input('npk')
+        );
+
+        $decryptedPassword = CryptoJS::decrypt(
+            env('PASS_ENCRIPTION_KEY'),
+            $request->input('password')
+        );
+
+        $request->merge([
+            'npk' => $decryptedNpk,
+            'password' => $decryptedPassword,
+        ]);
+
+        $request->validate([
+            'npk' => 'required|numeric',
             'password' => 'required|string',
         ]);
     }
 
+
+
     protected function credentials(Request $request)
     {
-return $request->only($this->username(), 'password');
+        // dd($request);
+        return [
+            'npk' => $request->get('npk'),
+            'password' => $request->get('password')
+        ];
     }
+
 
     public function username()
     {

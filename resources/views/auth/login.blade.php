@@ -17,8 +17,9 @@
                                 <div class="mb-3">
                                     <label for="npk" class="form-label">NPK</label>
                                     <input id="npk" type="text"
-                                        class="form-control @error('npk') is-invalid @enderror" name="npk"
-                                        value="{{ old('npk') }}" required autocomplete="email" autofocus>
+                                        class="form-control @error('npk') is-invalid @enderror" value="{{ old('npk') }}"
+                                        required autocomplete="email" autofocus>
+                                    <input type="hidden" name="npk" id="npk_encrypted">
                                     @error('npk')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -28,33 +29,18 @@
                                 <div class="mb-4">
                                     <label for="password" class="form-label">Password</label>
                                     <input id="password" type="password"
-                                        class="form-control @error('password') is-invalid @enderror" name="password"
-                                        required autocomplete="current-password">
+                                        class="form-control @error('password') is-invalid @enderror" required
+                                        autocomplete="current-password">
+                                    <input type="hidden" name="password" id="password_encrypted">
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
                                 </div>
-                                {{-- <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input primary" type="checkbox" name="remember"
-                                            id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                        <label class="form-check-label text-dark" for="remember">
-                                            Remember this Device
-                                        </label>
-                                    </div>
-                                    <a class="text-primary fw-bold" href="{{ route('password.request') }}">Forgot
-                                        Password?</a>
-                                </div> --}}
                                 <button type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">
                                     Sign In
                                 </button>
-                                {{-- <div class="d-flex align-items-center justify-content-center">
-                                    <p class="fs-4 mb-0 fw-bold">New to Modernize?</p>
-                                    <a class="text-primary fw-bold ms-2" href="{{ route('register') }}">Create an
-                                        account</a>
-                                </div> --}}
                             </form>
                         </div>
                     </div>
@@ -62,4 +48,41 @@
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        function encryptToJsonString(message, passphrase) {
+            const salt = CryptoJS.lib.WordArray.random(128 / 8);
+            const key = CryptoJS.PBKDF2(passphrase, salt, {
+                keySize: 256 / 32,
+                iterations: 999,
+                hasher: CryptoJS.algo.SHA512
+            });
+
+            const iv = CryptoJS.lib.WordArray.random(128 / 8);
+            const encrypted = CryptoJS.AES.encrypt(message, key, {
+                iv: iv
+            });
+
+            return JSON.stringify({
+                ct: encrypted.ciphertext.toString(CryptoJS.enc.Base64),
+                iv: iv.toString(),
+                s: salt.toString()
+            });
+        }
+
+        document.querySelector("form").addEventListener("submit", function(e) {
+            const npk = document.querySelector("#npk").value;
+            const password = document.querySelector("#password").value;
+            const n_key = @json($npk_key);
+            const p_key = @json($pass_key);
+
+            document.querySelector("#npk_encrypted").value = encryptToJsonString(npk,
+                n_key);
+            document.querySelector("#password_encrypted").value = encryptToJsonString(password,
+                p_key);
+
+            document.querySelector("#npk").disabled = true;
+            document.querySelector("#password").disabled = true;
+        });
+    </script>
 @endsection
