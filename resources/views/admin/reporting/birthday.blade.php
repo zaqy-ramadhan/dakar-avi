@@ -5,7 +5,9 @@
 <div class="card" style="border-radius: 20px">
     <div class="card-header">
         <p class="fs-8 fw-bold"> Laporan Ulang Tahun Karyawan</p>
-        <div class="col align-items-between d-flex">
+    </div>
+    <div class="card-body">
+        <div class="col align-items-between d-flex mb-4">
             <form action="" method="GET" class="d-flex">
                 <div class="input-group">
                     <select name="month" class="form-select">
@@ -26,8 +28,6 @@
                 </div>
             </form>
         </div> 
-    </div>
-    <div class="card-body">
         <div class="table-responsive">
             <table class="table table-bordered">
                 <thead>
