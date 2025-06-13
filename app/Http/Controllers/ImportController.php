@@ -347,7 +347,8 @@ class ImportController extends Controller
                 $work = WorkHour::whereRaw('LOWER(work_hour) = ?', [strtolower($row[15])])->first();
                 $line = Line::whereRaw('LOWER(line_name) = ?', [strtolower($row[16])])->first();
                 $gol = Golongan::whereRaw('LOWER(golongan_name) = ?', [strtolower($row[17])])->first();
-                $subgol = SubGolongan::whereRaw('LOWER(sub_golongan_name) = ?', [strtolower($row[18])])->first();
+                $subgolInput = strtolower(preg_replace('/(\d)([a-zA-Z])/', '$1 $2', $row[18]));
+                $subgol = SubGolongan::whereRaw('LOWER(sub_golongan_name) = ?', [$subgolInput])->first();
                 $role = DakarRole::whereRaw('LOWER(role_name) = ?', [strtolower($row[22])])->first();
 
                 if($row[97] == 'Aktif'){
