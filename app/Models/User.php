@@ -186,9 +186,16 @@ class User extends Authenticatable
         }
 
         $job = $user->employeeJob->first();
-        $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id)->isNotEmpty();
+        $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty();
         if ($employment_status) {
             $progress = 35;
+        } else {
+            return $progress;
+        }
+
+        $given = $job->inventory->where('employee_job_id', $job->id)->isNotEmpty();
+        if($given){
+            $progress = 50;
         } else {
             return $progress;
         }
@@ -201,7 +208,7 @@ class User extends Authenticatable
             });
             $inventories_status = $nonSpecificInventories->where('status', '-')->isEmpty();
         }
-        if(optional($user->firstEmployeeJob)->user_dakar_role != 'karyawan') {
+        if (optional($user->firstEmployeeJob)->user_dakar_role != 'karyawan') {
             if ($inventories_status) {
                 $progress = 100;
             } else {
@@ -209,12 +216,12 @@ class User extends Authenticatable
             }
         } else {
             if ($inventories_status) {
-                $progress = 50;
+                $progress = 75;
             } else {
                 return $progress;
             }
         }
-        
+
         $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
         if ($inumber_status) {
             $progress = 100;
@@ -227,5 +234,32 @@ class User extends Authenticatable
         }
 
         return $progress;
+    }
+
+    public function adminNotif()
+    {
+        $users = User::whereHas('employeeDetail', function ($q) {
+            $q->where('is_draft', 0);
+        })->get(['id', 'fullname', 'npk']);
+
+        $notif = [
+            'personal_completed' => $users->filter(function ($user) {
+                return $user->progressOnboarding() === 10;
+            }),
+            'employment_completed' => $users->filter(function ($user) {
+                return $user->progressOnboarding() === 35;
+            }),
+            'starterkit_given' => $users->filter(function ($user) {
+                return $user->progressOnboarding() === 50;
+            }),
+            'starterkit_received' => $users->filter(function ($user) {
+                return $user->progressOnboarding() === 75;
+            }),
+            // 'digitalaccount_received' => $users->filter(function ($user) {
+            //     return $user->progressOnboarding() === 100;
+            // }),
+        ];
+
+        return $notif;
     }
 }

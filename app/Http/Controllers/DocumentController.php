@@ -105,7 +105,7 @@ class DocumentController extends Controller
                 ->setPaper('a4', 'portrait');
             $filename = 'data_kompensasi_' . str_replace(' ', '_', $kontrak->user->fullname) . '.pdf';
 
-            return $pdf->stream($filename);
+            return $pdf->download($filename);
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while generating the document: ' . $e->getMessage())->withInput();
         }
@@ -210,7 +210,7 @@ class DocumentController extends Controller
                 ->setPaper('a4', 'portrait');
             $filename = 'paklaring_' . str_replace(' ', '_', $kontrak->user->fullname) . '.pdf';
 
-            return $pdf->stream($filename);
+            return $pdf->download($filename);
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while generating the document: ' . $e->getMessage())->withInput();
         }
@@ -360,23 +360,7 @@ class DocumentController extends Controller
                 $filename = 'kontrak_pkwt_' . str_replace(' ', '_', $kontrak->user->fullname) . '.pdf';
             }
             PDF::setOptions(['isRemoteEnabled' => true]);
-            return $pdf->stream($filename);
-
-            // if ($is_admin) {
-            //     PDF::setOptions(['isRemoteEnabled' => true]);
-            //     return $pdf->stream($filename);
-            // } else {
-            //     // Tambahkan proteksi/enkripsi dompdf
-            //     $dompdf = $pdf->getDomPDF();
-            //     $dompdf->render();
-            //     $dompdf->getCanvas()->get_cpdf()->setEncryption(
-            //         'userpass',
-            //         'ownerpass',
-            //         ['print']
-            //     );
-
-            //     return $pdf->stream('kontrak.pdf');
-            // }
+            return $pdf->download($filename);
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while generating the document: ' . $e->getMessage())->withInput();
         }
@@ -486,7 +470,7 @@ class DocumentController extends Controller
             $filename = 'SKSMK_' . str_replace(' ', '_', $kontrak->user->fullname) . '.pdf';
 
 
-            return $pdf->stream($filename);
+            return $pdf->download($filename);
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while generating the SKSMK: ' . $e->getMessage())->withInput();
         }
@@ -541,7 +525,7 @@ class DocumentController extends Controller
             $pdf = PDF::loadView('documents.kerahasiaan', compact('kontrak',  'jobDoc'))
                 ->setPaper('a4', 'portrait');
             $filename = 'Surat_Pernyataan_Kerahasiaan_' . str_replace(' ', '_', $kontrak->user->fullname) . '.pdf';
-            return $pdf->stream($filename);
+            return $pdf->download($filename);
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while generating the document: ' . $e->getMessage())->withInput();
         }
