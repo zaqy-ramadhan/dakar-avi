@@ -11,7 +11,6 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         .body-wrapper .container-fluid {
@@ -436,15 +435,12 @@
             </div>
         </div>
     </div>
-    <!-- DataTables JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/sidebarmenu.js"></script>
     <script src="/assets/js/app.min.js"></script>
-    {{-- <script src="/assets/libs/apexcharts/dist/apexcharts.min.js"></script> --}}
     <script src="/assets/libs/simplebar/dist/simplebar.js"></script>
-    {{-- <script src="/assets/js/dashboard.js"></script> --}}
     <script src="https://cdn.datatables.net/2.2.0/js/dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
