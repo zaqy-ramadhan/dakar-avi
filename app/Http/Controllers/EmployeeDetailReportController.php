@@ -92,15 +92,15 @@ class EmployeeDetailReportController extends Controller
                 return [
                     'npk' => $employee->npk,
                     'fullname' => $employee->fullname,
-                    'email' => $employee->email,
+                    'email' => $employee->email ?? 'N/A',
                     'gender' => $detail->gender == 1 ? 'P' : ($detail->gender == 0 ? 'L' : 'N/A'),
                     'join_date' => Carbon::parse($employee->join_date)->isoFormat('D MMMM Y') ??
                         Carbon::parse($firstJob->start_date)->isoFormat('D MMMM Y'),
                     'department' => $job->department->department_name,
                     'position' => $job->position->position_name ?? 'N/A',
                     'employment_status' => Str::ucfirst($job->user_dakar_role),
-                    'job_status' => $job->contract,
-                    'job_type' => $job->jobType->job_type_name,
+                    'job_status' => $job ? $job->contract : "N/A",
+                    'job_type' => $job->jobType->job_type_name ?? 'N/A',
                     'gol'      => $job->golongan->golongan_name ?? 'N/A',
                     'sub_gol'  => $job->subGolongan->sub_golongan_name ?? 'N/A',
                     'status'   => $job->employment_status
