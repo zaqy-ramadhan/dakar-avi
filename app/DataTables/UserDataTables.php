@@ -103,12 +103,12 @@ class UserDataTables extends DataTable
                 $currentRoute = request()->route()->getName();
 
                 if (Auth::user()->getRole() == 'admin 4') {
-                    $buttons = '<a href="' . $employmentUrl . '" class="btn btn-sm btn-outline-primary m-1" title="Employment"><i class="ti ti-script fs-4" ></i><a/>';
+                    $buttons = '<a href="' . $employmentUrl . '" class="btn btn-sm btn-outline-primary m-1" title="Employment"><i class="ti ti-script fs-6" ></i><a/>';
                 } else {
                     $buttons = '
-                    <a href="' . $detailUrl . '" class="btn btn-sm btn-outline-success m-1" title="User Details"><i class="ti ti-list-details fs-4"></i></a>
-                    <a href="' . $employmentUrl . '" class="btn btn-sm btn-outline-primary m-1" title="Employment"><i class="ti ti-script fs-4" ></i><a/>       
-                    <a href="' . $offboardingUrl . '" class="btn btn-sm btn-outline-warning m-1" title="Proceed Offboarding"><i class="ti ti-briefcase-off fs-4" ></i><a/>            
+                    <a href="' . $detailUrl . '" class="btn btn-sm btn-outline-success m-1" title="User Details"><i class="ti ti-list-details fs-6"></i></a>
+                    <a href="' . $employmentUrl . '" class="btn btn-sm btn-outline-primary m-1" title="Employment"><i class="ti ti-script fs-6" ></i><a/>       
+                    <a href="' . $offboardingUrl . '" class="btn btn-sm btn-outline-warning m-1" title="Proceed Offboarding"><i class="ti ti-briefcase-off fs-6" ></i><a/>            
                     ';
                 }
 

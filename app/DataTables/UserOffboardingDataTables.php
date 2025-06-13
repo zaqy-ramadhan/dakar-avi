@@ -33,7 +33,7 @@ class UserOffboardingDataTables extends DataTable
             })
             ->addColumn('actions', function ($row) {
                 $offboardingUrl = route('users.index.offboarding.detail', $row->id);
-                $buttons = '<a title="Detail Offboarding" href="' . $offboardingUrl . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-briefcase-off fs-4"></i></a>';
+                $buttons = '<a title="Detail Offboarding" href="' . $offboardingUrl . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-briefcase-off fs-6"></i></a>';
                 return $buttons;
             })
             ->rawColumns(['actions'])

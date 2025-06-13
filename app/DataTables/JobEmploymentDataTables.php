@@ -142,11 +142,11 @@ class JobEmploymentDataTables extends DataTable
                     ->first();
 
                 $skhkButton = $previousJob || ($job->user_dakar_role === 'karyawan' && $job->employment_status == false)
-                    ? '<a title="SKSMK" href="' . route("user.skhk-pdf", $previousJob->id ?? $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-hourglass-off fs-4"></i> SKSMK</a>'
+                    ? '<a title="SKSMK" href="' . route("user.skhk-pdf", $previousJob->id ?? $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-hourglass-off fs-6"></i> SKSMK</a>'
                     : '';
 
                 $sertifButton = in_array($job->user_dakar_role, ['pemagangan', 'internship']) && $job->employment_status == false ?
-                    '<a title="Sertif ' . ucfirst($job->user_dakar_role) . '" target="_blank" href="' . route('sertif.pdf', $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-certificate fs-4"></i> Sertifikat</a>'
+                    '<a title="Sertif ' . ucfirst($job->user_dakar_role) . '" target="_blank" href="' . route('sertif.pdf', $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-certificate fs-6"></i> Sertifikat</a>'
                     : '';
 
                 // Access control for wage & contract button
@@ -197,22 +197,22 @@ class JobEmploymentDataTables extends DataTable
 
                 $wageButton = '';
                 if ($showWageButton) {
-                    $wageButton = '<a title="Gaji & Tunjangan" href="' . route("job.wage.allowance", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-wallet fs-4"></i> Gaji & Tunjangan</a>';
+                    $wageButton = '<a title="Gaji & Tunjangan" href="' . route("job.wage.allowance", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-wallet fs-6"></i> Gaji & Tunjangan</a>';
                 }
 
                 $kontrakButton = '';
                 if ($showKontrakButton) {
-                    $kontrakButton = '<a title="Kontrak" href="' . route("user.kontrak-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-4"></i> Kontrak</a>';
+                    $kontrakButton = '<a title="Kontrak" href="' . route("user.kontrak-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-6"></i> Kontrak</a>';
                 }
 
                 $kompensasiButton = '';
                 if ($showKompensasiButton) {
-                    $kompensasiButton = '<a title="Kompensasi" href="' . route("user.kompensasi-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-presentation-analytics fs-4"></i> Kompensasi</a>';
+                    $kompensasiButton = '<a title="Kompensasi" href="' . route("user.kompensasi-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-presentation-analytics fs-6"></i> Kompensasi</a>';
                 }
 
                 $kerahasiaanButton =  $job->id === $job->user->firstEmployeeJob->id
                         ? '
-                        <a title="Pernyataan Kerahasiaan" href="' . route("user.kerahasiaan-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-lock fs-4"></i> SPK</a>
+                        <a title="Pernyataan Kerahasiaan" href="' . route("user.kerahasiaan-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-lock fs-6"></i> SPK</a>
                         '
                         : '';
 
@@ -221,16 +221,16 @@ class JobEmploymentDataTables extends DataTable
                     $deleteButton = '';
                 } else {
                     $deleteButton = '
-                        <a type="button" href="' . route('employee-jobs.edit', ["id" => $job->id, "prev" => $currentRoute]) . '" class="btn btn-sm btn-outline-warning m-1" title="Edit Job"><i class="ti ti-edit fs-4"></i> Edit</a>
+                        <a type="button" href="' . route('employee-jobs.edit', ["id" => $job->id, "prev" => $currentRoute]) . '" class="btn btn-sm btn-outline-warning m-1" title="Edit Job"><i class="ti ti-edit fs-6"></i> Edit</a>
                         <form action="' . route('job.destroy', $job->id) . '" method="POST">
                         ' . csrf_field() . '
                         ' . method_field('POST') . '
-                        <button type="submit" class="btn btn-sm btn-outline-danger m-1" onclick="return confirm(\'Are you sure?\')"><i class="ti ti-trash fs-4"></i> Delete</button>
+                        <button type="submit" class="btn btn-sm btn-outline-danger m-1" onclick="return confirm(\'Are you sure?\')"><i class="ti ti-trash fs-6"></i> Delete</button>
                         </form>';
                 }
 
                 $offboardButton = $job->employment_status == true
-                    ? '<button type="button" class="btn btn-sm btn-outline-warning m-1" data-bs-toggle="modal" data-bs-target="#offboardingModal' . $job->id . '" title="Add Out Date"><i class="ti ti-briefcase-off fs-4"></i> Out Date</button>
+                    ? '<button type="button" class="btn btn-sm btn-outline-warning m-1" data-bs-toggle="modal" data-bs-target="#offboardingModal' . $job->id . '" title="Add Out Date"><i class="ti ti-briefcase-off fs-6"></i> Out Date</button>
                         
                         <!-- Offboarding Modal -->
                         <div class="modal fade" id="offboardingModal' . $job->id . '" tabindex="-1" aria-labelledby="offboardingModalLabel' . $job->id . '" aria-hidden="true">
@@ -269,7 +269,7 @@ class JobEmploymentDataTables extends DataTable
                                 ' . $wageButton . '    
                                 ' . $kontrakButton . '
                                 ' . $kompensasiButton . '
-                                    <a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-4"></i>Paklaring</a>
+                                    <a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-6"></i>Paklaring</a>
                                     ' . $skhkButton . '
                                 </div>
                             ';
@@ -292,8 +292,8 @@ class JobEmploymentDataTables extends DataTable
                     } elseif ($currentRoute === 'users.index.offboarding.detail') {
                         return '
                             <div class="d-flex">
-                                <a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-4"></i> Paklaring</a>
-                                <a title="SKSMK" href="' . route("user.skhk-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-hourglass-off fs-4"></i> SKSMK</a>
+                                <a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-6"></i> Paklaring</a>
+                                <a title="SKSMK" href="' . route("user.skhk-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-hourglass-off fs-6"></i> SKSMK</a>
                             </div>
                         ';
                     } elseif ($currentRoute === 'users.index.employment.detail') {
@@ -329,7 +329,7 @@ class JobEmploymentDataTables extends DataTable
                     if ($currentRoute === 'users.index.offboarding') {
                         return '
                         <div class="d-flex">
-                            <a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-4"></i>Paklaring</a>
+                            <a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-6"></i>Paklaring</a>
                             ' . $skhkButton . '
                         </div>';
                     }

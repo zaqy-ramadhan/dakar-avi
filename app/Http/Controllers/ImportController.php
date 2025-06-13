@@ -22,6 +22,8 @@ use App\Models\JobType;
 use App\Models\Level;
 use App\Models\Line;
 use App\Models\Position;
+use App\Models\Section;
+use App\Models\WorkHour;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
@@ -73,184 +75,184 @@ class ImportController extends Controller
                     'gender' => $gender,
                     'birth_place' => $row[6],
                     'blood_type' => $row[7],
-                    'religion' => $row[21],
-                    'no_jamsostek' => $row[22],
-                    'no_npwp' => $row[23],
-                    'no_ktp' => $row[24],
-                    'no_phone_house' => $row[25],
-                    'no_phone' => $row[26],
-                    'ktp_address' => $row[28],
-                    'current_address' => $row[29],
-                    'emergency_contact' => $row[30],
-                    'tax_status' => $row[31],
-                    'marital_status' => $row[32],
-                    'married_year' => $row[34],
+                    'religion' => $row[23],
+                    'no_jamsostek' => $row[24],
+                    'no_npwp' => $row[25],
+                    'no_ktp' => $row[26],
+                    'no_phone_house' => $row[27],
+                    'no_phone' => $row[28],
+                    'ktp_address' => $row[30],
+                    'current_address' => $row[31],
+                    'emergency_contact' => $row[32],
+                    'tax_status' => $row[33],
+                    'marital_status' => $row[34],
+                    'married_year' => $row[36],
                 ]);
 
-                if($row[33]){ //pasangan
+                if($row[35]){ //pasangan
                     $employeeFamily = EmployeeFamily::updateOrCreate([
                         'user_id' => $user->id,
                         'type' => 'pasangan',
-                        'name' => $row[33],
+                        'name' => $row[35],
                     ], [
-                        'birth_date' => $row[35],
-                        'education' => $row[36],
-                        'occupation' => $row[37],
+                        'birth_date' => $row[37],
+                        'education' => $row[38],
+                        'occupation' => $row[39],
                     ]);
                 }
 
-                if($row[38]){ //anak
+                if($row[40]){ //anak
                     $employeeFamily = EmployeeFamily::updateOrCreate([
                         'user_id' => $user->id,
                         'type' => 'child',
-                        'name' => $row[38],
+                        'name' => $row[40],
                     ], [
-                        'birth_date' => $row[39],
-                        'education' => $row[40],
-                        'occupation' => $row[41],
+                        'birth_date' => $row[41],
+                        'education' => $row[42],
+                        'occupation' => $row[43],
                     ]);
                 }
 
-                if($row[42]){ //anak 2
+                if($row[44]){ //anak 2
                     $employeeFamily = EmployeeFamily::updateOrCreate([
                         'user_id' => $user->id,
                         'type' => 'child',
-                        'name' => $row[42],
+                        'name' => $row[44],
                     ], [
-                        'birth_date' => $row[43],
-                        'education' => $row[44],
-                        'occupation' => $row[45],
+                        'birth_date' => $row[45],
+                        'education' => $row[46],
+                        'occupation' => $row[47],
                     ]);
                 }
 
-                if($row[46]){ //anak 3
+                if($row[48]){ //anak 3
                     $employeeFamily = EmployeeFamily::updateOrCreate([
                         'user_id' => $user->id,
                         'type' => 'child',
-                        'name' => $row[46],
+                        'name' => $row[48],
                     ], [
-                        'birth_date' => $row[47],
-                        'education' => $row[48],
-                        'occupation' => $row[49],
+                        'birth_date' => $row[49],
+                        'education' => $row[50],
+                        'occupation' => $row[51],
                     ]);
                 }
 
-                if($row[50]){ //ayah
+                if($row[52]){ //ayah
                     $employeeFamily = EmployeeFamily::updateOrCreate([
                         'user_id' => $user->id,
                         'type' => 'ayah',
-                        'name' => $row[50],
+                        'name' => $row[52],
                     ], [
-                        'birth_date' => $row[51],
-                        'education' => $row[52],
-                        'occupation' => $row[53],
+                        'birth_date' => $row[53],
+                        'education' => $row[54],
+                        'occupation' => $row[55],
                     ]);
                 }
 
-                if($row[54]){ //ibu
+                if($row[56]){ //ibu
                     $employeeFamily = EmployeeFamily::updateOrCreate([
                         'user_id' => $user->id,
                         'type' => 'ibu',
-                        'name' => $row[54],
+                        'name' => $row[56],
                     ], [
-                        'birth_date' => $row[55],
-                        'education' => $row[56],
-                        'occupation' => $row[57],
+                        'birth_date' => $row[57],
+                        'education' => $row[58],
+                        'occupation' => $row[59],
                     ]);
                 }
 
-                if($row[58]){ //saudara
+                if($row[60]){ //saudara
                     $employeeFamily = EmployeeFamily::updateOrCreate([
                         'user_id' => $user->id,
                         'type' => 'saudara',
-                        'name' => $row[58],
+                        'name' => $row[60],
                     ], [
-                        'birth_date' => $row[59],
-                        'education' => $row[60],
-                        'occupation' => $row[61],
+                        'birth_date' => $row[61],
+                        'education' => $row[62],
+                        'occupation' => $row[63],
                     ]);
                 }
 
-                if($row[62]){ //saudara 2
+                if($row[64]){ //saudara 2
                     $employeeFamily = EmployeeFamily::updateOrCreate([
                         'user_id' => $user->id,
                         'type' => 'saudara',
-                        'name' => $row[62],
+                        'name' => $row[64],
                     ], [
-                        'birth_date' => $row[63],
-                        'education' => $row[64],
-                        'occupation' => $row[65],
+                        'birth_date' => $row[65],
+                        'education' => $row[66],
+                        'occupation' => $row[67],
                     ]);
                 }
 
-                if($row[66]){ //education 1
+                if($row[68]){ //education 1
                     $employeeEducation = EmployeeEducation::updateOrCreate([
                         'user_id' => $user->id,
-                        'education_level' => $row[66],
+                        'education_level' => $row[68],
                     ], [
-                        'education_institution' => $row[67],
-                        'education_city' => $row[68],
-                        'education_major' => $row[69],
-                        'education_gpa' => $row[70],
-                        'education_start_year' => $row[71],
-                        'education_end_year' => $row[72],
+                        'education_institution' => $row[69],
+                        'education_city' => $row[70],
+                        'education_major' => $row[71],
+                        'education_gpa' => $row[72],
+                        'education_start_year' => $row[73],
+                        'education_end_year' => $row[74],
                     ]);
                 }
 
-                if($row[73]){ //education 2
+                if($row[75]){ //education 2
                     $employeeEducation = EmployeeEducation::updateOrCreate([
                         'user_id' => $user->id,
-                        'education_level' => $row[73],
+                        'education_level' => $row[75],
                     ], [
-                        'education_institution' => $row[74],
-                        'education_city' => $row[75],
-                        'education_major' => $row[76],
-                        'education_gpa' => $row[77],
-                        'education_start_year' => $row[78],
-                        'education_end_year' => $row[79],
+                        'education_institution' => $row[76],
+                        'education_city' => $row[77],
+                        'education_major' => $row[78],
+                        'education_gpa' => $row[79],
+                        'education_start_year' => $row[80],
+                        'education_end_year' => $row[81],
                     ]);
                 }
 
-                if($row[80]){//training 1
+                if($row[82]){//training 1
                     $employeeTraining = EmployeeTraining::updateOrCreate([
                         'user_id' => $user->id,
-                        'training_institution' => $row[81],
-                        'training_year' => $row[82],
+                        'training_institution' => $row[83],
+                        'training_year' => $row[84],
                     ], [
-                        'training_duration' => $row[80],
-                        'training_certificate' => $row[83],
+                        'training_duration' => $row[82],
+                        'training_certificate' => $row[85],
                     ]);
                 }
 
-                if($row[84]){//training 2
+                if($row[86]){//training 2
                     $employeeTraining = EmployeeTraining::updateOrCreate([
                         'user_id' => $user->id,
-                        'training_institution' => $row[85],
-                        'training_year' => $row[86],
+                        'training_institution' => $row[87],
+                        'training_year' => $row[88],
                     ], [
-                        'training_duration' => $row[84],
-                        'training_certificate' => $row[87],
+                        'training_duration' => $row[86],
+                        'training_certificate' => $row[89],
                     ]);
                 }
 
-                if($row[88]){//training 3
+                if($row[90]){//training 3
                     $employeeTraining = EmployeeTraining::updateOrCreate([
                         'user_id' => $user->id,
-                        'training_institution' => $row[89],
-                        'training_year' => $row[90],
+                        'training_institution' => $row[91],
+                        'training_year' => $row[92],
                     ], [
-                        'training_duration' => $row[88],
-                        'training_certificate' => $row[91],
+                        'training_duration' => $row[90],
+                        'training_certificate' => $row[93],
                     ]);
                 }
 
-                if($row[92]){//bank
+                if($row[94]){//bank
                     $employeeBank = EmployeeBank::updateOrCreate([
                         'user_id' => $user->id,
                     ], [
-                        'bank_name' => $row[92],
-                        'account_name' => $row[93],
-                        'account_number' => $row[94],
+                        'bank_name' => $row[94],
+                        'account_name' => $row[95],
+                        'account_number' => $row[96],
                     ]);
                 }
 
@@ -338,17 +340,19 @@ class ImportController extends Controller
                 $group = Group::whereRaw('LOWER(group_name) = ?', [strtolower($row[8])])->first();
                 $div = Division::whereRaw('LOWER(division_name) = ?', [strtolower($row[9])])->first();
                 $dept = Department::whereRaw('LOWER(department_name) = ?', [strtolower($row[10])])->first();
-                $pos = Position::whereRaw('LOWER(position_name) = ?', [strtolower($row[11])])->first();
-                $lvl = Level::whereRaw('LOWER(level_name) = ?', [strtolower($row[12])])->first();
-                $jtype = JobType::whereRaw('LOWER(job_type_name) = ?', [strtolower($row[13])])->first();
-                $line = Line::whereRaw('LOWER(line_name) = ?', [strtolower($row[14])])->first();
-                $gol = Golongan::whereRaw('LOWER(golongan_name) = ?', [strtolower($row[15])])->first();
-                $subgol = SubGolongan::whereRaw('LOWER(sub_golongan_name) = ?', [strtolower($row[16])])->first();
-                $role = DakarRole::whereRaw('LOWER(role_name) = ?', [strtolower($row[20])])->first();
+                $sec = Section::whereRaw('LOWER(section_name) = ?', [strtolower($row[11])])->first();
+                $pos = Position::whereRaw('LOWER(position_name) = ?', [strtolower($row[12])])->first();
+                $lvl = Level::whereRaw('LOWER(level_name) = ?', [strtolower($row[13])])->first();
+                $jtype = JobType::whereRaw('LOWER(job_type_name) = ?', [strtolower($row[14])])->first();
+                $work = WorkHour::whereRaw('LOWER(work_hour) = ?', [strtolower($row[15])])->first();
+                $line = Line::whereRaw('LOWER(line_name) = ?', [strtolower($row[16])])->first();
+                $gol = Golongan::whereRaw('LOWER(golongan_name) = ?', [strtolower($row[17])])->first();
+                $subgol = SubGolongan::whereRaw('LOWER(sub_golongan_name) = ?', [strtolower($row[18])])->first();
+                $role = DakarRole::whereRaw('LOWER(role_name) = ?', [strtolower($row[22])])->first();
 
-                if($row[95] == 'Aktif'){
+                if($row[97] == 'Aktif'){
                     $jobStatus = true;
-                } elseif($row[95] == 'Nonaktif'){
+                } elseif($row[97] == 'Nonaktif'){
                     $jobStatus = false;
                 } else {
                     $jobStatus = null;
@@ -360,18 +364,21 @@ class ImportController extends Controller
                     'group_id' => $group ? $group->id : null,
                     'division_id' => $div ? $div->id : null,
                     'department_id' => $dept ? $dept->id : null,
+                    'section_id' => $sec ? $sec->id : null,
                     'position_id' => $pos ? $pos->id : null,
                     'role_level_id' => $lvl ? $lvl->id : null,
                     'job_type_id' => $jtype ? $jtype->id : null,
                     'line_id' => $line ? $line->id : null,
                     'golongan_id' => $gol ? $gol->id : null,
                     'sub_golongan_id' => $subgol ? $subgol->id : null,
-                    'job_status' => strtolower($row[17]),
-                    'start_date' => $row[18],
-                    'end_date' => $row[19],
-                    'user_dakar_role' => strtolower($row[20]),
+                    'job_status' => strtolower($row[19]),
+                    'start_date' => $row[20],
+                    'end_date' => $row[21],
+                    'user_dakar_role' => strtolower($row[22]),
                     'is_onboarding_completed' => true,
                     'employment_status' => $jobStatus,
+                    'work_hour_code_id' => $work ? $work->id : null
+
                 ]);
 
                 $user->dakarRole()->sync($role->id);
@@ -391,7 +398,7 @@ class ImportController extends Controller
             return back()->with('success', 'Data berhasil diimport!');
         } catch (\Exception $e) {
             // Log error message
-            Log::error('Import failed: ' . $e->getMessage());
+            Log::error('Import failed: ' . $e);
 
             // Return error message to user
             return back()->with('error', 'Terjadi kesalahan saat mengimport data: ' . $e->getMessage());

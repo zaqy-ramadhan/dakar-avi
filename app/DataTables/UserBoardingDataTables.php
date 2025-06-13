@@ -68,14 +68,14 @@ class UserBoardingDataTables extends DataTable
                 $currentRoute = request()->route()->getName();
 
                 if ($currentRoute === "users.index.onboarding") {
-                    $buttons = '<a title="Detail Onboarding" href="' . $onboardingUrl . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-briefcase fs-4"></i></a>';
+                    $buttons = '<a title="Detail Onboarding" href="' . $onboardingUrl . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-briefcase fs-6"></i></a>';
                 }
 
                 $buttons .=
                     '<form action="' . $deleteUrl . '" method="POST" style="display:inline;">
                     ' . csrf_field() . '
                     ' . method_field('POST') . '
-                    <button type="submit" title="Delete User" class="btn btn-sm btn-outline-danger m-1" onclick="return confirm(\'Are you sure?\')"><i class="ti ti-trash fs-4"></i></button>
+                    <button type="submit" title="Delete User" class="btn btn-sm btn-outline-danger m-1" onclick="return confirm(\'Are you sure?\')"><i class="ti ti-trash fs-6"></i></button>
                 </form>';
 
                 return $buttons;
