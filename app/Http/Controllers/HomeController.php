@@ -33,7 +33,7 @@ class HomeController extends Controller
     public function index()
     {
         try {
-            if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4'])){
+            if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4'])) {
                 $user = User::query()
                     ->with(['department', 'employeeJob.position'])
                     ->select('users.*');
@@ -51,7 +51,7 @@ class HomeController extends Controller
                 $internshipRole = DakarRole::where('role_name', 'internship')->first();
                 $internship = (clone $user)->whereHas('dakarRole', function ($y) use ($internshipRole) {
                     $y->where('dakar_role_user.dakar_role_id', $internshipRole->id);
-                    })
+                })
                     ->whereHas('latestEmployeeJob', function ($query) {
                         $query->where('employment_status', true);
                     })
@@ -63,8 +63,8 @@ class HomeController extends Controller
                     ->select('jt.job_type_name', DB::raw('COUNT(*) as total'))
                     ->groupBy('jt.job_type_name')
                     ->pluck('total', 'jt.job_type_name');
-                
-                    // dd($jobType);
+
+                // dd($jobType);
 
                 $departments = DB::table('dakar_departments')
                     ->leftJoin('dakar_employee_job', function ($join) {
@@ -88,7 +88,7 @@ class HomeController extends Controller
                     ->whereHas('item', function ($query) {
                         $query->where('type', 'baju');
                     })
-                    ->whereHas('employeeJob', function($query){
+                    ->whereHas('employeeJob', function ($query) {
                         $query->where('employment_status', true);
                     })
                     ->where('acc_date', '<=', Carbon::now()->subMonths(12))
@@ -125,21 +125,33 @@ class HomeController extends Controller
                     $karyawan = (clone $user)->whereHas('dakarRole', function ($z) use ($karyawanRole) {
                         $z->where('dakar_role_user.dakar_role_id', $karyawanRole->id);
                     })
-                    ->whereHas('latestEmployeeJob', function ($query) {
-                        $query->where('employment_status', true);
-                    })
-                    ->get();
+                        ->whereHas('latestEmployeeJob', function ($query) {
+                            $query->where('employment_status', true);
+                        })
+                        ->get();
                 } else {
                     $karyawan = collect();
                 }
 
-                $uncomplete = User::whereHas('firstEmployeeJob', function ($query) {
-                    $query
-                        ->where('is_onboarding_completed', false)
-                        ->where('employment_status', true)
-                        ->whereRaw('id = (SELECT MIN(id) FROM dakar_employee_job WHERE user_id = users.id)')
-                    ;
-                })->get();
+                // $uncomplete = User::whereHas('firstEmployeeJob', function ($query) {
+                //     $query
+                //         ->where('is_onboarding_completed', false)
+                //         ->where('employment_status', true)
+                //         ->whereRaw('id = (SELECT MIN(id) FROM dakar_employee_job WHERE user_id = users.id)')
+                //     ;
+
+                // })->get();
+                $users = User::whereHas('employeeDetail', function ($q) {
+                    $q->where('is_draft', 0);
+                });
+
+                $users = $users->get();
+                $users = $users->filter(function ($user) {
+                    $progress = $user->progressOnboarding();
+                    return $progress < 100;
+                });
+
+                $uncomplete = $users;
 
                 return view('home', compact('pemagangan', 'uncomplete', 'internship', 'karyawan', 'jobType', 'departments', 'expiredThisMonth', 'uniformRefresh', 'birthdays'));
             } else {
