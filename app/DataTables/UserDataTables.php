@@ -52,6 +52,7 @@ class UserDataTables extends DataTable
             })
             ->addColumn('is_active', function ($user) {
                 $latestJob = $user->latestEmployeeJob;
+                $latestJob->updateStatus();
 
                 if (is_null($latestJob)) {
                     return '<span class="badge text-bg-light">N/A</span>';
@@ -133,7 +134,6 @@ class UserDataTables extends DataTable
             ->whereDoesntHave('dakarRole', function ($q) {
                 $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3']);
             });
-;
 
         if (request()->input('statusFilter')) {
             $status = request()->input('statusFilter');

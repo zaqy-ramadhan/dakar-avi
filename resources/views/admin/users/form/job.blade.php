@@ -257,7 +257,7 @@
         @include('admin.users.form.inventoryNumber')
     </div>
 @endif
-
+{{-- {{ dd($user->latestEmployeeJob->is_active()) }} --}}
 {{-- {{ request()->route()->getName() }} --}}
 
 

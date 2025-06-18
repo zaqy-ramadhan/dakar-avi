@@ -83,7 +83,7 @@ class User extends Authenticatable
         return $this->dakarRole()->pluck('id')->first();
     }
 
-    public function LOS()
+    public function LOS($date = null)
     {
         $startDate = $this->join_date;
 
@@ -93,7 +93,7 @@ class User extends Authenticatable
 
         if ($startDate) {
             $start = \Carbon\Carbon::parse($startDate);
-            $end = \Carbon\Carbon::now();
+            $end = $date ? \Carbon\Carbon::parse($date) : \Carbon\Carbon::now();
             $years = (int)$start->diffInYears($end);
             $months = (int)$start->diffInMonths($end) % 12;
             return $years . ' tahun ' . $months . ' bulan';
@@ -167,6 +167,90 @@ class User extends Authenticatable
         return $this->hasOne(EmployeeJob::class)->latestOfMany('start_date');
     }
 
+    public function previousEmployeeJob()
+    {
+        return $this->hasOne(EmployeeJob::class)
+            ->where('start_date', '<', $this->latestEmployeeJob?->start_date)
+            ->orderBy('start_date', 'desc');
+    }
+
+    // public function currentEmployeeJob($date = null)
+    // {
+    //     $date = $date
+    //         ? \Carbon\Carbon::parse($date)->endOfMonth()->endOfDay()
+    //         : \Carbon\Carbon::now()->endOfMonth()->endOfDay();
+
+    //     $jobs = $this->relationLoaded('employeeJob')
+    //         ? $this->employeeJob
+    //         : $this->employeeJob()->get();
+
+    //     return $jobs
+    //         ->filter(function ($job) use ($date) {
+    //             $start = \Carbon\Carbon::parse($job->start_date)->startOfDay(); // 00:00:00
+    //             $end = $job->resign_date
+    //                 ? \Carbon\Carbon::parse($job->resign_date)->endOfDay()     // 23:59:59
+    //                 : ($job->end_date
+    //                     ? \Carbon\Carbon::parse($job->end_date)->endOfDay()    // 23:59:59
+    //                     : null);
+
+    //             return $start->lessThanOrEqualTo($date) && (is_null($end) || $date->lessThanOrEqualTo($end));
+    //         })
+    //         ->sortByDesc('start_date')
+    //         ->first();
+    // }
+    public function currentEmployeeJob($date = null)
+    {
+        $date = $date
+            ? \Carbon\Carbon::parse($date)->endOfMonth()->endOfDay()
+            : \Carbon\Carbon::now()->endOfMonth()->endOfDay();
+
+        $jobs = $this->relationLoaded('employeeJob')
+            ? $this->employeeJob
+            : $this->employeeJob()->get();
+
+        return $jobs
+            ->filter(function ($job) use ($date) {
+                $start = \Carbon\Carbon::parse($job->start_date)->startOfDay(); // 00:00:00
+                $end = $job->resign_date
+                    ? \Carbon\Carbon::parse($job->resign_date)->endOfDay()     // 23:59:59
+                    : ($job->end_date
+                        ? \Carbon\Carbon::parse($job->end_date)->endOfDay()
+                        : null);
+
+                // Hanya ambil jika tanggal filter >= start && (belum berakhir atau filter <= end)
+                return $date->greaterThanOrEqualTo($start)
+                    && (is_null($end) || $date->lessThanOrEqualTo($end));
+            })
+            ->sortByDesc('start_date')
+            ->first();
+    }
+
+    public function latestEducation()
+    {
+        // return $this->hasOne(EmployeeEducation::class)
+        //     ->select('*')
+        //     ->where('user_id', $this->id)
+        //     ->orderByRaw("
+        //     CASE education_level
+        //         WHEN 'S3' THEN 6
+        //         WHEN 'S2' THEN 5
+        //         WHEN 'S1' THEN 4
+        //         WHEN 'D3' THEN 3
+        //         WHEN 'SMA' THEN 2
+        //         WHEN 'SMP' THEN 1
+        //         WHEN 'SD' THEN 0
+        //         ELSE 0
+        //     END DESC
+        // ")
+        //     ->limit(1);
+        $order = ['S2' => 5, 'S1' => 4, 'D3' => 3, 'SMA' => 2, 'SMP' => 1];
+
+        return $this->employeeEducations->sortByDesc(function ($edu) use ($order) {
+            return $order[$edu->education_level] ?? 0;
+        })->first();
+    }
+
+
     public function firstEmployeeJob()
     {
         return $this->hasOne(EmployeeJob::class)->orderBy('start_date', 'asc');
@@ -194,7 +278,7 @@ class User extends Authenticatable
         }
 
         $given = $job->inventory->where('employee_job_id', $job->id)->isNotEmpty();
-        if($given){
+        if ($given) {
             $progress = 50;
         } else {
             return $progress;

@@ -47,5 +47,17 @@ class EmployeeDetail extends Model
         // dd($this->gender);
         return $this->gender === '0' ? 'Laki-laki' : ($this->gender === '1' ? 'Perempuan' : null);
     }
+
+    public function age($date = null){
+        $birthDate = $this->birth_date;
+        if (!$birthDate) {
+            return 'N/A';
+        }
+        $birth = \Carbon\Carbon::parse($birthDate);
+        $now = $date ? \Carbon\Carbon::parse($date) : \Carbon\Carbon::now();
+        $years = (int)$birth->diffInYears($now);
+        // $months = (int)$birth->diffInMonths($now) % 12;
+        return $years . ' Tahun ';
+    }
     
 }

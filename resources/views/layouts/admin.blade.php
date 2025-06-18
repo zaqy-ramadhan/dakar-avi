@@ -173,6 +173,15 @@
                                     </a>
                                 </li>
                                 <li class="sidebar-item">
+                                    <a class="sidebar-link {{ Request::is('*reporting/employee') ? 'active' : '' }}"
+                                        href="/admin/reporting/employee" aria-expanded="false">
+                                        <span>
+                                            <i class="ti ti-shirt"></i>
+                                        </span>
+                                        <span class="hide-menu">Uniform Renewal</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
                                     <a class="sidebar-link {{ Request::is('*expired-contract*') ? 'active' : '' }}"
                                         href="/admin/reporting/expired-contract" aria-expanded="false">
                                         <span>
@@ -452,7 +461,7 @@
                                                     <button class="accordion-button collapsed" type="button"
                                                         data-bs-toggle="collapse" data-bs-target="#notifCollapse3"
                                                         aria-expanded="false" aria-controls="notifCollapse3">
-                                                        Starter Kit Given
+                                                        Starter Kit Provided
                                                     </button>
                                                 </h2>
                                                 <div id="notifCollapse3" class="accordion-collapse collapse"
