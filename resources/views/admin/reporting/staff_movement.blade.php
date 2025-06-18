@@ -4,14 +4,6 @@
     <div class="container-fluid">
         <div class="card" style="border-radius: 20px">
             <dic class="card-body">
-                {{-- <h4 class="mb-3">
-                    Data {{ $note }}
-                    @if (request('date'))
-                        untuk bulan {{ \Carbon\Carbon::parse(request('date'))->isoFormat('MMMM Y') }}
-                    @else
-                        bulan {{ \Carbon\Carbon::now()->isoFormat('MMMM Y') }}
-                    @endif
-                </h4> --}}
 
                 @php
                     $notes = [
@@ -26,13 +18,22 @@
                     ];
                 @endphp
 
-                <ul class="nav nav-tabs mb-3">
+                {{-- <ul class="nav nav-tabs mb-3">
                     @foreach ($notes as $label)
                         <li class="nav-item">
                             <a class="nav-link {{ $note == $label ? 'active' : '' }}"
                                 href="{{ route('staff-movement.index', ['note' => $label, 'date' => request('date')]) }}">
                                 {{ $label }}
                             </a>
+                        </li>
+                    @endforeach
+                </ul> --}}
+                <ul class="nav nav-tabs mb-3" id="noteTabs">
+                    @foreach ($notes as $label)
+                        <li class="nav-item">
+                            <button class="nav-link {{ $note == $label ? 'active' : '' }}" data-note="{{ $label }}">
+                                {{ $label }}
+                            </button>
                         </li>
                     @endforeach
                 </ul>
@@ -101,6 +102,187 @@
 
 @push('scripts')
     <script>
+        let currentNote = @json($note);
+        let datatable;
+
+        function loadDataTable(note, date) {
+            if (datatable) {
+                datatable.destroy();
+                $('#datatable').empty(); // reset table
+                $('#datatable').html(`
+                <thead><tr><th>No</th><th>Full Name</th><th>NPK</th></tr></thead>
+            `); // optionally reset header
+            }
+
+            $.ajax({
+                url: "{{ route('staff-movement.data') }}",
+                data: {
+                    note: note,
+                    date: date
+                },
+                success: function(response) {
+                    // Optional: re-render header based on note if needed
+
+                    // Initialize new DataTable
+                    datatable = $('#datatable').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: "{{ route('staff-movement.data') }}",
+                            data: {
+                                note: note,
+                                date: date
+                            }
+                        },
+                        columns: getColumnsByNote(note)
+                    });
+                }
+            });
+        }
+
+        function getColumnsByNote(note) {
+            const base = [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'fullname',
+                    name: 'fullname'
+                },
+                {
+                    data: 'npk',
+                    name: 'npk'
+                },
+            ];
+
+            const columnsByNote = {
+                'New Employee Kontrak': [{
+                    data: 'department'
+                }, {
+                    data: 'section'
+                }, {
+                    data: 'position'
+                }, {
+                    data: 'start_date'
+                }],
+                'New Employee Tetap': [{
+                    data: 'department'
+                }, {
+                    data: 'section'
+                }, {
+                    data: 'position'
+                }, {
+                    data: 'start_date'
+                }],
+                'New Employee Pemagangan': [{
+                    data: 'department'
+                }, {
+                    data: 'section'
+                }, {
+                    data: 'position'
+                }, {
+                    data: 'start_date'
+                }],
+                'New Employee Internship': [{
+                    data: 'department'
+                }, {
+                    data: 'start_date'
+                }, {
+                    data: 'duration'
+                }],
+                'Employee Contract Extension': [{
+                        data: 'department'
+                    }, {
+                        data: 'section'
+                    }, {
+                        data: 'position'
+                    }, {
+                        data: 'start_date'
+                    },
+                    {
+                        data: 'end_date'
+                    }, {
+                        data: 'duration'
+                    }, {
+                        data: 'contract'
+                    }
+                ],
+                'Employee Contract Position Change': [{
+                        data: 'department'
+                    }, {
+                        data: 'section'
+                    }, {
+                        data: 'old_position'
+                    },
+                    {
+                        data: 'position'
+                    }, {
+                        data: 'start_date'
+                    }
+                ],
+                'Employee Department Mutation': [{
+                        data: 'old_department'
+                    }, {
+                        data: 'department'
+                    }, {
+                        data: 'section'
+                    },
+                    {
+                        data: 'position'
+                    }, {
+                        data: 'start_date'
+                    }
+                ],
+                'One Year Service': [{
+                    data: 'department'
+                }, {
+                    data: 'section'
+                }, {
+                    data: 'position'
+                }, {
+                    data: 'start_date'
+                }],
+            };
+
+            return base.concat(columnsByNote[note] || []);
+        }
+
+        $(function() {
+            const defaultDate = $('input[name="date"]').val();
+
+            // Load first time
+            loadDataTable(currentNote, defaultDate);
+
+            // Tab click
+            $('#noteTabs').on('click', 'button[data-note]', function() {
+                const selectedNote = $(this).data('note');
+
+                currentNote = selectedNote;
+
+                // Update active class
+                $('#noteTabs .nav-link').removeClass('active');
+                $(this).addClass('active');
+
+                // Update hidden input for export
+                $('input[name="note"]').val(selectedNote);
+
+                // Load DataTable
+                loadDataTable(selectedNote, defaultDate);
+            });
+
+            // Export
+            $('#exportExcel').on('click', function() {
+                var date = $('input[name="date"]').val();
+                var note = $('input[name="note"]').val();
+                window.location.href = "{{ route('staff-movement.data') }}" +
+                    `?note=${encodeURIComponent(note)}&date=${encodeURIComponent(date)}&export=excel`;
+            });
+        });
+    </script>
+
+    {{-- <script>
         $(function() {
             $('#exportExcel').on('click', function() {
                 // Collect filter params
@@ -231,5 +413,5 @@
                 ],
             });
         });
-    </script>
+    </script> --}}
 @endpush
