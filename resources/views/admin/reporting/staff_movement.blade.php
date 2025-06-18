@@ -22,7 +22,7 @@
                         'Employee Contract Extension',
                         'Employee Contract Position Change',
                         'Employee Department Mutation',
-                        'Employee 1 Year',
+                        'One Year Service',
                     ];
                 @endphp
 
@@ -43,8 +43,9 @@
                         <input type="month" name="date"
                             value="{{ request('date', \Carbon\Carbon::now()->format('Y-m')) }}" class="form-control">
                         <button type="submit" class="btn btn-primary">Filter</button>
-                        <a href="{{ route('staff-movement.index', ['note' => $note]) }}"
-                            class="btn btn-secondary">Reset</a>
+                        <a href="{{ route('staff-movement.index', ['note' => $note]) }}" class="btn btn-secondary">Reset</a>
+                        <button type="button" id="exportExcel" class="btn btn-success"><i
+                                class="ti ti-file-spreadsheet fs-4"></i>Export Excel</button>
                     </div>
                 </form>
             </dic>
@@ -86,7 +87,7 @@
                         <th>Section</th>
                         <th>Position</th>
                         <th>Start Date</th>
-                     @elseif($note == 'Employee 1 Year')
+                    @elseif($note == 'One Year Service')
                         <th>Department</th>
                         <th>Section</th>
                         <th>Position</th>
@@ -101,6 +102,16 @@
 @push('scripts')
     <script>
         $(function() {
+            $('#exportExcel').on('click', function() {
+                // Collect filter params
+                var date = $('input[name="date"]').val();
+                var note = $('input[name="note"]').val();
+                var params = [];
+                if (note) params.push('note=' + encodeURIComponent(note));
+                if (date) params.push('date=' + encodeURIComponent(date));
+                params.push('export=excel');
+                window.location.href = "{{ route('staff-movement.data') }}" + "?" + params.join('&');
+            });
             $('#datatable').DataTable({
                 processing: true,
                 serverSide: true,
@@ -203,8 +214,21 @@
                             data: 'start_date',
                             name: 'start_date'
                         },
+                    @elseif ($note == 'One Year Service') {
+                            data: 'department',
+                            name: 'department'
+                        }, {
+                            data: 'section',
+                            name: 'section'
+                        }, {
+                            data: 'position',
+                            name: 'position'
+                        }, {
+                            data: 'start_date',
+                            name: 'start_date'
+                        },
                     @endif
-                ]
+                ],
             });
         });
     </script>

@@ -7,6 +7,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StaffMovementReportController extends Controller
 {
@@ -23,7 +24,7 @@ class StaffMovementReportController extends Controller
         'Employee Department Mutation',
         'Employee Internship Extension',
         'Employee Pemagangan Extension',
-        'Employee 1 Year',
+        'One Year Service',
     ];
 
     public function index(Request $request)
@@ -32,32 +33,97 @@ class StaffMovementReportController extends Controller
         return view('admin.reporting.staff_movement', compact('note'));
     }
 
-    public function data(Request $request)
+    public function getData(Request $request)
     {
         $note = $request->input('note');
         $date = $request->input('date')
             ? Carbon::parse($request->input('date'))->startOfMonth()
             : Carbon::now()->startOfMonth();
 
-        $endDate = $date->copy()->endOfMonth();
+        if ($request->has('export') && $request->input('export') == 'excel') {
+            $employees = match ($note) {
+                'New Employee Tetap' => $this->newEmployeeTetap($request)->getData(true),
+                'New Employee Kontrak' => $this->newEmployeeKontrak($request)->getData(true),
+                'New Employee Pemagangan' => $this->newEmployeePemagangan($request)->getData(true),
+                'New Employee Internship' => $this->newEmployeeIntern($request)->getData(true),
+                'Employee Contract Extension' => $this->EmployeeContractExtension($request)->getData(true),
+                'Employee Contract Position Change' => $this->EmployeeContractPositionChange($request)->getData(true),
+                'Employee Department Mutation' => $this->EmployeeDepartmentMutation($request)->getData(true),
+                'One Year Service' => $this->EmployeeContractLongTerm($request)->getData(true),
+                default => collect(),
+            };
+            $export = match ($note) {
+                'New Employee Kontrak', 'New Employee Pemagangan', 'New Employee Tetap' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Department' => $item['department'],
+                    'Section' => $item['section'],
+                    'Position' => $item['position'],
+                    'Start Date' => $item['start_date'],
+                ]),
 
-        $query = EmployeeJob::with(['user', 'position', 'department'])
-            ->where('notes', $note)
-            ->whereBetween('start_date', [$date, $endDate]);
+                'New Employee Internship' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Department' => $item['department'],
+                    'Start Date' => $item['start_date'],
+                    'Duration' => $item['duration'],
+                ]),
 
-        return DataTables::of($query)
-            ->addIndexColumn()
-            ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
-            ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
-            ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
-            ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
-            ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
-            ->make(true);
-    }
+                'Employee Contract Extension' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Department' => $item['department'],
+                    'Section' => $item['section'],
+                    'Position' => $item['position'],
+                    'Start Date' => $item['start_date'],
+                    'End Date' => $item['end_date'],
+                    'Duration' => $item['duration'],
+                    'Contract' => $item['contract'],
+                ]),
 
-    public function getData(Request $request)
-    {
-        $note = $request->input('note');
+                'Employee Contract Position Change' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Department' => $item['department'],
+                    'Section' => $item['section'],
+                    'Old Position' => $item['old_position'],
+                    'New Position' => $item['position'],
+                    'Start Date' => $item['start_date'],
+                ]),
+
+                'Employee Department Mutation' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Old Department' => $item['old_department'],
+                    'New Department' => $item['department'],
+                    'Section' => $item['section'],
+                    'Position' => $item['position'],
+                    'Start Date' => $item['start_date'],
+                ]),
+
+                'One Year Service' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Department' => $item['department'],
+                    'Section' => $item['section'],
+                    'Position' => $item['position'],
+                    'Start Date' => $item['start_date'],
+                ]),
+
+                default => collect($employees['data']),
+            };
+
+            $filename = str_replace(' ', '-', strtolower($note)) . '-report-' . $date->isoFormat('MMMM-Y') . '.xlsx';
+            return Excel::download(new \App\Exports\EmployeeExport($export), $filename);
+        }
+
         return match ($note) {
             'New Employee Tetap' => $this->newEmployeeTetap($request),
             'New Employee Kontrak' => $this->newEmployeeKontrak($request),
@@ -66,7 +132,7 @@ class StaffMovementReportController extends Controller
             'Employee Contract Extension' => $this->EmployeeContractExtension($request),
             'Employee Contract Position Change' => $this->EmployeeContractPositionChange($request),
             'Employee Department Mutation' => $this->EmployeeDepartmentMutation($request),
-            'Employee 1 Year' => $this->EmployeeContractLongTerm($request),
+            'One Year Service' => $this->EmployeeContractLongTerm($request),
             default => response()->json([]),
         };
     }
@@ -317,11 +383,21 @@ class StaffMovementReportController extends Controller
             ->addColumn('department', fn($user) => $user->currentEmployeeJob($date)?->department->department_name ?? 'N/A')
             ->addColumn('section', fn($user) => $user->currentEmployeeJob($date)?->section->section_name ?? 'N/A')
             ->addColumn('position', fn($user) => $user->currentEmployeeJob($date)?->position->position_name ?? 'N/A')
-            ->addColumn('start_date', fn($user) => Carbon::parse($user->employeeJob->first()->start_date)->isoFormat('D MMM Y'))
-            ->addColumn('end_date', fn($user) => Carbon::parse($user->$user->currentEmployeeJob($date)?->end_date)->isoFormat('D MMM Y'))
+            ->addColumn('start_date', fn($user) =>
+            optional($user->employeeJob->first())
+                ? Carbon::parse($user->employeeJob->first()->start_date)->isoFormat('D MMM Y')
+                : 'N/A')
+
             ->addColumn('age_in_months', function ($user) use ($date) {
-                $start = Carbon::parse($user->employeeJob->first()->start_date);
-                return $start->diffInMonths($date) . ' bulan';
+                $firstJob = $user->employeeJob->first();
+                return $firstJob
+                    ? Carbon::parse($firstJob->start_date)->diffInMonths($date) . ' bulan'
+                    : 'N/A';
+            })->addColumn('end_date', function ($user) use ($date) {
+                $job = $user->currentEmployeeJob($date);
+                return $job && $job->end_date
+                    ? Carbon::parse($job->end_date)->isoFormat('D MMM Y')
+                    : 'N/A';
             })
             ->make(true);
     }

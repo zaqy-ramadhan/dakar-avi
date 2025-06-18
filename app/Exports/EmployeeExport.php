@@ -21,10 +21,13 @@ class EmployeeExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return [
-            'NPK', 'Fullname', 'Gender', 'Age', 'Education', 'Blood Type',
-            'Join Date', 'Start Date', 'End Date', 'Duration', 'LOS',
-            'Department', 'Employment Status', 'Job Status', 'Job Type', 'Golongan', 'Status'
-        ];
+        // return [
+        //     'NPK', 'Fullname', 'Gender', 'Age', 'Education', 'Blood Type',
+        //     'Join Date', 'Start Date', 'End Date', 'Duration', 'LOS',
+        //     'Department', 'Employment Status', 'Job Status', 'Job Type', 'Golongan', 'Status'
+        // ];
+          return $this->collection->first()
+            ? array_keys($this->collection->first())
+            : [];
     }
 }
