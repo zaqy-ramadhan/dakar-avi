@@ -96,25 +96,6 @@ class EmployeeJob extends Model
         }
     }
 
-    public function updateStatus()
-    {
-        $now = \Carbon\Carbon::now();
-
-        // Prioritaskan resign_date jika ada
-        if ($this->resign_date && $now->greaterThan(\Carbon\Carbon::parse($this->resign_date))) {
-            $this->employment_status = false;
-            $this->save();
-            return;
-        }
-
-        // Jika end_date sudah lewat dan belum resign
-        if ($this->end_date && $now->greaterThan(\Carbon\Carbon::parse($this->end_date))) {
-            $this->employment_status = false;
-            $this->save();
-            return;
-        }
-    }
-
     // public function is_active($date = null)
     // {
     //     $filterDateStart = $date

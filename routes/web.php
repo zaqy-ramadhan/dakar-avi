@@ -103,7 +103,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/reporting/employee', [EmployeeDetailReportController::class, 'index'])->name('employee-detail');
         Route::get('/admin/reporting/uniform-refresh', [UniformRefreshController::class, 'index']);
         Route::get('/admin/reporting/staff-movement', [StaffMovementReportController::class, 'index'])->name('staff-movement.index');
-        Route::get('/admin/reporting/staff-movement/data', [StaffMovementReportController::class, 'data'])->name('staff-movement.data');
+        Route::get('/admin/reporting/staff-movement/data', [StaffMovementReportController::class, 'getData'])->name('staff-movement.data');
+
 
         //master data
         Route::prefix('admin')->group(function () {

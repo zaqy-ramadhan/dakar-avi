@@ -1,95 +1,211 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <h4 class="mb-4">Staff Movement Record</h4>
+    <div class="container-fluid">
+        <div class="card" style="border-radius: 20px">
+            <dic class="card-body">
+                {{-- <h4 class="mb-3">
+                    Data {{ $note }}
+                    @if (request('date'))
+                        untuk bulan {{ \Carbon\Carbon::parse(request('date'))->isoFormat('MMMM Y') }}
+                    @else
+                        bulan {{ \Carbon\Carbon::now()->isoFormat('MMMM Y') }}
+                    @endif
+                </h4> --}}
 
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <input type="month" class="form-control" id="filter-month" value="{{ now()->format('Y-m') }}">
+                @php
+                    $notes = [
+                        'New Employee Kontrak',
+                        'New Employee Tetap',
+                        'New Employee Pemagangan',
+                        'New Employee Internship',
+                        'Employee Contract Extension',
+                        'Employee Contract Position Change',
+                        'Employee Department Mutation',
+                        'Employee 1 Year',
+                    ];
+                @endphp
+
+                <ul class="nav nav-tabs mb-3">
+                    @foreach ($notes as $label)
+                        <li class="nav-item">
+                            <a class="nav-link {{ $note == $label ? 'active' : '' }}"
+                                href="{{ route('staff-movement.index', ['note' => $label, 'date' => request('date')]) }}">
+                                {{ $label }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+
+                <form method="GET" class="mb-4">
+                    <input type="hidden" name="note" value="{{ $note }}">
+                    <div class="input-group" style="max-width: 400px;">
+                        <input type="month" name="date"
+                            value="{{ request('date', \Carbon\Carbon::now()->format('Y-m')) }}" class="form-control">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="{{ route('staff-movement.index', ['note' => $note]) }}"
+                            class="btn btn-secondary">Reset</a>
+                    </div>
+                </form>
+            </dic>
         </div>
-    </div>
 
-    <ul class="nav nav-tabs" id="movementTabs" role="tablist">
-        @foreach ($categories as $index => $note)
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {{ $index === 0 ? 'active' : '' }}"
-                        id="tab-{{ $index }}"
-                        data-bs-toggle="tab"
-                        data-bs-target="#table-{{ $index }}"
-                        type="button"
-                        role="tab">
-                    {{ $note }}
-                </button>
-            </li>
-        @endforeach
-    </ul>
+        <table id="datatable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Full Name</th>
+                    <th>NPK</th>
 
-    <div class="tab-content mt-3">
-        @foreach ($categories as $index => $note)
-            <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}" id="table-{{ $index }}" role="tabpanel">
-                <div class="card" style="border-radius: 20px; overflow-x: auto; width: 100%;">
-                    <table class="table table-bordered movement-table" data-note="{{ $note }}" id="datatable-{{ $index }}">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>NPK</th>
-                                <th>Nama Lengkap</th>
-                                <th>Posisi</th>
-                                <th>Departemen</th>
-                                <th>Tanggal Mulai</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        @endforeach
+                    @if (in_array($note, ['New Employee Kontrak', 'New Employee Pemagangan', 'New Employee Tetap']))
+                        <th>Department</th>
+                        <th>Section</th>
+                        <th>Position</th>
+                        <th>Start Date</th>
+                    @elseif($note == 'New Employee Internship')
+                        <th>Department</th>
+                        <th>Start Date</th>
+                        <th>Duration</th>
+                    @elseif($note == 'Employee Contract Extension')
+                        <th>Department</th>
+                        <th>Section</th>
+                        <th>Position</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                    @elseif($note == 'Employee Contract Position Change')
+                        <th>Department</th>
+                        <th>Section</th>
+                        <th>Old Position</th>
+                        <th>New Position</th>
+                        <th>Start Date</th>
+                    @elseif($note == 'Employee Department Mutation')
+                        <th>Old Department</th>
+                        <th>New Department</th>
+                        <th>Section</th>
+                        <th>Position</th>
+                        <th>Start Date</th>
+                     @elseif($note == 'Employee 1 Year')
+                        <th>Department</th>
+                        <th>Section</th>
+                        <th>Position</th>
+                        <th>Start Date</th>
+                    @endif
+                </tr>
+            </thead>
+        </table>
     </div>
-</div>
 @endsection
 
 @push('scripts')
-<script>
-    function loadTable(tableId, note, date) {
-        $('#' + tableId).DataTable({
-            processing: true,
-            serverSide: true,
-            destroy: true,
-            ajax: {
-                url: '{{ route("staff-movement.data") }}',
-                data: {
-                    note: note,
-                    date: date
-                }
-            },
-            columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'npk', name: 'npk' },
-                { data: 'fullname', name: 'fullname' },
-                { data: 'position', name: 'position' },
-                { data: 'department', name: 'department' },
-                { data: 'start_date', name: 'start_date' },
-            ]
-        });
-    }
+    <script>
+        $(function() {
+            $('#datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('staff-movement.data', ['note' => $note]) }}",
+                    data: function(d) {
+                        d.date = "{{ request('date') }}";
+                    }
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'fullname',
+                        name: 'fullname'
+                    },
+                    {
+                        data: 'npk',
+                        name: 'npk'
+                    },
 
-    $(function () {
-        const defaultDate = $('#filter-month').val() + '-01';
-
-        $('.movement-table').each(function () {
-            const tableId = $(this).attr('id');
-            const note = $(this).data('note');
-            loadTable(tableId, note, defaultDate);
-        });
-
-        $('#filter-month').on('change', function () {
-            const selectedDate = $(this).val() + '-01';
-            $('.movement-table').each(function () {
-                const tableId = $(this).attr('id');
-                const note = $(this).data('note');
-                loadTable(tableId, note, selectedDate);
+                    @if (in_array($note, ['New Employee Kontrak', 'New Employee Pemagangan', 'New Employee Tetap']))
+                        {
+                            data: 'department',
+                            name: 'department'
+                        }, {
+                            data: 'section',
+                            name: 'section'
+                        }, {
+                            data: 'position',
+                            name: 'position'
+                        }, {
+                            data: 'start_date',
+                            name: 'start_date'
+                        },
+                    @elseif ($note == 'New Employee Internship') {
+                            data: 'department',
+                            name: 'department'
+                        }, {
+                            data: 'start_date',
+                            name: 'start_date'
+                        }, {
+                            data: 'duration',
+                            name: 'duration'
+                        },
+                    @elseif ($note == 'Employee Contract Extension') {
+                            data: 'department',
+                            name: 'department'
+                        }, {
+                            data: 'section',
+                            name: 'section'
+                        }, {
+                            data: 'position',
+                            name: 'position'
+                        }, {
+                            data: 'start_date',
+                            name: 'start_date'
+                        }, {
+                            data: 'end_date',
+                            name: 'end_date'
+                        }, {
+                            data: 'duration',
+                            name: 'duration'
+                        }, {
+                            data: 'contract',
+                            name: 'contract'
+                        },
+                    @elseif ($note == 'Employee Contract Position Change') {
+                            data: 'department',
+                            name: 'department'
+                        }, {
+                            data: 'section',
+                            name: 'section'
+                        }, {
+                            data: 'old_position',
+                            name: 'old_position'
+                        }, {
+                            data: 'position',
+                            name: 'position'
+                        }, {
+                            data: 'start_date',
+                            name: 'start_date'
+                        },
+                    @elseif ($note == 'Employee Department Mutation') {
+                            data: 'old_department',
+                            name: 'old_department'
+                        }, {
+                            data: 'department',
+                            name: 'department'
+                        }, {
+                            data: 'section',
+                            name: 'section'
+                        }, {
+                            data: 'position',
+                            name: 'position'
+                        }, {
+                            data: 'start_date',
+                            name: 'start_date'
+                        },
+                    @endif
+                ]
             });
         });
-    });
-</script>
+    </script>
 @endpush
