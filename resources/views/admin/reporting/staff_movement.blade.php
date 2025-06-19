@@ -11,6 +11,7 @@
                         'New Employee Tetap',
                         'New Employee Pemagangan',
                         'New Employee Internship',
+                        'Expired Contract',
                         'Employee Contract Extension',
                         'Employee Contract Position Change',
                         'Employee Department Mutation',
@@ -40,7 +41,7 @@
 
                 <form method="GET" class="mb-4">
                     <input type="hidden" name="note" value="{{ $note }}">
-                    <div class="input-group" style="max-width: 400px;">
+                    <div class="input-group" style="max-width: fit-content;">
                         <input type="month" name="date"
                             value="{{ request('date', \Carbon\Carbon::now()->format('Y-m')) }}" class="form-control">
                         <button type="submit" class="btn btn-primary">Filter</button>
@@ -93,6 +94,11 @@
                         <th>Section</th>
                         <th>Position</th>
                         <th>Start Date</th>
+                    @elseif($note == 'Expired Contract')
+                        <th>Department</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
                     @endif
                 </tr>
             </thead>
@@ -105,38 +111,53 @@
         let currentNote = @json($note);
         let datatable;
 
+        function renderTableHeader(note) {
+            let base = `<th>No</th><th>Full Name</th><th>NPK</th>`;
+            let extra = '';
+
+            switch (note) {
+            case 'New Employee Kontrak':
+            case 'New Employee Tetap':
+            case 'New Employee Pemagangan':
+            case 'One Year Service':
+                extra = `<th>Department</th><th>Section</th><th>Position</th><th>Start Date</th>`;
+                break;
+            case 'New Employee Internship':
+                extra = `<th>Department</th><th>Start Date</th><th>Duration</th>`;
+                break;
+            case 'Employee Contract Extension':
+                extra = `<th>Department</th><th>Section</th><th>Position</th><th>Start Date</th><th>End Date</th><th>Duration</th><th>Status</th>`;
+                break;
+            case 'Employee Contract Position Change':
+                extra = `<th>Department</th><th>Section</th><th>Old Position</th><th>New Position</th><th>Start Date</th>`;
+                break;
+            case 'Employee Department Mutation':
+                extra = `<th>Old Department</th><th>New Department</th><th>Section</th><th>Position</th><th>Start Date</th>`;
+                break;
+            case 'Expired Contract':
+                extra = `<th>Department</th><th>Start Date</th><th>End Date</th><th>Status</th>`;
+                break;
+            }
+            $('#datatable').html(`<thead><tr>${base}${extra}</tr></thead>`);
+        }
+
         function loadDataTable(note, date) {
             if (datatable) {
-                datatable.destroy();
-                $('#datatable').empty(); // reset table
-                $('#datatable').html(`
-                <thead><tr><th>No</th><th>Full Name</th><th>NPK</th></tr></thead>
-            `); // optionally reset header
+            datatable.destroy();
             }
+            renderTableHeader(note);
 
-            $.ajax({
+            datatable = $('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
                 url: "{{ route('staff-movement.data') }}",
                 data: {
-                    note: note,
-                    date: date
-                },
-                success: function(response) {
-                    // Optional: re-render header based on note if needed
-
-                    // Initialize new DataTable
-                    datatable = $('#datatable').DataTable({
-                        processing: true,
-                        serverSide: true,
-                        ajax: {
-                            url: "{{ route('staff-movement.data') }}",
-                            data: {
-                                note: note,
-                                date: date
-                            }
-                        },
-                        columns: getColumnsByNote(note)
-                    });
+                note: note,
+                date: date
                 }
+            },
+            columns: getColumnsByNote(note)
             });
         }
 
@@ -244,6 +265,15 @@
                 }, {
                     data: 'start_date'
                 }],
+                'Expired Contract': [{
+                    data: 'department'
+                }, {
+                    data: 'start_date'
+                }, {
+                    data: 'end_date'
+                }, {
+                    data: 'status'
+                }]
             };
 
             return base.concat(columnsByNote[note] || []);

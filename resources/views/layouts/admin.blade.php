@@ -190,7 +190,7 @@
                                         <span class="hide-menu">Employee Movement</span>
                                     </a>
                                 </li>
-                                <li class="sidebar-item">
+                                {{-- <li class="sidebar-item">
                                     <a class="sidebar-link {{ Request::is('*expired-contract*') ? 'active' : '' }}"
                                         href="/admin/reporting/expired-contract" aria-expanded="false">
                                         <span>
@@ -198,7 +198,7 @@
                                         </span>
                                         <span class="hide-menu">Expired Contract</span>
                                     </a>
-                                </li>
+                                </li> --}}
                                 <li class="sidebar-item">
                                     <a class="sidebar-link {{ Request::is('*employee-birthday*') ? 'active' : '' }}"
                                         href="/admin/reporting/employee-birthday" aria-expanded="false">

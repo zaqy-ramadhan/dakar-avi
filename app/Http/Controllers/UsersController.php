@@ -1343,7 +1343,7 @@ class UsersController extends Controller
 
 
             $lastJob = EmployeeJob::where('user_id', $id)
-                ->where('employment_status', true)
+                // ->where('employment_status', true)
                 ->latest()
                 ->first();
 

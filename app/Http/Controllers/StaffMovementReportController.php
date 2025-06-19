@@ -25,6 +25,7 @@ class StaffMovementReportController extends Controller
         'Employee Internship Extension',
         'Employee Pemagangan Extension',
         'One Year Service',
+        'Expired Contract',
     ];
 
     public function index(Request $request)
@@ -50,6 +51,7 @@ class StaffMovementReportController extends Controller
                 'Employee Contract Position Change' => $this->EmployeeContractPositionChange($request)->getData(true),
                 'Employee Department Mutation' => $this->EmployeeDepartmentMutation($request)->getData(true),
                 'One Year Service' => $this->EmployeeContractLongTerm($request)->getData(true),
+                'Expired Contract' => $this->expiredContract($request)->getData(true),
                 default => collect(),
             };
             $export = match ($note) {
@@ -117,6 +119,17 @@ class StaffMovementReportController extends Controller
                     'Start Date' => $item['start_date'],
                 ]),
 
+                'Expired Contract' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Department' => $item['department'],
+                    'Start Date' => $item['start_date'],
+                    'End Date' => $item['end_date'],
+                    'Status' => $item['status'],
+                ]),
+
+
                 default => collect($employees['data']),
             };
 
@@ -133,6 +146,7 @@ class StaffMovementReportController extends Controller
             'Employee Contract Position Change' => $this->EmployeeContractPositionChange($request),
             'Employee Department Mutation' => $this->EmployeeDepartmentMutation($request),
             'One Year Service' => $this->EmployeeContractLongTerm($request),
+            'Expired Contract' => $this->expiredContract($request),
             default => response()->json([]),
         };
     }
@@ -399,6 +413,32 @@ class StaffMovementReportController extends Controller
                     ? Carbon::parse($job->end_date)->isoFormat('D MMM Y')
                     : 'N/A';
             })
+            ->make(true);
+    }
+
+    public function expiredContract(Request $request)
+    {
+        $date = $request->input('date')
+            ? Carbon::parse($request->input('date'))->startOfMonth()
+            : Carbon::now()->startOfMonth();
+
+        $endDate = $date->copy()->endOfMonth();
+
+        $expiredContracts = EmployeeJob::with(['user', 'department'])
+            ->whereBetween('end_date', [$date, $endDate])
+            ->get();
+
+        $transformedContracts = $expiredContracts->transform(fn($job) => [
+            'npk' => $job->user ? $job->user->npk : 'N/A',
+            'fullname' => $job->user ? $job->user->fullname : 'N/A',
+            'department' => $job->department ? $job->department->department_name : 'N/A',
+            'start_date' => $job->start_date ? Carbon::parse($job->start_date)->isoFormat('D MMMM Y') : 'N/A',
+            'end_date' => $job->end_date ? Carbon::parse($job->end_date)->isoFormat('D MMMM Y') : 'N/A',
+            'status' => $job->contract,
+        ]);
+
+        return DataTables::of($transformedContracts)
+            ->addIndexColumn()
             ->make(true);
     }
 
