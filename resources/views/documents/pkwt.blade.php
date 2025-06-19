@@ -175,7 +175,7 @@
                     :
                 </td>
                 <td>
-                    {{ $hr->fullname }}
+                    {{ $hr?->fullname ?? '-' }}
                 </td>
             </tr>
 
@@ -508,7 +508,7 @@
             <div>Pihak Pertama,</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}" alt=" "
                 style="width: auto; height: 60px;">
-            <div>{{ $hr->fullname }}</div>
+            <div>{{ $hr?->fullname ?? '-' }}</div>
             <div>HRGA & EHS Dept. Head</div>
         </div>
         <div class="signature">

@@ -155,7 +155,7 @@
             ditandatangani
             Perjanjian Pelatihan Kerja (selanjutnya akan disebut “Perjanjian”), oleh dan antara:</p>
         <ol>
-            <li><strong>{{ $hr->fullname }}</strong>, selaku HR Legal Sect.Head dalam hal ini bertindak untuk dan atas
+            <li><strong>{{ $hr?->fullname ?? '-' }}</strong>, selaku HR Legal Sect.Head dalam hal ini bertindak untuk dan atas
                 nama PT
                 Astra Visteon Indonesia, perusahaan yang bergerak di bidang manufaktur perakitan kendaraan bermotor roda
                 dua dan roda empat yang berkedudukan hukum di Bogor (selanjutnya disebut <strong>“Pihak
@@ -451,7 +451,7 @@
             <div>Pihak Pertama,</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}"
                 alt="Tanda Tangan Pihak Pertama" style="width: auto; height: 60px;">
-            <div>{{ $hr->fullname }}</div>
+            <div>{{ $hr?->fullname ?? '-' }}</div>
             <div>HR Legal Sect. Head</div>
         </div>
         <div class="signature">
