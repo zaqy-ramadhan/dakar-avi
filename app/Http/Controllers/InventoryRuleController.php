@@ -27,7 +27,7 @@ class InventoryRuleController extends Controller
         $departments = Department::all();
         // $levels = Level::all();
         // $jobStatus = JobStatus::all();
-        $items = item::all();
+        $items = Item::whereNotIn('item_name', ['User Password Great Day', 'User Password E-Slip'])->get();
 
         return view('admin.rule.form', compact('roles', 'departments', 'items'));
     }
@@ -39,7 +39,7 @@ class InventoryRuleController extends Controller
         $departments = Department::all();
         // $jobStatus = JobStatus::all();
         // $levels = Level::all();
-        $items = item::all();
+        $items = Item::whereNotIn('item_name', ['User Password Great Day', 'User Password E-Slip'])->get();
 
         return view('admin.rule.edit', compact('rule', 'roles', 'departments', 'items'));
     }

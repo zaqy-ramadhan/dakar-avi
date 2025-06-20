@@ -84,7 +84,7 @@ class JobWageAllowanceController extends Controller
         }
 
         $request->validate([
-            'type.*' => 'required|string|max:255',
+            'type.*' => 'nullable|string|max:255',
             'amount.*' => 'required|string',
             'calculation.*' => 'required|string|max:20',
             'status.*' => 'required|string|max:10',
@@ -93,6 +93,9 @@ class JobWageAllowanceController extends Controller
         JobWageAllowance::where('employee_job_id', $jobEmploymentId)->delete();
 
         foreach ($request->type as $index => $type) {
+            if ($type === null) {
+                continue;
+            }
             $amount = str_replace('.', '', $request->amount[$index]);
             JobWageAllowance::create([
                 'employee_job_id' => $jobEmploymentId,

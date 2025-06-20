@@ -39,7 +39,7 @@ class OnboardingController extends Controller
                         ['type' => 'Gaji Pokok', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
                         ['type' => 'Tunjangan Transport', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
                         ['type' => 'Tunjangan Makan', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
-                        ['type' => 'Tunjangan Kesehatan', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
+                        // ['type' => 'Tunjangan Kesehatan', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
                     ]);
                 } else {
                     $jobWageAllowance = collect([
@@ -145,7 +145,7 @@ class OnboardingController extends Controller
             $departments = Department::with('division')->get();
             $divisions = Division::all();
             $roles = DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get();
-            $allItems = Item::all();
+            $allItems = Item::whereNotIn('item_name', ['User Password Great Day', 'User Password E-Slip'])->get();
             $lastContractInventory = optional(optional($user->employeeJob->last())->inventory)->isEmpty() ?? true;
             $acceptedItems = collect($inventories ?? [])->where('status', 'Diterima');
             $groupedItems = $acceptedItems->groupBy('item_name');
