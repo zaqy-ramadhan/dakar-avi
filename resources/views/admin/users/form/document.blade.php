@@ -117,7 +117,7 @@
     </div>
 
     <div class="col-sm-6 col-md-6 col-lg-4 mb-3">
-        <label for="photo_file" class="form-label">Foto Buku Tabungan Rekening Bank <span
+        <label for="photo_file" class="form-label">Foto Rekening Bank <span
                 class="text-danger">*</span></label>
         <input type="file" class="form-control" id="bank_file" name="bank_file">
         <small class="text-muted">Wajib diisi</small>
