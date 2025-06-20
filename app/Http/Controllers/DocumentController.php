@@ -340,8 +340,8 @@ class DocumentController extends Controller
             $fullyear = date('Y', strtotime($kontrak->start_date));
 
             if ($kontrak->user_dakar_role !== 'karyawan') {
-                // $disnaker = Disnaker::first();
-                $disnaker = null;
+                $disnaker = Disnaker::first() ?? null;
+                // $disnaker = null;
                 $hr = User::whereHas('employeeJob.position', function ($query) {
                     $query->where('position_name', 'HR & Legal Section Head');
                 })->first();
@@ -414,8 +414,8 @@ class DocumentController extends Controller
             }
 
             if ($kontrak->user_dakar_role !== 'karyawan') {
-                // $disnaker = Disnaker::first();
-                $disnaker = null;
+                $disnaker = Disnaker::first() ?? null;
+                // $disnaker = null;
                 $hr = User::whereHas('employeeJob.position', function ($query) {
                     $query->where('position_name', 'HR & Legal Section Head');
                 })->first();

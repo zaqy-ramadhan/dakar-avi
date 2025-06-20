@@ -461,14 +461,14 @@
             <div>{{ $kontrak->user->fullname }}</div>
         </div>
 
-        {{-- <div style="margin-top: 32px" class="approval-section">
+        <div style="margin-top: 32px" class="approval-section">
             <div>Mengetahui dan Mengesahkan,</div>
             <div>Kepala Dinas Tenaga Kerja</div>
             <div>Kabupaten Bogor</div>
             <div style="height: 60px"></div>
-            <div>{{ $disnaker->nama }}</div>
-            <div>NIP. {{ $disnaker->nip }}</div>
-        </div> --}}
+            <div>{{ $disnaker?->nama ?? '-' }}</div>
+            <div>NIP. {{ $disnaker?->nip ?? '-' }}</div>
+        </div>
 
         <div style="text-align: right; margin-top: 240px;"><span>4</span></div>
         <table>
