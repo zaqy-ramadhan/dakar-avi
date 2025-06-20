@@ -345,14 +345,14 @@
                                                 <span class="hide-menu">Inventaris Rule</span>
                                             </a>
                                         </li>
-                                        <li class="sidebar-item">
+                                        {{-- <li class="sidebar-item">
                                             <a class="sidebar-link" href="/admin/disnaker" aria-expanded="false">
                                                 <span>
                                                     <i class="ti ti-chisel"></i>
                                                 </span>
                                                 <span class="hide-menu">Kepala Dinas Tenaga Kerja</span>
                                             </a>
-                                        </li>
+                                        </li> --}}
                                     </ul>
                                 </li>
                             </ul>
