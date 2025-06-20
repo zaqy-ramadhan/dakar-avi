@@ -120,7 +120,7 @@ class EmploymentController extends Controller
             $departments = Department::with('division')->get();
             $divisions = Division::all();
             $roles = DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get();
-            $allItems = Item::all();
+            $allItems = Item::whereNotIn('item_name', ['User Password Great Day', 'User Password E-Slip'])->get();
             // $lastContractInventory = optional(optional($user->employeeJob->last())->inventory)->isEmpty() ?? true;
             $previousRole = false;
             if ($user->employeeJob && $user->employeeJob->count() > 1) {
