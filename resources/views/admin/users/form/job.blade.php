@@ -188,6 +188,11 @@
                         Digital</button>
                 </li>
             @endif
+        {{-- @elseif (Request::is('*offboarding*'))
+              <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="exit-intv-tab" data-bs-toggle="tab" data-bs-target="#exit"
+                        type="button" role="tab" aria-controls="exit" aria-selected="false">Exit Interview</button>
+                </li> --}}
         @endif
     @endif
 </ul>

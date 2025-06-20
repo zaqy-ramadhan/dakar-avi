@@ -66,7 +66,8 @@
             @endforeach
         </div>
 
-        @if (Auth::user()->getRole() === 'admin')
+        {{-- @if (Auth::user()->getRole() === 'admin') --}}
+        @if(in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
             <button type="button" id="remove-wage-allowance" class="btn btn-danger mb-3 me-2"
                 style="display: none;">Remove
                 Wage/Allowance</button>

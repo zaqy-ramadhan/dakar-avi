@@ -3,6 +3,9 @@
 @section('content')
     <div class="container-fluid">
         <div class="card" style="border-radius: 20px">
+            <div class="card-header">
+                <p class="fs-8 fw-bold">Employee Movement</p>
+            </div>
             <dic class="card-body">
 
                 @php

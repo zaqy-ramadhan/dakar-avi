@@ -3,7 +3,7 @@
 @section('content')
     <div class="card" style="border-radius: 20px">
         <div class="card-header">
-            <p class="fs-8 fw-bold">Employee Data Export</p>
+            <p class="fs-8 fw-bold">Employee Data</p>
         </div>
         <div class="card-body">
             <form id="filterForm" class="row g-2">

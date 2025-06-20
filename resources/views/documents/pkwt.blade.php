@@ -175,7 +175,7 @@
                     :
                 </td>
                 <td>
-                    {{ $hr->fullname }}
+                    {{ $hr?->fullname ?? '-' }}
                 </td>
             </tr>
 
@@ -306,8 +306,13 @@
                     <li>{{ $wage->type . ' : ' . number_format($wage->amount, 0, ',', '.') . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation . ' hadir kerja' }}
                     </li>
                 @elseif($wage->type === 'Gaji Pokok')
+                    @if ($kontrak->level->level_name === 'Operator')
+                    <li>{{ $wage->type . ' : UMSK Kab. Bogor'  }}
+                    </li>
+                    @else
                     <li>{{ $wage->type . ' : ' . number_format($wage->amount, 0, ',', '.') . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
                     </li>
+                    @endif
                 @else
                     <li>{{ $wage->type . ' : ' . number_format($wage->amount, 0, ',', '.') . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
                     </li>
@@ -367,7 +372,7 @@
             <li>Pihak Kedua bersedia untuk bekerja sesuai dengan hari kerja dan jam kerja yang diatur dan ditetapkan
                 Perusahaan sebagai berikut :
                 <ul>
-                    <li>Senin sampai dengan Jum’at terbagi dalam Shift, pengaturan kerja shift mengikuti aturan dan
+                    <li>Senin sampai dengan Jum’at terbagi dalam shift, pengaturan kerja shift mengikuti aturan dan
                         ketentuan yang diatur secara tersendiri.</li>
                     <li>Hari Sabtu dan Minggu libur.</li>
                 </ul>
@@ -508,7 +513,7 @@
             <div>Pihak Pertama,</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}" alt=" "
                 style="width: auto; height: 60px;">
-            <div>{{ $hr->fullname }}</div>
+            <div>{{ $hr?->fullname ?? '-' }}</div>
             <div>HRGA & EHS Dept. Head</div>
         </div>
         <div class="signature">

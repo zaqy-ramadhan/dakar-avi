@@ -54,7 +54,7 @@
             </table>
         </div>
         <button type="button" id="add-item" class="btn btn-success mt-2"
-            @if (Auth::user()->getRole() !== 'admin') hidden @endif>Tambah Item</button>
+            @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4'])) hidden @endif>Tambah Item</button>
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">
@@ -254,7 +254,7 @@
 
                 let actionButtons = '';
 
-                if (role === 'admin') {
+                if (role === 'admin' || role === 'admin 2' || role === 'admin 3' || role === 'admin 4') {
                     actionButtons = `
                         <button type="button" class="btn btn-outline-danger btn-sm remove-item">
                             <i class="ti ti-trash"></i>
