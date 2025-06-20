@@ -102,9 +102,6 @@ class HomeController extends Controller
                             'npk' => $user?->npk ?? 'N/A',
                             'name' => $user?->fullname ?? 'N/A',
                             'department' => $inventory->employeeJob->department->department_name ?? 'N/A',
-                            // 'acc_date' => $inventory->acc_date,
-                            // 'status' => $inventory->status,
-                            // 'item_name' => $inventory->item?->name ?? 'N/A',
                         ];
                     })
                     ->unique('user_id')

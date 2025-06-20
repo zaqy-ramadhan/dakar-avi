@@ -223,9 +223,9 @@
                         Karyawan Habis Kontrak - {{ now()->addMonths(2)->translatedFormat('F Y') }}
                     </div>
                     <div class="card-body table-responsive">
-                        <a href="{{ route('expiredContract') }}" class="btn btn-outline-primary mb-3">
+                        {{-- <a href="{{ route('expiredContract') }}" class="btn btn-outline-primary mb-3">
                             Download Selengkapnya di Excel
-                        </a>
+                        </a> --}}
                         <table class="table text-nowrap mb-0 align-middle">
                             <thead>
                                 <tr>
@@ -324,9 +324,9 @@
                         Karyawan Ulang Tahun - {{ now()->translatedFormat('F Y') }}
                     </div>
                     <div class="card-body table-responsive">
-                        <a href="{{ route('birthday') }}" class="btn btn-outline-primary mb-3">
+                        {{-- <a href="{{ route('birthday') }}" class="btn btn-outline-primary mb-3">
                             Download Selengkapnya di Excel
-                        </a>
+                        </a> --}}
                         <table class="table text-nowrap mb-0 align-middle">
                             <thead>
                                 <tr>

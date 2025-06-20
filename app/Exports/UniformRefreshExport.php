@@ -43,7 +43,7 @@ class uniformRefreshExport implements FromCollection, WithHeadings
             ];
         })->values();
 
-        dd($data);
+        // dd($data);
         return $data;
     }
 

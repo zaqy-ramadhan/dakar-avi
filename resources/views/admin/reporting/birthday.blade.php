@@ -4,7 +4,7 @@
 
 <div class="card" style="border-radius: 20px">
     <div class="card-header">
-        <p class="fs-8 fw-bold"> Laporan Ulang Tahun Karyawan</p>
+        <p class="fs-8 fw-bold">Employee Birthday Report</p>
     </div>
     <div class="card-body">
         <div class="col align-items-between d-flex mb-4">

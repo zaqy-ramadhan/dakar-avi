@@ -97,11 +97,11 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/employee-jobs/{id}/', [UsersController::class, 'updateJob'])->name('employee-jobs.update');
 
         //reporting
-        Route::get('/admin/reporting/expired-contract', [ExpiredContractController::class, 'index'])->name('expired-contract.index');
-        Route::get('/admin/reporting/joined-employee', [JoinedEmployeeController::class, 'index'])->name('joined-employee.index');
+        // Route::get('/admin/reporting/expired-contract', [ExpiredContractController::class, 'index'])->name('expired-contract.index');
+        // Route::get('/admin/reporting/joined-employee', [JoinedEmployeeController::class, 'index'])->name('joined-employee.index');
         Route::get('/admin/reporting/employee-birthday', [EmployeeBirthdayController::class, 'index'])->name('employee-birthday.index');
         Route::get('/admin/reporting/employee', [EmployeeDetailReportController::class, 'index'])->name('employee-detail');
-        Route::get('/admin/reporting/uniform-refresh', [UniformRefreshController::class, 'index']);
+        Route::get('/admin/reporting/uniform-renewal', [UniformRefreshController::class, 'index'])->name('uniform.renewal');
         Route::get('/admin/reporting/staff-movement', [StaffMovementReportController::class, 'index'])->name('staff-movement.index');
         Route::get('/admin/reporting/staff-movement/data', [StaffMovementReportController::class, 'getData'])->name('staff-movement.data');
 

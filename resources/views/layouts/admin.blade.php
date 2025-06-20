@@ -172,15 +172,6 @@
                                         <span class="hide-menu">Employee Data</span>
                                     </a>
                                 </li>
-                                {{-- <li class="sidebar-item">
-                                    <a class="sidebar-link {{ Request::is('*reporting/employee') ? 'active' : '' }}"
-                                        href="/admin/reporting/employee" aria-expanded="false">
-                                        <span>
-                                            <i class="ti ti-shirt"></i>
-                                        </span>
-                                        <span class="hide-menu">Uniform Renewal</span>
-                                    </a>
-                                </li> --}}
                                 <li class="sidebar-item">
                                     <a class="sidebar-link {{ Request::is('*staff-movement*') ? 'active' : '' }}"
                                         href="/admin/reporting/staff-movement" aria-expanded="false">
@@ -188,6 +179,15 @@
                                             <i class="ti ti-calendar-plus"></i>
                                         </span>
                                         <span class="hide-menu">Employee Movement</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link {{ Request::is('*uniform-renewal') ? 'active' : '' }}"
+                                        href="/admin/reporting/uniform-renewal" aria-expanded="false">
+                                        <span>
+                                            <i class="ti ti-shirt"></i>
+                                        </span>
+                                        <span class="hide-menu">Uniform Renewal</span>
                                     </a>
                                 </li>
                                 {{-- <li class="sidebar-item">

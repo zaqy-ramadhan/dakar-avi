@@ -385,8 +385,8 @@ class StaffMovementReportController extends Controller
                 $currentJob = $user->currentEmployeeJob($date);
                 if (!$firstJob) return false;
                 $startDate = Carbon::parse($firstJob->start_date);
-                if(!$currentJob) return false;
-                if($user->currentEmployeeJob($date)->is_active($date) === 'inactive') return false;
+                if (!$currentJob) return false;
+                if ($user->currentEmployeeJob($date)->is_active($date) === 'inactive') return false;
 
                 return $startDate->year === $oneYearAgo->year &&
                     $startDate->month === $oneYearAgo->month;

@@ -7,7 +7,9 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Container\Attributes\Log;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class UniformRefreshController extends Controller
 {
@@ -17,48 +19,53 @@ class UniformRefreshController extends Controller
     public function index()
     {
         try {
-            $now = Carbon::now();
-            // Terima input bulan dan tahun secara dinamis dari request
-            $bulan = request()->input('month');
-            $tahun = request()->input('month');
+            $dateInput = request()->input('date'); // expecting format: YYYY-MM
 
-            // Jika input tidak ada, gunakan bulan dan tahun saat ini
-            if (!$bulan || !$tahun) {
-                $bulan = $now->month;
-                $tahun = $now->year;
-            }
-
-            // dd($bulan);
-
-            // Buat objek Carbon dari input bulan dan tahun
-            $inputDate = Carbon::createFromDate($tahun, $bulan);
+            // Jika tidak ada input, gunakan bulan ini
+            $inputDate = $dateInput ? Carbon::parse($dateInput) : Carbon::now();
 
             // Ambil tanggal 12 bulan sebelumnya dari input
-            $now = $inputDate->subMonths(12);
+            $annual = $inputDate->copy()->endOfMonth()->subMonths(12);
 
             $uniformRefresh = Inventory::with(['user', 'item', 'employeeJob.department'])
-                ->whereHas('item', function ( $query) {
+                ->whereHas('item', function ($query) {
                     $query->where('type', 'baju');
                 })
                 ->whereHas('employeeJob', function ($query) {
                     $query->where('employment_status', true);
                 })
-                ->where('acc_date', '<=',  $now)
+                ->where('acc_date', '<=', $annual)
                 ->where('status', 'Diterima')
                 ->get()
                 ->map(function ($inventory) {
                     $user = $inventory->user;
 
                     return [
-                        'id' => $inventory->user->id,
+                        'id' => $user?->id,
                         'npk' => $user?->npk ?? 'N/A',
                         'name' => $user?->fullname ?? 'N/A',
                         'department' => $inventory->employeeJob->department->department_name ?? 'N/A',
                     ];
                 })
-                ->unique('user_id')
+                ->unique('id') // pakai 'id' karena kita kembalikan id user
                 ->values();
-                dd($uniformRefresh);
+
+            if (request()->has('export') && request('export') === 'excel') {
+                $filename = 'uniform-refresh-' . Str::slug($inputDate->format('F-Y')) . '.xlsx';
+
+                $export = $uniformRefresh->map(function ($item) {
+                    return [
+                        'NPK' => $item['npk'],
+                        'Nama' => $item['name'],
+                        'Departemen' => $item['department'],
+                    ];
+                });                
+
+                return Excel::download(new \App\Exports\EmployeeExport($export), $filename);
+            }
+
+            // dd($uniformRefresh);
+            return view('admin.reporting.uniform', compact('uniformRefresh'));
         } catch (Exception $e) {
             return back()->with('error', $e->getMessage());
         }
