@@ -380,11 +380,13 @@ class StaffMovementReportController extends Controller
                     ->where('employment_status', true);
             })
             ->get()
-            ->filter(function ($user) use ($oneYearAgo) {
-                $firstJob = $user->employeeJob->first();
+            ->filter(function ($user) use ($oneYearAgo, $date) {
+                $firstJob = $user->firstEmployeeJob;
+                $currentJob = $user->currentEmployeeJob($date);
                 if (!$firstJob) return false;
-
                 $startDate = Carbon::parse($firstJob->start_date);
+                if(!$currentJob) return false;
+                if($user->currentEmployeeJob($date)->is_active($date) === 'inactive') return false;
 
                 return $startDate->year === $oneYearAgo->year &&
                     $startDate->month === $oneYearAgo->month;
