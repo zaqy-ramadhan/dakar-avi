@@ -96,7 +96,7 @@ class UsersController extends Controller
                             ['type' => 'Gaji Pokok', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
                             ['type' => 'Tunjangan Transport', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
                             ['type' => 'Tunjangan Makan', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
-                            ['type' => 'Tunjangan Kesehatan', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
+                            // ['type' => 'Tunjangan Kesehatan', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
                         ]);
                     } else {
                         $jobWageAllowance = collect([
