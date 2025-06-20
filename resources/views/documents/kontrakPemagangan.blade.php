@@ -451,7 +451,7 @@
             <div>Pihak Pertama,</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}"
                 alt="Tanda Tangan Pihak Pertama" style="width: auto; height: 60px;">
-            <div>{{ $hr?->fullname ?? '-' }}</div>
+            <div>{{$hr?->fullname ?? '-'}}</div>
             <div>HR Legal Sect. Head</div>
         </div>
         <div class="signature">

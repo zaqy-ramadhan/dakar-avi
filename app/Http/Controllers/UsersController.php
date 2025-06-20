@@ -47,11 +47,8 @@ class UsersController extends Controller
         $jobStatus = JobStatus::all();
         $type = request()->route('role');
 
-        $pageTitles = [
-            'users.index.onboarding' => 'Employee Onboarding',
-            'users.index.offboarding' => 'Employee Offboarding',
-        ];
-        $page = $pageTitles[$routeName] ?? 'Employee Management';
+
+        $page = 'Employee Management';
 
         $userRole = Auth::user()->getRole();
         $restrictedRoles = ['karyawan', 'pemagangan', 'internship'];
@@ -109,7 +106,7 @@ class UsersController extends Controller
                 }
 
                 $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft == 0) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
-                $personal_date = optional($user->employeeDocs)->last()->created_at;
+                $personal_date = optional($user->employeeDocs)->last()?->created_at;
 
                 $job = $user->employeeJob->first();
                 $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id)->isNotEmpty();
@@ -400,7 +397,7 @@ class UsersController extends Controller
     public function assignRole()
     {
         try {
-            DB::beginTransaction();
+            // DB::beginTransaction();
             $users = User::all();
             foreach ($users as $user) {
                 $role = $user->getRole() ?? null;
@@ -408,12 +405,12 @@ class UsersController extends Controller
                     $user->dakarRole()->sync(8);
                 }
             }
-            DB::commit();
+            // DB::commit();
             return response()->json([
                 'success' => 'user role assigned'
             ]);
         } catch (\Exception $e) {
-            DB::rollBack();
+            // DB::rollBack();
 
             Log::error('Error assign role: ' . $e->getMessage());
 
@@ -689,7 +686,7 @@ class UsersController extends Controller
             ]);
 
             // Mulai transaksi database
-            DB::beginTransaction();
+            // DB::beginTransaction();
 
             // Cari user berdasarkan NPK
             $user = User::findOrFail($id);
@@ -934,7 +931,7 @@ class UsersController extends Controller
 
 
             // Commit transaksi jika semua berhasil
-            DB::commit();
+            // DB::commit();
 
             // return redirect()->route('users.index')->with('success', 'User detail created successfully');
 
@@ -943,7 +940,7 @@ class UsersController extends Controller
                 'success' => 'User detail created successfully.'
             ], 200);
         } catch (\Exception $e) {
-            DB::rollBack();
+            // DB::rollBack();
 
             Log::error('Error storing user details: ' . $e->getMessage());
 
@@ -1051,7 +1048,7 @@ class UsersController extends Controller
                 'marriage_certificate_file'    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             ]);
 
-            DB::beginTransaction();
+            // DB::beginTransaction();
 
             $user = User::findOrFail($id);
             $user->update([
@@ -1261,13 +1258,13 @@ class UsersController extends Controller
                 }
             }
 
-            DB::commit();
+            // DB::commit();
 
             return response()->json([
                 'message' => 'User detail updated successfully.',
             ], 200);
         } catch (\Exception $e) {
-            DB::rollBack();
+            // DB::rollBack();
 
             Log::error('Error updating user details: ' . $e->getMessage());
 
@@ -1278,9 +1275,48 @@ class UsersController extends Controller
         }
     }
 
+    private function determineJobNotes(EmployeeJob|null $lastJob, string $user_role, Request $request, bool $isFirstJob): string
+    {
+        if ($isFirstJob || $lastJob === null) {
+            if ($user_role === 'karyawan') {
+                return match ($request->job_status) {
+                    'tetap' => 'New Employee Tetap',
+                    'asing' => 'New Employee Asing',
+                    default => 'New Employee Kontrak',
+                };
+            } elseif ($user_role === 'pemagangan') {
+                return 'New Employee Pemagangan';
+            } elseif ($user_role === 'internship') {
+                return 'New Employee Internship';
+            }
+        } else {
+            if ($user_role === 'karyawan') {
+                if (
+                    $lastJob->position_id !== $request->position_id ||
+                    $lastJob->role_level_id !== $request->level_id
+                ) {
+                    return 'Employee Contract Position Change';
+                } elseif (
+                    $lastJob->department_id !== $request->department_id ||
+                    $lastJob->division_id !== $request->division_id
+                ) {
+                    return 'Employee Department Mutation';
+                } else {
+                    return 'Employee Contract Extension';
+                }
+            } elseif ($user_role === 'pemagangan') {
+                return 'Employee Pemagangan Extension';
+            } elseif ($user_role === 'internship') {
+                return 'Employee Internship Extension';
+            }
+        }
+
+        return '';
+    }
+
+
     public function storeJob(Request $request, $id)
     {
-        // dd($request);
         $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'nullable|date',
@@ -1300,17 +1336,18 @@ class UsersController extends Controller
             'work_hour' => 'nullable|string|max:255|exists:dakar_work_hour_code,id'
         ]);
 
-        // dd($request);
         try {
-            DB::beginTransaction();
+            // DB::beginTransaction();
 
             $user_role = DakarRole::findOrFail($request->employment_status)->role_name;
 
-            $lastJob = EmployeeJob::where('user_id', $id)->latest()->first();
-            if ($lastJob) {
-                $lastJob->employment_status = false;
-                $lastJob->save();
-            }
+
+            $lastJob = EmployeeJob::where('user_id', $id)
+                // ->where('employment_status', true)
+                ->latest()
+                ->first();
+
+            $notes = $this->determineJobNotes($lastJob, $user_role, $request, $lastJob === null);
 
             EmployeeJob::create([
                 'user_id' => $id,
@@ -1330,29 +1367,30 @@ class UsersController extends Controller
                 'job_status' => $request->job_status ?? null,
                 'user_dakar_role' => $user_role ?? null,
                 'employment_status' => true,
-                'work_hour_code_id' => $request->work_hour
+                'work_hour_code_id' => $request->work_hour,
+                'notes' => $notes ?? null,
             ]);
 
             $user = User::findOrFail($id);
-
             if (isset($request->employment_status)) {
                 $user->dakarRole()->sync($request->employment_status);
             }
 
-            DB::commit();
+            // DB::commit();
 
-            return redirect()->back()->with('success',  'Job Employment created succesfully');
+            return redirect()->back()
+                ->with('success', 'Job Employment created successfully');
         } catch (\Exception $e) {
-            DB::rollBack();
-
+            // DB::rollBack();
             Log::error('Error updating user jobs: ' . $e->getMessage());
 
             return response()->json([
-                'message' => 'Failed to update user jobs. Please try again. ' . $e->getMessage(),
-                'error'   => $e->getMessage(),
+                'message' => 'Failed to update user jobs. Please try again.',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
+
 
     public function updateJob(Request $request, $id)
     {
@@ -1376,12 +1414,16 @@ class UsersController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
+            // DB::beginTransaction();
 
             $job = EmployeeJob::findOrFail($id);
             $user = $job->user;
 
             $user_role = DakarRole::findOrFail($request->employment_status)->role_name;
+
+            $firstJobId = EmployeeJob::where('user_id', $user->id)->orderBy('start_date')->value('id');
+            $isFirstJob = $job->id == $firstJobId;
+            $notes = $this->determineJobNotes($job, $user_role, $request, $isFirstJob);
 
             $job->update([
                 'start_date' => $request->start_date,
@@ -1400,17 +1442,18 @@ class UsersController extends Controller
                 'job_status' => $request->job_status ?? null,
                 'user_dakar_role' => $user_role ?? null,
                 'work_hour_code_id' => $request->work_hour,
+                'notes' => $notes,
             ]);
 
             if ($request->employment_status) {
                 $user->dakarRole()->sync([$request->employment_status]);
             }
 
-            DB::commit();
+            // DB::commit();
 
             return redirect()->back()->with('success', 'Job Employment updated successfully');
         } catch (\Exception $e) {
-            DB::rollBack();
+            // DB::rollBack();
             Log::error('Error updating user jobs: ' . $e->getMessage());
 
             return response()->json([
@@ -1419,6 +1462,8 @@ class UsersController extends Controller
             ], 500);
         }
     }
+
+
 
     public function editJob($id)
     {
@@ -1572,7 +1617,13 @@ class UsersController extends Controller
     {
         try {
             $job = EmployeeJob::findOrFail($id);
+            $user = $job->user;
             $job->delete();
+            $lastJob = EmployeeJob::where('user_id', $user->id)->latest()->first();
+            if ($lastJob) {
+                $lastJob->employment_status = true;
+                $lastJob->save();
+            }
 
             return redirect()->back()->with('success', 'Job Employment deleted successfully');
         } catch (\Exception $e) {

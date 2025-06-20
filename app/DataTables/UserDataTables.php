@@ -31,9 +31,9 @@ class UserDataTables extends DataTable
             })
             ->orderColumn('department_name', function ($query, $order) {
                 $query->leftJoin('dakar_employee_job as ej', 'users.id', '=', 'ej.user_id')
-                      ->leftJoin('dakar_departments as d', 'ej.department_id', '=', 'd.id')
-                      ->orderBy('d.department_name', $order);
-            })            
+                    ->leftJoin('dakar_departments as d', 'ej.department_id', '=', 'd.id')
+                    ->orderBy('d.department_name', $order);
+            })
             ->addColumn('position_name', function ($user) {
                 return optional($user->employeeJob)->position->position_name ?? 'No Position';
             })
@@ -133,7 +133,6 @@ class UserDataTables extends DataTable
             ->whereDoesntHave('dakarRole', function ($q) {
                 $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3']);
             });
-;
 
         if (request()->input('statusFilter')) {
             $status = request()->input('statusFilter');

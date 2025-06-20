@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\UniformRefreshController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,7 @@ use App\Http\Controllers\EmployeeBirthdayController;
 use App\Http\Controllers\EmployeeDetailReportController;
 use App\Http\Controllers\ExpiredContractController;
 use App\Http\Controllers\JoinedEmployeeController;
+use App\Http\Controllers\StaffMovementReportController;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
@@ -88,7 +90,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/inventory-rules/{id}/edit', [InventoryRuleController::class, 'edit'])->name('inventory-rules.edit');
         Route::put('/inventory-rules/{id}', [InventoryRuleController::class, 'update'])->name('inventory-rules.update');
         Route::delete('/inventory-rules/{id}', [InventoryRuleController::class, 'destroy'])->name('inventory-rules.destroy');
-        
+
         Route::post('/employee-job/resign/{id}', [UsersController::class, 'resign'])->name('employeeJob.resign');
 
         Route::get('/employee-jobs/{id}/edit', [UsersController::class, 'editJob'])->name('employee-jobs.edit');
@@ -99,7 +101,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/reporting/joined-employee', [JoinedEmployeeController::class, 'index'])->name('joined-employee.index');
         Route::get('/admin/reporting/employee-birthday', [EmployeeBirthdayController::class, 'index'])->name('employee-birthday.index');
         Route::get('/admin/reporting/employee', [EmployeeDetailReportController::class, 'index'])->name('employee-detail');
-
+        Route::get('/admin/reporting/uniform-refresh', [UniformRefreshController::class, 'index']);
+        Route::get('/admin/reporting/staff-movement', [StaffMovementReportController::class, 'index'])->name('staff-movement.index');
+        Route::get('/admin/reporting/staff-movement/data', [StaffMovementReportController::class, 'getData'])->name('staff-movement.data');
 
 
         //master data
@@ -120,9 +124,9 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('job_status', JobStatusController::class);
             Route::resource('item', ItemController::class);
 
-            // Route::get('disnaker', [DisnakerController::class, 'index'])->name('disnaker.index');
-            // Route::post('disnaker', [DisnakerController::class, 'store'])->name('disnaker.store');
-            // Route::put('disnaker/{nip}', [DisnakerController::class, 'update'])->name(('disnaker.update'));
+            Route::get('disnaker', [DisnakerController::class, 'index'])->name('disnaker.index');
+            Route::post('disnaker', [DisnakerController::class, 'store'])->name('disnaker.store');
+            Route::put('disnaker/{nip}', [DisnakerController::class, 'update'])->name(('disnaker.update'));
         });
 
         #export pdf and excel
@@ -138,7 +142,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/offboarding/{id}', [OffboardingController::class, 'store'])->name('offboarding.store');
         Route::put('/offboarding/{id}', [OffboardingController::class, 'update'])->name('offboarding.update');
-        
+
         //seeding role to users
         Route::get('assign-role', [UsersController::class, 'assignRole']);
     });

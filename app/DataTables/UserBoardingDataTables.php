@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Models\DakarRole;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -54,11 +55,87 @@ class UserBoardingDataTables extends DataTable
                 }
             })
             ->orderColumn('checklist', function ($query, $order) {
-                // Sorting by progressOnboarding is not possible directly in SQL,
-                // so we sort by a related field, e.g., latestEmployeeJob's progress or created_at as a fallback.
-                // Adjust this logic as needed for your data structure.
                 $query->orderBy('created_at', $order);
             })
+            ->addColumn('pre_onboarding', function ($user) {
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+
+                $startDate = Carbon::parse($job->start_date)->startOfDay();
+                $deadline = $startDate->copy()->subDay(); // H-1
+                $completionDate = optional($user->employeeDocs)->last()?->created_at;
+
+                if ($completionDate) {
+                    $completion = Carbon::parse($completionDate)->startOfDay();
+                    if ($completion->lte($deadline)) {
+                        return '<span class="badge bg-success">On Time</span>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($completion);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span>';
+                    }
+                } else {
+                    $now = Carbon::now()->startOfDay();
+                    if ($now->lte($deadline)) {
+                        return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($now);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span>';
+                    }
+                }
+            })
+            ->addColumn('onboarding', function ($user) {
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+
+                $startDate = Carbon::parse($job->start_date)->startOfDay();
+                $deadline = $startDate->copy();
+                $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)->where('status', 'Diterima')?->last()?->updated_at ?? null;
+
+                if ($completionDate) {
+                    $completion = Carbon::parse($completionDate)->startOfDay();
+                    if ($completion->lte($deadline)) {
+                        return '<span class="badge bg-success">On Time</span>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($completion);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span>';
+                    }
+                } else {
+                    $now = Carbon::now()->startOfDay();
+                    if ($now->lte($deadline)) {
+                        return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($now);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span>';
+                    }
+                }
+            })
+            ->addColumn('post_onboarding', function ($user) {
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+
+                $startDate = Carbon::parse($job->start_date)->startOfDay();
+                $deadline = $startDate->copy()->addMonth();
+                $completionDate = optional($user->employeeInventoryNumber)->last()?->created_at;
+
+                if ($completionDate) {
+                    $completion = Carbon::parse($completionDate)->startOfDay();
+                    if ($completion->lte($deadline)) {
+                        return '<span class="badge bg-success">On Time</span>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($completion);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span>';
+                    }
+                } else {
+                    $now = Carbon::now()->startOfDay();
+                    if ($now->lte($deadline)) {
+                        return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($now);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span>';
+                    }
+                }
+            })
+
             ->addColumn('actions', function ($row) {
                 $detailUrl = route('users.details.update', $row->id);
                 $onboardingUrl = route('users.index.onboarding.detail', $row->id);
@@ -80,7 +157,7 @@ class UserBoardingDataTables extends DataTable
 
                 return $buttons;
             })
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'pre_onboarding', 'onboarding', 'post_onboarding'])
         ;
     }
 
@@ -109,21 +186,12 @@ class UserBoardingDataTables extends DataTable
         });
 
         if (request()->input('progressFilter') === 'true') {
-            // $users->whereHas('firstEmployeeJob', function ($qu) {
-            //     $qu->where('employment_status', true)
-            //     ->where('is_onboarding_completed', false);
-            // });
             $users->whereHas('employeeDetail', function ($q) {
                 $q->where('is_draft', 0);
             });
 
             $users = $users->get();
             $users = $users->filter(function ($user) {
-                // if ($user->employeeJob->isNotEmpty()) {
-                //     return true;
-                // }
-                // $progress = optional($user->employeeJob->first());
-                // return $progress < 100;
                 $progress = $user->progressOnboarding();
                 return $progress < 100;
             });
@@ -159,6 +227,9 @@ class UserBoardingDataTables extends DataTable
             Column::make('start_date'),
             Column::make('end_date'),
             Column::make('checklist')->title('Onboarding Progress'),
+            Column::make('pre_onboarding')->title('Pre Onboarding'),
+            Column::make('onboarding')->title('Onboarding'),
+            Column::make('post_onboarding')->title('Post Onboarding'),
             Column::computed('actions')
                 ->title('Actions')
         ];

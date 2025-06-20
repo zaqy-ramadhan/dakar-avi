@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,6 +35,7 @@ class EmployeeJob extends Model
         'is_onboarding_completed',
         'employment_status',
         'work_hour_code_id',
+        'notes'
     ];
 
     protected $casts = [
@@ -91,6 +93,45 @@ class EmployeeJob extends Model
             return 'Tetap';
         } else {
             return 'N/A';
+        }
+    }
+
+    // public function is_active($date = null)
+    // {
+    //     $filterDateStart = $date
+    //         ? \Carbon\Carbon::parse($date)->endOfMonth()->endOfDay()
+    //         : \Carbon\Carbon::now()->endOfMonth()->endOfDay();
+
+    //     $filterDateEnd = $date
+    //         ? \Carbon\Carbon::parse($date)->startOfMonth()->endOfDay()
+    //         : \Carbon\Carbon::now()->startOfMonth()->endOfDay();
+
+    //     $start = \Carbon\Carbon::parse($this->start_date)->startOfDay(); 
+    //     $end = $this->resign_date
+    //         ? \Carbon\Carbon::parse($this->resign_date)->endOfDay()
+    //         : ($this->end_date ? \Carbon\Carbon::parse($this->end_date)->endOfDay() : null);
+
+    //     return $filterDateStart->greaterThanOrEqualTo($start) &&
+    //         (is_null($end) || $filterDateEnd->lessThanOrEqualTo($end));
+    // }
+
+    public function is_active($date = null) 
+    {
+        $carbonDate = $date ? Carbon::parse($date) : Carbon::now();
+
+        $monthStart = $carbonDate->copy()->startOfMonth()->startOfDay();
+        $monthEnd = $carbonDate->copy()->endOfMonth()->endOfDay();
+
+        $start = Carbon::parse($this->start_date)->startOfDay();
+        $end = $this->resign_date
+            ? Carbon::parse($this->resign_date)->endOfDay()
+            : ($this->end_date ? Carbon::parse($this->end_date)->endOfDay() : null);
+
+        if ($start->lessThanOrEqualTo($monthEnd) &&
+            (is_null($end) || $end->greaterThanOrEqualTo($monthStart))) {
+            return 'active';
+        } else {
+            return 'inactive';
         }
     }
 
@@ -267,7 +308,7 @@ class EmployeeJob extends Model
         return $this->belongsTo(Section::class, 'section_id', 'id');
     }
 
-     public function workHour()
+    public function workHour()
     {
         return $this->belongsTo(WorkHour::class, 'work_hour_code_id', 'id');
     }

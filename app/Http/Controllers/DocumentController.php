@@ -340,7 +340,8 @@ class DocumentController extends Controller
             $fullyear = date('Y', strtotime($kontrak->start_date));
 
             if ($kontrak->user_dakar_role !== 'karyawan') {
-                $disnaker = Disnaker::first();
+                // $disnaker = Disnaker::first();
+                $disnaker = null;
                 $hr = User::whereHas('employeeJob.position', function ($query) {
                     $query->where('position_name', 'HR & Legal Section Head');
                 })->first();
@@ -361,22 +362,6 @@ class DocumentController extends Controller
             }
             PDF::setOptions(['isRemoteEnabled' => true]);
             return $pdf->stream($filename);
-
-            // if ($is_admin) {
-            //     PDF::setOptions(['isRemoteEnabled' => true]);
-            //     return $pdf->stream($filename);
-            // } else {
-            //     // Tambahkan proteksi/enkripsi dompdf
-            //     $dompdf = $pdf->getDomPDF();
-            //     $dompdf->render();
-            //     $dompdf->getCanvas()->get_cpdf()->setEncryption(
-            //         'userpass',
-            //         'ownerpass',
-            //         ['print']
-            //     );
-
-            //     return $pdf->stream('kontrak.pdf');
-            // }
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while generating the document: ' . $e->getMessage())->withInput();
         }
