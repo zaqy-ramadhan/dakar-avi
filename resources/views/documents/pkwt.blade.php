@@ -512,14 +512,14 @@
         <div class="signature" style="margin-right: 240px">
             <div>Pihak Pertama,</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}" alt=" "
-                style="width: auto; height: 60px;">
+                style="width: auto; height: 60px; margin-bottom: 20px">
             <div>{{ $hr?->fullname ?? '-' }}</div>
             <div>HRGA & EHS Dept. Head</div>
         </div>
         <div class="signature">
             <div>Pihak Kedua,</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->second_party_signature) }}" alt=" "
-                style="width: auto; height: 60px;">
+                style="width: auto; height: 60px; margin-bottom: 20px;">
             <div>{{ $kontrak->user->fullname }}</div>
         </div>
 

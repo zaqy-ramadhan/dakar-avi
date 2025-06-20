@@ -465,7 +465,7 @@
             <div>Mengetahui dan Mengesahkan,</div>
             <div>Kepala Dinas Tenaga Kerja</div>
             <div>Kabupaten Bogor</div>
-            <div style="height: 60px"></div>
+            <div style="height: 60px;"></div>
             <div>{{ $disnaker?->nama ?? '-' }}</div>
             <div>NIP. {{ $disnaker?->nip ?? '-' }}</div>
         </div>
