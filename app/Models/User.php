@@ -320,6 +320,174 @@ class User extends Authenticatable
         return $progress;
     }
 
+    public function progressOnbaordingEmployee()
+    {
+        $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
+
+        $progress = 0;
+        $message = '🚀 Complete your personal data and supporting documents to start the onboarding process.';
+
+        $personal_status = ($user->employeeDetail ? $user->employeeDetail->is_draft == 0 : false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+        if ($personal_status) {
+            $progress = 25;
+            $message = '🚀 Your Contract will land soon. Stay tuned!';
+        } else {
+            return [
+                'progress' => $progress,
+                'message' => $message,
+            ];
+        }
+
+        $job = $user->firstEmployeeJob;
+        $employment_status = false;
+
+        if ($job && $job->jobDoc->isNotEmpty()) {
+            $contractDoc = $job->jobDoc->firstWhere('type', 'contract');
+            if ($contractDoc && $contractDoc->second_party_signature) {
+                $progress = 50;
+                $message = '🚀 Your Confidentiality Agreement will land soon. Stay tuned!';
+            } else {
+                return [
+                    'progress' => $progress,
+                    'message' => $message,
+                ];
+            }
+        } else {
+            return [
+                'progress' => $progress,
+                'message' => $message,
+            ];
+        }
+
+        $spkDoc = $job->jobDoc->firstWhere('type', 'kerahasiaan');
+        if ($spkDoc && $spkDoc->second_party_signature) {
+            $progress = 75;
+            $message = '🚀 Your Starter Kit Checklist will land soon. Stay tuned!';
+        } else {
+            return [
+                'progress' => $progress,
+                'message' => $message,
+            ];
+        }
+
+        $totalInventory = $job->inventory->where('employee_job_id', $job->id)->count();
+        $acceptedCount = $job->inventory->where('employee_job_id', $job->id)
+            ->where('status', 'accepted')->count();
+        if ($totalInventory > 0 && $acceptedCount === $totalInventory) {
+            $progress = 100;
+            $message = '🎉 Onboarding completed. Welcome aboard!';
+        } else {
+            return [
+                'progress' => $progress,
+                'message' => $message,
+            ];
+        }
+
+        return [
+            'progress' => $progress,
+            'message' => $message,
+        ];
+    }
+
+    public function progressOnboardingAdmin()
+    {
+        $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
+
+        $progress = 0;
+        $message = '🚀 Complete the employment data to start the onboarding process.';
+
+        $personal_status = ($user->employeeDetail ? $user->employeeDetail->is_draft == 0 : false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+        if($personal_status)
+        {
+            $progress = 10;
+        }
+        $hasEmployeeJob = $user->firstEmployeeJob;
+
+        if ($personal_status && $hasEmployeeJob) {
+            $progress = 17;
+            $message = '🚀 Prepare or fill in the wage allowance to continue the onboarding process.';
+        } else {
+            return [
+                'progress' => $progress,
+                'message' => $message,
+            ];
+        }
+
+        $wage = $user->firstEmployeeJob && $user->firstEmployeeJob->jobWageAllowance->isNotEmpty();
+        if ($wage) {
+            $progress = 34;
+            $message = '🚀 Set Starter Kit to continue the onboarding process.';
+        } else {
+            return [
+                'progress' => $progress,
+                'message' => $message,
+            ];
+        }
+
+        $job = $user->firstEmployeeJob;
+        $employment_status = false;
+
+        $totalInventory = $job->inventory->where('employee_job_id', $job->id)->count();
+        if ($totalInventory > 0) {
+            $message = '🚀 Sign the contract to continue the onboarding process.';
+            $progress = 51;
+        } else {
+            return [
+                'progress' => $progress,
+                'message' => $message,
+            ];
+        }
+
+        if ($job && $job->jobDoc->isNotEmpty()) {
+            $contractDoc = $job->jobDoc->firstWhere('type', 'contract');
+            if ($contractDoc && $contractDoc->second_party_signature) {
+                $progress = 68;
+                $message = '🚀 Sign the compensation data to continue the onboarding process.';
+            } else {
+                return [
+                    'progress' => $progress,
+                    'message' => $message,
+                ];
+            }
+        } else {
+            return [
+                'progress' => $progress,
+                'message' => $message,
+            ];
+        }
+
+        $spkDoc = $job->jobDoc->firstWhere('type', 'kompensasi');
+        if ($spkDoc && $spkDoc->second_party_signature) {
+            $progress = 85;
+            $message = '🎉 Set the Digital Account to continue the onboarding process.';
+        } else {
+            return [
+                'progress' => $progress,
+                'message' => $message,
+            ];
+        }
+
+        $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
+        if ($inumber_status) {
+            $progress = 100;
+            $message = '🎉 Onboarding completed!';
+            if ($user->firstEmployeeJob && $user->firstEmployeeJob->is_onboarding_completed == false) {
+                $user->firstEmployeeJob->is_onboarding_completed = true;
+                $user->firstEmployeeJob->save();
+            }
+        } else {
+            return [
+                'progress' => $progress,
+                'message' => $message,
+            ];
+        }
+
+        return [
+            'progress' => $progress,
+            'message' => $message,
+        ];
+    }
+
     public function adminNotif()
     {
         $users = User::whereHas('employeeDetail', function ($q) {
@@ -328,20 +496,26 @@ class User extends Authenticatable
 
         $notif = [
             'personal_completed' => $users->filter(function ($user) {
-                return $user->progressOnboarding() === 10;
+                return $user->progressOnboardingAdmin()['progress'] === 0;
             }),
             'employment_completed' => $users->filter(function ($user) {
-                return $user->progressOnboarding() === 35;
+                return $user->progressOnboardingAdmin()['progress'] === 17;
+            }),
+            'wage_filled' => $users->filter(function ($user) {
+                return $user->progressOnboardingAdmin()['progress'] === 34;
+            }),
+            'contract_signed' => $users->filter(function ($user) {
+                return $user->progressOnboardingAdmin()['progress'] === 51;
+            }),
+            'compensation_signed' => $users->filter(function ($user) {
+                return $user->progressOnboardingAdmin()['progress'] === 68;
             }),
             'starterkit_given' => $users->filter(function ($user) {
-                return $user->progressOnboarding() === 50;
+                return $user->progressOnboardingAdmin()['progress'] === 85;
             }),
-            'starterkit_received' => $users->filter(function ($user) {
-                return $user->progressOnboarding() === 75;
+            'digital_account_given' => $users->filter(function ($user) {
+                return $user->progressOnboardingAdmin()['progress'] === 100;
             }),
-            // 'digitalaccount_received' => $users->filter(function ($user) {
-            //     return $user->progressOnboarding() === 100;
-            // }),
         ];
 
         return $notif;

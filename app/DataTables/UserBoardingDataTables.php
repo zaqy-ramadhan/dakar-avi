@@ -47,9 +47,9 @@ class UserBoardingDataTables extends DataTable
                 });
             })
             ->addColumn('checklist', function ($user) {
-                $progress = $user->progressOnboarding() ?? false;
+                $progress = $user->progressOnboardingAdmin()['progress'] >= 10 ?? false;
                 if ($progress) {
-                    return $user->progressOnboarding() . '%';
+                    return $user->progressOnboardingAdmin()['progress'] . '%';
                 } else {
                     return 'N/A';
                 }
@@ -89,7 +89,11 @@ class UserBoardingDataTables extends DataTable
 
                 $startDate = Carbon::parse($job->start_date)->startOfDay();
                 $deadline = $startDate->copy();
-                $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)->where('status', 'Diterima')?->last()?->updated_at ?? null;
+                $isCompleted = $user->progressOnboardingAdmin()['progress'] === 68 ;
+                $completionDate = null;
+                if ($isCompleted) {
+                    $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)->where('status', 'Diterima')?->last()?->updated_at ?? null;
+                }
 
                 if ($completionDate) {
                     $completion = Carbon::parse($completionDate)->startOfDay();

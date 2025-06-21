@@ -67,6 +67,9 @@
     <div class="row">
         @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
             <p class="fs-8 fw-bold">Welcome {{ Auth::user()->fullname }}</p>
+            <div class="alert alert-warning fade show" role="alert">
+                {{ Auth::user()->progressOnbaordingEmployee()['message'] }}
+           </div>
             <div class="col-lg-5 col-md-12 col-sm-12">
                 <div class="card" style="border-radius: 20px">
                     <div class="card-header">
@@ -75,13 +78,13 @@
                     <div class="card-body">
                         <p class="fw-bolder mb-0">Your first day is on
                             {{ Carbon\Carbon::parse(Auth::user()->join_date)->isoFormat('D MMMM YYYY') }}</p>
-                        @if (Auth::user()->progressOnboarding() > 0)
+                        @if (Auth::user()->progressOnbaordingEmployee()['progress'] > 0)
                             <div class="progress mt-4 mb-3">
                                 <div class="progress-bar" role="progressbar"
-                                    style="width: {{ Auth::user()->progressOnboarding() }}%;"
-                                    aria-valuenow="{{ Auth::user()->progressOnboarding() }}" aria-valuemin="0"
+                                    style="width: {{ Auth::user()->progressOnbaordingEmployee()['progress'] }}%;"
+                                    aria-valuenow="{{ Auth::user()->progressOnbaordingEmployee()['progress'] }}" aria-valuemin="0"
                                     aria-valuemax="100">
-                                    {{ Auth::user()->progressOnboarding() }}%
+                                    {{ Auth::user()->progressOnbaordingEmployee()['progress'] }}%
                                 </div>
                             </div>
                             <p class="text-muted">
@@ -122,19 +125,37 @@
                             <a href="{{ route('users.index.onboarding') }}">
                                 <div class="step-vertical d-flex">
                                     <div class="circle-vertical-container">
-                                        <div class="circle-vertical @if ($employment_status) active @endif"><i
+                                        <div class="circle-vertical @if ($contract_status) active @endif"><i
                                                 class="ti ti-clipboard-text fs-4"></i></div>
                                         <div class="connector-vertical"></div>
                                     </div>
                                     <div class="step-content-vertical ms-3">
-                                        <div class="label-vertical">Document Signature</div>
-                                        @if ($employment_status && !empty($employment_date))
+                                        <div class="label-vertical">Contract Signature</div>
+                                        @if ($contract_status && !empty($contract_date))
                                             <div class="text-muted small">
-                                                {{ \Carbon\Carbon::parse($employment_date)->format('d M Y') }}</div>
+                                                {{ \Carbon\Carbon::parse($contract_date)->format('d M Y') }}</div>
                                         @endif
                                     </div>
                                 </div>
                             </a>
+
+                             <a href="{{ route('users.index.onboarding') }}">
+                                <div class="step-vertical d-flex">
+                                    <div class="circle-vertical-container">
+                                        <div class="circle-vertical @if ($spk_status) active @endif"><i
+                                                class="ti ti-clipboard-text fs-4"></i></div>
+                                        <div class="connector-vertical"></div>
+                                    </div>
+                                    <div class="step-content-vertical ms-3">
+                                        <div class="label-vertical">SPK Signature</div>
+                                        @if ($spk_status && !empty($spk_date))
+                                            <div class="text-muted small">
+                                                {{ \Carbon\Carbon::parse($spk_date)->format('d M Y') }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </a>
+
 
                             <!-- Step 4 -->
                             <a href="{{ route('users.index.onboarding') }}">
@@ -164,7 +185,7 @@
                                                     class="ti ti-apps fs-4"></i></div>
                                         </div>
                                         <div class="step-content-vertical ms-3">
-                                            <div class="label-vertical">Digital Account</div>
+                                            <div class="label-vertical">Waiting for Digital Account</div>
                                             @if ($inumber_status && !empty($inumber_date))
                                                 <div class="text-muted small">
                                                     {{ \Carbon\Carbon::parse($inumber_date)->format('d M Y') }}</div>

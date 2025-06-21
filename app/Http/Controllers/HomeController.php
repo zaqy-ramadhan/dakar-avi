@@ -158,33 +158,40 @@ class HomeController extends Controller
                 $personal_date = optional($user->employeeDetail)->created_at;
 
                 $job = $user->employeeJob->first();
-                $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id);
-                $employment_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
+                $contractDoc = $job->jobDoc->firstWhere('type', 'contract');
+                $contract_status = $contractDoc && $contractDoc->second_party_signature;
+                $contract_date = optional($contractDoc)->created_at;
+
+                $spkDoc = $job->jobDoc->firstWhere('type', 'kerahasiaan');
+                $spk_status = $spkDoc && $spkDoc->second_party_signature;
+                $spk_date = optional($spkDoc)->created_at;
+
+                // $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id);
+                // $employment_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
 
                 $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
                 $inventories_status = false;
                 if ($job && $job->inventory->isNotEmpty()) {
-                    // dd($job->inventory);
                     $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
-                        // dd($item->item->item_name);
                         return !in_array(strtolower($item->item->item_name), $specificItems);
                     });
-                    // dd($nonSpecificInventories);
                     $inventories_status = $nonSpecificInventories->where('status', '-')->isEmpty();
                 }
-                // dd($nonSpecificInventories);
                 $inventories_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->updated_at ?? null;
 
                 $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
-                // dd($user->employeeInventoryNumber->isNotEmpty());
                 $inumber_date = optional($user->employeeInventoryNumber)->last()?->created_at;
 
                 return view('home', compact(
                     'user',
                     'personal_status',
                     'personal_date',
-                    'employment_status',
-                    'employment_date',
+                    'contract_status',
+                    'contract_date',
+                    'spk_status',
+                    'spk_date',
+                    // 'employment_status',
+                    // 'employment_date',
                     'inventories_status',
                     'inventories_date',
                     'inumber_status',
