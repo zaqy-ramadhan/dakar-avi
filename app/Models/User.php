@@ -370,12 +370,18 @@ class User extends Authenticatable
             ];
         }
 
-        $totalInventory = $job->inventory->where('employee_job_id', $job->id)->count();
-        $acceptedCount = $job->inventory->where('employee_job_id', $job->id)
-            ->where('status', 'accepted')->count();
+        // $totalInventory = $job->inventory->where('employee_job_id', $job->id)->count();
+        $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
+        $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
+            return !in_array(strtolower($item->item->item_name), $specificItems);
+        });
+        $totalInventory = $nonSpecificInventories->count();
+
+        $acceptedCount = $nonSpecificInventories->where('employee_job_id', $job->id)
+            ->where('status', 'Diterima')->count();
         if ($totalInventory > 0 && $acceptedCount === $totalInventory) {
             $progress = 100;
-            $message = '🎉 Onboarding completed. Welcome aboard!';
+            $message = '🎉 Your onboarding tasks have been completed. Welcome aboard!';
         } else {
             return [
                 'progress' => $progress,
@@ -397,8 +403,7 @@ class User extends Authenticatable
         $message = '🚀 Complete the employment data to start the onboarding process.';
 
         $personal_status = ($user->employeeDetail ? $user->employeeDetail->is_draft == 0 : false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
-        if($personal_status)
-        {
+        if ($personal_status) {
             $progress = 10;
         }
         $hasEmployeeJob = $user->firstEmployeeJob;

@@ -611,7 +611,7 @@
                                         onclick="event.stopPropagation();">
                                         @if (Auth::user()->progressOnbaordingEmployee()['progress'] > 0)
                                             <p class="text-muted">
-                                                <span>Onboarding Progress</span>
+                                                <span>{{ Auth::user()->progressOnbaordingEmployee()['message'] }}</span>
                                             </p>
                                             <div class="progress">
                                                 <div class="progress-bar" role="progressbar"

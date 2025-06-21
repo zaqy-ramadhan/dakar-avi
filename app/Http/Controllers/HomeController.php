@@ -175,7 +175,8 @@ class HomeController extends Controller
                     $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
                         return !in_array(strtolower($item->item->item_name), $specificItems);
                     });
-                    $inventories_status = $nonSpecificInventories->where('status', '-')->isEmpty();
+                    $inventories_status = $nonSpecificInventories->where('status', 'Diterima')->isNotEmpty();
+                    // dd($nonSpecificInventories->where('status', 'Diterima'));
                 }
                 $inventories_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->updated_at ?? null;
 
