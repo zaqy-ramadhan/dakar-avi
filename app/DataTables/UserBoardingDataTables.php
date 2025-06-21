@@ -92,7 +92,7 @@ class UserBoardingDataTables extends DataTable
                 $isCompleted = $user->progressOnboardingAdmin()['progress'] === 68 ;
                 $completionDate = null;
                 if ($isCompleted) {
-                    $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)->where('status', 'Diterima')?->last()?->updated_at ?? null;
+                    $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at ?? null;
                 }
 
                 if ($completionDate) {
