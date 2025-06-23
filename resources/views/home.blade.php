@@ -67,10 +67,14 @@
     <div class="row">
         @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
             <p class="fs-8 fw-bold">Welcome {{ Auth::user()->fullname }}</p>
+            @if(Auth::user()->progressOnbaordingEmployee()['progress'] == 100)
+            <div class="alert alert-success fade show" role="alert">
+            @else
             <div class="alert alert-warning fade show" role="alert">
+            @endif
                 {{ Auth::user()->progressOnbaordingEmployee()['message'] }}
            </div>
-            <div class="col-lg-5 col-md-12 col-sm-12">
+            <div class="col-lg-7 col-md-12 col-sm-12">
                 <div class="card" style="border-radius: 20px">
                     <div class="card-header">
                         <p class="fs-6 fw-bold">Onboarding Progress</p>
@@ -198,19 +202,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12 col-lg-7 col-sm-12 row d-flex justify-content-between">
+            <div class="col-md-12 col-lg-5 col-sm-12 row d-flex justify-content-between">
                 <div class="col">
                     @include('admin.users.dashboardCard')
-                </div>
-                <div class="col">
-                    <div class="card" style="border-radius:20px">
-                        <div class="card-header">
-                            <p class="fs-6 fw-bold">HR Contact</p>
-                        </div>
-                        <div class="card-body">
-                            <p><i class="ti ti-brand-whatsapp fs-4"></i> 087874911618 - ( Sadtu Risdiyati ) </p>
-                            <p><i class="ti ti-brand-whatsapp fs-4"></i> 08988573497 - ( Risyad Syaifatul )</p>
-                            <p><i class="ti ti-mail fs-4"></i>admin.hr@astra-visteon.com</p>
+                    <div class="col">
+                        <div class="card" style="border-radius:20px">
+                            <div class="card-header">
+                                <p class="fs-6 fw-bold">HR Contact</p>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="ti ti-brand-whatsapp fs-4"></i> 087874911618 - ( Sadtu Risdiyati ) </p>
+                                <p><i class="ti ti-brand-whatsapp fs-4"></i> 08988573497 - ( Risyad Syaifatul )</p>
+                                <p><i class="ti ti-mail fs-4"></i>admin.hr@astra-visteon.com</p>
+                            </div>
                         </div>
                     </div>
                 </div>

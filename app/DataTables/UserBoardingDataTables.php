@@ -196,7 +196,7 @@ class UserBoardingDataTables extends DataTable
 
             $users = $users->get();
             $users = $users->filter(function ($user) {
-                $progress = $user->progressOnboarding();
+                $progress = $user->progressOnboardingAdmin()['progress'];
                 return $progress < 100;
             });
         }

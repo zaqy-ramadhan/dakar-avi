@@ -405,7 +405,9 @@ class User extends Authenticatable
         $personal_status = ($user->employeeDetail ? $user->employeeDetail->is_draft == 0 : false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
         if ($personal_status) {
             $progress = 10;
+            $message = '🚀 Prepare or fill the employment data to continue the onboarding process.';
         }
+
         $hasEmployeeJob = $user->firstEmployeeJob;
 
         if ($personal_status && $hasEmployeeJob) {
@@ -445,7 +447,7 @@ class User extends Authenticatable
 
         if ($job && $job->jobDoc->isNotEmpty()) {
             $contractDoc = $job->jobDoc->firstWhere('type', 'contract');
-            if ($contractDoc && $contractDoc->second_party_signature) {
+            if ($contractDoc && $contractDoc->first_party_signature) {
                 $progress = 68;
                 $message = '🚀 Sign the compensation data to continue the onboarding process.';
             } else {
@@ -462,7 +464,7 @@ class User extends Authenticatable
         }
 
         $spkDoc = $job->jobDoc->firstWhere('type', 'kompensasi');
-        if ($spkDoc && $spkDoc->second_party_signature) {
+        if ($spkDoc && $spkDoc->first_party_signature) {
             $progress = 85;
             $message = '🎉 Set the Digital Account to continue the onboarding process.';
         } else {
@@ -509,13 +511,13 @@ class User extends Authenticatable
             'wage_filled' => $users->filter(function ($user) {
                 return $user->progressOnboardingAdmin()['progress'] === 34;
             }),
-            'contract_signed' => $users->filter(function ($user) {
+            'starterkit_given' => $users->filter(function ($user) {
                 return $user->progressOnboardingAdmin()['progress'] === 51;
             }),
-            'compensation_signed' => $users->filter(function ($user) {
+            'contract_signed' => $users->filter(function ($user) {
                 return $user->progressOnboardingAdmin()['progress'] === 68;
             }),
-            'starterkit_given' => $users->filter(function ($user) {
+            'compensation_signed' => $users->filter(function ($user) {
                 return $user->progressOnboardingAdmin()['progress'] === 85;
             }),
             'digital_account_given' => $users->filter(function ($user) {
@@ -524,5 +526,49 @@ class User extends Authenticatable
         ];
 
         return $notif;
+    }
+
+    public function rule()
+    {
+        $rule = null;
+        if ($this->dakarRole) {
+            $employeeJob = optional($this->employeeJob)->last();
+            if ($employeeJob) {
+                $ruleQuery = InventoryRule::where('dakar_role_id', $this->getRoleId());
+                if ($employeeJob->department_id) {
+                    $ruleQuery->whereHas('department', function ($q) use ($employeeJob) {
+                        $q->where('dakar_departments.id', $employeeJob->department_id);
+                    });
+                }
+                $rule = $ruleQuery->first();
+            }
+        }
+        return $rule;
+    }
+
+    public function items()
+    {
+        $rule = $this->rule();
+        return $rule ? $rule->items->map(function ($item) {
+            $size = '';
+            if (strpos(strtolower($item->item_name), 'eragam esd') !== false) {
+                $size = $this->employeeDetail->esd_uniform_size ?? 'Default Size';
+            } elseif (strpos(strtolower($item->item_name), 'sepatu esd') !== false) {
+                $size = $this->employeeDetail->esd_shoes_size ?? 'Default Size';
+            } elseif (strpos(strtolower($item->item_name), 'biru') !== false) {
+                $size = $this->employeeDetail->blue_uniform_size ?? 'Default Size';
+            } elseif (strpos(strtolower($item->item_name), 'polo') !== false) {
+                $size = $this->employeeDetail->polo_shirt_size ?? 'Default Size';
+            } elseif (strpos(strtolower($item->item_name), 'safety') !== false) {
+                $size = $this->employeeDetail->safety_shoes_size ?? 'Default Size';
+            } else {
+                $size = '-';
+            }
+            return [
+                'id' => $item->id,
+                'name' => $item->item_name,
+                'size' => $size,
+            ];
+        }) : [];
     }
 }

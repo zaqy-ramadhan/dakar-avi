@@ -34,15 +34,6 @@ class EmploymentController extends Controller
             $id = $id ?? Auth::id();
 
             $user = User::with('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob')->findOrFail($id);
-            // $jobWageAllowance = JobWageAllowance::where('employee_job_id', optional($user->latestEmployeeJob)->id)->get();
-
-            // if ($jobWageAllowance === null || $jobWageAllowance->count() <= 0) {
-            //     $jobWageAllowance = collect([
-            //         ['type' => 'Gaji Pokok', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
-            //         ['type' => 'Tunjangan Transport', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
-            //         ['type' => 'Tunjangan Makan', 'amount' => '', 'calculation' => 'Per Month', 'status' => 'Gross'],
-            //     ]);
-            // }
 
             $inventories = $user->inventory->map(function ($inventory) {
                 return [
@@ -61,50 +52,8 @@ class EmploymentController extends Controller
             })->sortBy('item_id')->values();
             // dd($inventories);
 
-            $rule = null;
-            if ($user->dakarRole) {
-                $employeeJob = optional($user->employeeJob)->last();
-                if ($employeeJob) {
-                    $ruleQuery = InventoryRule::where('dakar_role_id', $user->getRoleId());
-                    if ($employeeJob->department_id) {
-                        $ruleQuery->whereHas('department', function ($q) use ($employeeJob) {
-                            $q->where('dakar_departments.id', $employeeJob->department_id);
-                        });
-                    }
-                    // if ($employeeJob->department_id) {
-                    //     $ruleQuery->where('department_id', $employeeJob->department_id);
-                    // }
-                    // if ($employeeJob->role_level_id) {
-                    //     $ruleQuery->Where('level_id', $employeeJob->role_level_id);
-                    // }
-                    // if ($employeeJob->job_status) {
-                    //     $ruleQuery->Where('job_status', $employeeJob->job_status);
-                    // }
-                    $rule = $ruleQuery->first();
-                }
-            }
-
-            $items = $rule ? $rule->items->map(function ($item) use ($user) {
-                $size = '';
-                if (strpos(strtolower($item->item_name), 'eragam esd') !== false) {
-                    $size = $user->employeeDetail->esd_uniform_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'sepatu esd') !== false) {
-                    $size = $user->employeeDetail->esd_shoes_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'biru') !== false) {
-                    $size = $user->employeeDetail->blue_uniform_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'polo') !== false) {
-                    $size = $user->employeeDetail->polo_shirt_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'safety') !== false) {
-                    $size = $user->employeeDetail->safety_shoes_size ?? 'Default Size';
-                } else {
-                    $size = '-';
-                }
-                return [
-                    'id' => $item->id,
-                    'name' => $item->item_name,
-                    'size' => $size,
-                ];
-            }) : [];
+            $rule = $user->rule();
+            $items = $user->items();
 
             $costCenters = CostCenter::all();
             $levels = Level::all();

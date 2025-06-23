@@ -4,6 +4,18 @@
     <style>
         .step-container {
             position: relative;
+            overflow-x: auto;
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 0.5rem;
+        }
+
+        .step-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .step-container::-webkit-scrollbar-thumb {
+            background: #dee2e6;
+            border-radius: 3px;
         }
 
         .step-container::before {
@@ -20,7 +32,8 @@
         .step {
             position: relative;
             z-index: 1;
-            flex: 1;
+            flex: 0 0 auto;
+            min-width: 120px;
         }
 
         .circle {
@@ -77,7 +90,19 @@
                 <div class="label">
                     Employment
                     @if ($employment_status && !empty($employment_date))
-                        <div class="text-muted small">{{ \Carbon\Carbon::parse($employment_date)->format('d M Y') }}
+                        <div class="text-muted small">{{ $employment_date->format('d M Y') }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="step text-center">
+                <div class="circle @if ($contract_status) active @endif"><i class="ti ti-signature"></i>
+                </div>
+                <div class="label">
+                    Contract Signature
+                    @if ($contract_status && !empty($contract_date))
+                        <div class="text-muted small">{{ $contract_date->format('d M Y') }}
                         </div>
                     @endif
                 </div>
@@ -177,15 +202,14 @@
             @if (optional($user->firstEmployeeJob)->user_dakar_role === 'karyawan')
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#ga" type="button"
-                        role="tab" aria-controls="ga" aria-selected="false">Kepesertaan & Akun Digital</button>
+                        role="tab" aria-controls="ga" aria-selected="false">Digital Account</button>
                 </li>
             @endif
         @elseif(Request::is('*employment*'))
             @if (optional($user->latestEmployeeJob)->user_dakar_role === 'karyawan')
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#ga"
-                        type="button" role="tab" aria-controls="ga" aria-selected="false">Kepesertaan & Akun
-                        Digital</button>
+                        type="button" role="tab" aria-controls="ga" aria-selected="false">Digital Account</button>
                 </li>
             @endif
         {{-- @elseif (Request::is('*offboarding*'))

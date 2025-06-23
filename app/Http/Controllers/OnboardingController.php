@@ -22,6 +22,7 @@ use App\Models\Line;
 use App\Models\Position;
 use App\Models\User;
 use App\Models\WorkHour;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -50,12 +51,18 @@ class OnboardingController extends Controller
 
             //progress
 
-            $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft == 0) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+            $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft === false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
             $personal_date = optional($user->employeeDocs)->last()?->created_at;
 
-            $job = $user->employeeJob->first();
+            $job = $user->firstEmployeeJob;
             $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id);
-            $employment_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
+            // $employment_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
+            $employment_date = optional($job?->created_at);
+
+            $contractDoc = ($job?->jobDoc?->where('first_party_signature', true)?->firstWhere('type', 'contract'));
+            $contract_status = (bool) $contractDoc;
+            $contract_date = $contractDoc?->created_at;
+            // dd($contractDoc);
 
             $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
             $inventories_status = false;
@@ -95,41 +102,8 @@ class OnboardingController extends Controller
                 $previousRole = in_array(strtolower($role), ['pemagangan', 'internship']);
             }
 
-            $rule = null;
-            if ($user->dakarRole) {
-                $employeeJob = optional($user->employeeJob)->last();
-                if ($employeeJob) {
-                    $ruleQuery = InventoryRule::where('dakar_role_id', $user->getRoleId());
-                    if ($employeeJob->department_id) {
-                        $ruleQuery->whereHas('department', function ($q) use ($employeeJob) {
-                            $q->where('dakar_departments.id', $employeeJob->department_id);
-                        });
-                    }
-                    $rule = $ruleQuery->first();
-                }
-            }
-
-            $items = $rule ? $rule->items->map(function ($item) use ($user) {
-                $size = '';
-                if (strpos(strtolower($item->item_name), 'eragam esd') !== false) {
-                    $size = $user->employeeDetail->esd_uniform_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'sepatu esd') !== false) {
-                    $size = $user->employeeDetail->esd_shoes_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'biru') !== false) {
-                    $size = $user->employeeDetail->blue_uniform_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'polo') !== false) {
-                    $size = $user->employeeDetail->polo_shirt_size ?? 'Default Size';
-                } elseif (strpos(strtolower($item->item_name), 'safety') !== false) {
-                    $size = $user->employeeDetail->safety_shoes_size ?? 'Default Size';
-                } else {
-                    $size = '-';
-                }
-                return [
-                    'id' => $item->id,
-                    'name' => $item->item_name,
-                    'size' => $size,
-                ];
-            }) : [];
+            $rule = $user->rule();
+            $items = $user->items();
 
             $costCenters = CostCenter::all();
             $levels = Level::all();
@@ -198,6 +172,8 @@ class OnboardingController extends Controller
                 'personal_date',
                 'employment_status',
                 'employment_date',
+                'contract_status',
+                'contract_date',
                 'inventories_status',
                 'inventories_date',
                 'inumber_status',
