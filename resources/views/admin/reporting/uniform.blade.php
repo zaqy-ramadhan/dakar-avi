@@ -27,6 +27,7 @@
                             <th>NPK</th>
                             <th>Name</th>
                             <th>Department</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,6 +37,11 @@
                                 <td>{{ $employee['npk'] }}</td>
                                 <td>{{ $employee['name'] }}</td>
                                 <td>{{ $employee['department'] }}</td>
+                                <td>
+                                    <a href="{{ route('users.index.employment.detail', $employee['id']) }}"
+                                        class="btn btn-sm btn-outline-primary"><i
+                                            class="ti ti-clipboard-list fs-6"></i></a>
+                                </td>
                             </tr>
                         @empty
                             <tr>

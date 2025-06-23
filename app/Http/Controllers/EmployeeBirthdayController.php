@@ -34,6 +34,7 @@ class EmployeeBirthdayController extends Controller
                 $job = $user && $user->employeeJob ? $user->employeeJob->last() : null;
 
                 return [
+                    'id' => $user ? $user->id : 'N/A',
                     'npk' => $user ? $user->npk : 'N/A',
                     'name' => $user ? $user->fullname : 'N/A',
                     'status_karyawan' => $job ? $job->job_status : 'N/A',
