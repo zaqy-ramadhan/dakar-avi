@@ -22,7 +22,7 @@ class CheckEmployeeEmploymentStatus
             $sksmk = JobDoc::where('employee_job_id', $employeeJob->id)->where('type', 'sksmk')->first();
 
             $isEmployed = $employeeJob->employment_status;
-            $isOffboarded = $employeeOffboarding->exit_interview;
+            $isOffboarded = $employeeOffboarding?->exit_interview;
 
             if (!$isEmployed && $isOffboarded && !$paklaring && !$sksmk) {
                 Auth::logout();
