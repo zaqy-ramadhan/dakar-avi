@@ -33,16 +33,16 @@ class DocumentController extends Controller
     }
 
 
-    public function indexJobDocs(UserDataTables $dataTable)
-    {
-        if (Auth::user()->getRole() !== 'admin') {
-            $user = User::with('employeeJob')->findOrFail(Auth::user()->id);
-            return view('admin.job_documents.details', compact('user'));
-        }
+    // public function indexJobDocs(UserDataTables $dataTable)
+    // {
+    //     if (Auth::user()->getRole() !== 'admin') {
+    //         $user = User::with('employeeJob')->findOrFail(Auth::user()->id);
+    //         return view('admin.job_documents.details', compact('user'));
+    //     }
 
-        $roles = DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get();
-        return $dataTable->render('admin.job_documents.index', compact('roles'));
-    }
+    //     $roles = DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get();
+    //     return $dataTable->render('admin.job_documents.index', compact('roles'));
+    // }
 
     public function jobDocsDetail(JobEmploymentDataTables $datatTable, $id)
     {

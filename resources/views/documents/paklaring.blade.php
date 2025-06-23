@@ -263,7 +263,7 @@
         <p class="to">Per tanggal @php
             $endDate = $kontrak->resign_date ?? $kontrak->end_date;
         @endphp
-            {{ $endDate ? \Carbon\Carbon::parse($endDate)->isoFormat('D MMMM Y') : '' }}, sudah tidak bekerja / keluar
+            {{ $endDate ? \Carbon\Carbon::parse($endDate)->addDay()->isoFormat('D MMMM Y') : '' }}, sudah tidak bekerja / keluar
             dari PT. Astra Visteon Indonesia.</p>
         <p class="to">Demikian kami sampaikan, atas perhatian dan kerjasamanya kami ucapkan terima kasih.</p>
         <br>
