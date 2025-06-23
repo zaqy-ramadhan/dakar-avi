@@ -248,10 +248,10 @@ class JobEmploymentDataTables extends DataTable
                                   <div class="col-sm-12 mb-3">
                                     <input type="date" class="form-control" id="resign_date_' . $job->id . '" name="resign_date"
                                       value="' . (optional(optional($job->user->offboarding)->resign_date)->format('Y-m-d') ?? '') . '"
-                                      ' . (Auth::user()->getRole() != 'admin' ? 'readonly' : '') . '>
+                                      ' . (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']) ? 'readonly' : '') . '>
                                   </div>
                                   <button type="submit" class="btn btn-primary"
-                                    ' . (Auth::user()->getRole() != 'admin' ? 'hidden' : '') . '>Submit</button>
+                                    ' . (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']) ? 'hidden' : '') . '>Submit</button>
                                 </form>
                               </div>
                             </div>

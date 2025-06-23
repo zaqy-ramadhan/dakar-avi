@@ -105,7 +105,9 @@ class UsersController extends Controller
                     }
                 }
 
-                $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft === false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+                // $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft === false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+                $personal_status = ($user->employeeDetail) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+                // dd($personal_status);
                 $personal_date = optional($user->employeeDocs)->last()?->created_at;
 
                 $job = $user->employeeJob->first();
