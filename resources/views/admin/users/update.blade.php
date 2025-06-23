@@ -3,7 +3,7 @@
 @section('content')
     <div class="card" style="border-radius: 20px">
         <div class="card-header">
-            <p class="fs-8 fw-bold">User Details</p>
+            <p class="fs-8 fw-bold">Personal Data</p>
         </div>
 
         <div class="card-body">

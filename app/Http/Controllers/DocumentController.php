@@ -175,7 +175,7 @@ class DocumentController extends Controller
                 $query->where('position_name', 'HRGA & EHS Department Head');
             })->first();
 
-            $offboarding = Offboarding::where('user_id', $kontrak->user_id)->latest() ?? null;
+            $offboarding = Offboarding::where('user_id', $kontrak->user_id)->latest()->first() ?? null;
 
             $jobDoc = JobDoc::where('employee_job_id', $kontrak->id)->where('type', 'paklaring')->first() ?? null;
             $is_admin = in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']);;
@@ -224,7 +224,7 @@ class DocumentController extends Controller
                 $query->where('position_name', 'HRGA & EHS Department Head');
             })->first();
 
-            $offboarding = Offboarding::where('user_id', $kontrak->user_id)->latest();
+            $offboarding = Offboarding::where('user_id', $kontrak->user_id)->latest()->first();
 
             $jobDoc = JobDoc::where('employee_job_id', $kontrak->id)->where('type', 'paklaring')->first() ?? null;
             $is_admin = in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']);;

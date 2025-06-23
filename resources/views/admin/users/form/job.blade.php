@@ -13,6 +13,7 @@
         .step-container::-webkit-scrollbar {
             height: 6px;
         }
+
         .step-container::-webkit-scrollbar-thumb {
             background: #dee2e6;
             border-radius: 3px;
@@ -121,7 +122,8 @@
             </div>
             @if (optional($user->firstEmployeeJob)->user_dakar_role === 'karyawan')
                 <div class="step text-center">
-                    <div class="circle @if ($inumber_status) active @endif"><i class="ti ti-apps"></i></div>
+                    <div class="circle @if ($inumber_status) active @endif"><i class="ti ti-apps"></i>
+                    </div>
                     <div class="label">
                         Digital Account
                         @if ($inumber_status && !empty($inumber_date))
@@ -164,32 +166,45 @@
         @endif
         @if (Request::is('*onboarding*') && in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
             @php
-            $subGolongan = optional(optional($user->firstEmployeeJob)->subGolongan)->sub_golongan_name;
-            $userRole = Auth::user()->getRole();
-            $allowWageTab = false;
+                $subGolongan = optional(optional($user->firstEmployeeJob)->subGolongan)->sub_golongan_name;
+                $userRole = Auth::user()->getRole();
+                $allowWageTab = false;
 
-            if (in_array($subGolongan, ['4 A'])) {
-                if (in_array($userRole, ['admin', 'admin 2'])) {
-                $allowWageTab = true;
+                if (in_array($subGolongan, ['4 A'])) {
+                    if (in_array($userRole, ['admin', 'admin 2'])) {
+                        $allowWageTab = true;
+                    }
+                } elseif (
+                    in_array($subGolongan, [
+                        '4 B',
+                        '4 C',
+                        '4 D',
+                        '4 E',
+                        '4 F',
+                        '5 A',
+                        '5 B',
+                        '5 C',
+                        '5 D',
+                        '6 A',
+                        '6 B',
+                        '6 C',
+                        '6 D',
+                    ])
+                ) {
+                    if ($userRole === 'admin') {
+                        $allowWageTab = true;
+                    }
+                } else {
+                    if (in_array($userRole, ['admin', 'admin 1', 'admin 2'])) {
+                        $allowWageTab = true;
+                    }
                 }
-            } elseif (in_array($subGolongan, [
-                '4 B', '4 C', '4 D', '4 E', '4 F', '5 A', '5 B', '5 C', '5 D',
-                '6 A', '6 B', '6 C', '6 D'
-            ])) {
-                if ($userRole === 'admin') {
-                $allowWageTab = true;
-                }
-            } else {
-                if (in_array($userRole, ['admin', 'admin 1', 'admin 2'])) {
-                $allowWageTab = true;
-                }
-            }
             @endphp
             @if ($user->firstEmployeeJob && $allowWageTab)
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="wage-tab" data-bs-toggle="tab" data-bs-target="#wage" type="button"
-                role="tab" aria-controls="wage" aria-selected="false">Wage/Allowance</button>
-            </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="wage-tab" data-bs-toggle="tab" data-bs-target="#wage" type="button"
+                        role="tab" aria-controls="wage" aria-selected="false">Wage/Allowance</button>
+                </li>
             @endif
         @endif
         <li class="nav-item" role="presentation">
@@ -209,14 +224,15 @@
             @if (optional($user->latestEmployeeJob)->user_dakar_role === 'karyawan')
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#ga"
-                        type="button" role="tab" aria-controls="ga" aria-selected="false">Digital Account</button>
+                        type="button" role="tab" aria-controls="ga" aria-selected="false">Digital
+                        Account</button>
                 </li>
             @endif
-        {{-- @elseif (Request::is('*offboarding*'))
-              <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="exit-intv-tab" data-bs-toggle="tab" data-bs-target="#exit"
-                        type="button" role="tab" aria-controls="exit" aria-selected="false">Exit Interview</button>
-                </li> --}}
+        @elseif (Request::is('*offboarding*'))
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="exit-intv-tab" data-bs-toggle="tab" data-bs-target="#exit"
+                    type="button" role="tab" aria-controls="exit" aria-selected="false">Exit Interview</button>
+            </li>
         @endif
     @endif
 </ul>
@@ -286,6 +302,25 @@
         @include('admin.users.form.inventoryNumber')
     </div>
 @endif
+
+@if (Request::is('*offboarding*'))
+    <div class="tab-pane py-4 px-2 fade" id="exit" role="tabpanel" aria-labelledby="exit">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfFq_-XYzyZbe9ZCzXijt1YaLoPeR-LZljjH5moqu8WVvb-Wg/viewform?usp=preview"
+            target="_blank" class="btn btn-primary mb-3">
+            <i class="ti ti-list-check fs-4"></i> Exit Interview (Google Form)
+        </a>
+        <div class="form-check">
+            {{-- @dd($user->offboarding) --}}
+            <input class="form-check-input" type="checkbox" value="0" id="exit_gform_checked"
+                name="exit_gform" @if (optional($user->offboarding)->exit_interview) checked @endif>
+            <label class="form-check-label" for="exit_gform_checked">
+                I have completed the Google Form Exit Interview
+            </label>
+        </div>
+    </div>
+@endif
+
+
 {{-- {{ dd($user->latestEmployeeJob->is_active()) }} --}}
 {{-- {{ request()->route()->getName() }} --}}
 
@@ -650,6 +685,32 @@
             //     departmentInput.val(selectedOption.data("department") || "");
             //     divisionInput.val(selectedOption.data("division") || "");
             // });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkbox = document.getElementById('exit_gform_checked');
+
+            checkbox.addEventListener('change', function() {
+                fetch("{{ route('offboarding.exit-interview', $user->id) }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            exit_gform: this.checked ? 1 : 0
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Optional: Tampilkan notifikasi sukses
+                        console.log("Status updated");
+                    })
+                    .catch(error => {
+                        console.error("Error updating status:", error);
+                    });
+            });
         });
     </script>
 @endpush

@@ -19,11 +19,10 @@
                             <label for="amount_{{ $index }}" class="form-label">Amount</label>
                             @php
                                 $amountValue = old('amount.' . $index, $allowance['amount']);
-                                $amountValue = is_numeric($amountValue) ? (float) $amountValue : 0;
                             @endphp
 
                             <input type="text" class="form-control amount-input" id="amount_{{ $index }}"
-                                name="amount[]" value="{{ number_format($amountValue, 0, ',', '.') }}"
+                                name="amount[]" value="{{ $amountValue }}"
                                 @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])) disabled @endif>
 
                             @error('amount.' . $index)
@@ -90,12 +89,12 @@
                     let newEntry = document.getElementById("wage_allowance_0").cloneNode(true);
                     newEntry.id = "wage_allowance_" + wageAllowanceCount;
 
-                    // Update input names and clear values
-                    let inputs = newEntry.querySelectorAll("input, select");
-                    inputs.forEach(input => {
-                        input.name = input.name.replace(/\[\d+\]/, `[${wageAllowanceCount}]`);
-                        input.value = ""; // Clear input values
-                    });
+                    // // Update input names and clear values
+                    // let inputs = newEntry.querySelectorAll("input, select");
+                    // inputs.forEach(input => {
+                    //     input.name = input.name.replace(/\[\d+\]/, `[${wageAllowanceCount}]`);
+                    //     input.value = ""; // Clear input values
+                    // });
 
                     wageAllowanceContainer.appendChild(newEntry);
                     wageAllowanceCount++;
@@ -116,12 +115,12 @@
             });
         });
     </script>
-    <script>
+    {{-- <script>
         document.querySelectorAll('.amount-input').forEach(function(input) {
             input.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\./g, '').replace(/\D/g, '');
                 e.target.value = new Intl.NumberFormat('id-ID').format(value);
             });
         });
-    </script>
+    </script> --}}
 @endpush

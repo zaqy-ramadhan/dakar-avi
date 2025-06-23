@@ -240,7 +240,7 @@
                     :
                 </td>
                 <td>
-                    {{ optional($kontrak->user->employeeDetail)->birth_date }}
+                    {{ optional(optional($kontrak->user->employeeDetail)->birth_date ? \Carbon\Carbon::parse($kontrak->user->employeeDetail->birth_date) : null)->isoFormat('D MMMM Y') }}
                 </td>
             </tr>
 
@@ -310,7 +310,7 @@
                     <li>{{ $wage->type . ' : UMSK Kab. Bogor'  }}
                     </li>
                     @else
-                    <li>{{ $wage->type . ' : ' . number_format($wage->amount, 0, ',', '.') . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
+                    <li>{{ $wage->type . ' : ' . $wage->amount . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
                     </li>
                     @endif
                 @else

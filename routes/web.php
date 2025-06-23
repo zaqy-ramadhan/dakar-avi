@@ -45,7 +45,7 @@ Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLogi
 Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('active_employee');
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home.index');
 
 
@@ -64,7 +64,7 @@ Route::get('api/v1/department/{id}', [ApiDepartmentController::class, 'show']);
 Route::get('api/v1/position', [ApiPositionController::class, 'index']);
 Route::get('api/v1/position/{id}', [ApiPositionController::class, 'show']);
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->middleware('active_employee')->group(function () {
 
     Route::middleware(['role:admin,admin 2,admin 3,admin 4'])->group(function () {
 
@@ -193,6 +193,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/off', function (UserOffboardingDataTables $dataTable) {
         return $dataTable->render('admin.users.user');
     })->name('user.offboarding');
+
+    Route::post('/offboarding/{id}/exit-interview', [OffboardingController::class, 'exitIntv'])->name('offboarding.exit-interview');
 
 
     //dakar form

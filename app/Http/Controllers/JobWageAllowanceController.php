@@ -96,11 +96,11 @@ class JobWageAllowanceController extends Controller
             if ($type === null) {
                 continue;
             }
-            $amount = str_replace('.', '', $request->amount[$index]);
+            $amount = $request->amount[$index];
             JobWageAllowance::create([
                 'employee_job_id' => $jobEmploymentId,
                 'type' => $type,
-                'amount' => (int)$amount,
+                'amount' => $amount,
                 'calculation' => $request->calculation[$index],
                 'status' => $request->status[$index],
             ]);

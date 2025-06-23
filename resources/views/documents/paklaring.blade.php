@@ -184,12 +184,11 @@
                 <td>Masa kerja</td>
                 <td class="space">:</td>
                 <td>
-                    {{ $kontrak->start_date ? $kontrak->start_date->isoFormat('D MMMM Y') : '-' }}
-                    -
+                    {{ $kontrak->start_date ? \Carbon\Carbon::parse($kontrak->start_date)->isoFormat('D MMMM Y') : '-' }} -
                     @php
                         $endDate = $kontrak->resign_date ?? $kontrak->end_date;
                     @endphp
-                    {{ $endDate ? $endDate->isoFormat('D MMMM Y') : '' }}
+                    {{ $endDate ? \Carbon\Carbon::parse($endDate)->isoFormat('D MMMM Y') : '' }}
                 </td>
                 </td>
             </tr>
@@ -199,6 +198,7 @@
             <tr>
                 <td>Alasan berhenti</td>
                 <td class="space">:</td>
+                {{-- @dd($offboarding->reason) --}}
                 <td>{{ optional($offboarding)->reason ?? ' - ' }}</td>
             </tr>
             <tr>
@@ -213,7 +213,7 @@
             <div>Citeureup, @php
                 $endDate = $kontrak->resign_date ?? $kontrak->end_date;
             @endphp
-                {{ $endDate ? $endDate->isoFormat('D MMMM Y') : '' }}</div>
+                {{ $endDate ? \Carbon\Carbon::parse($endDate)->isoFormat('D MMMM Y') : '' }}</div>
             <div>Hormat kami,</div>
             <div class="signature">
                 <img src="{{ public_path('storage/' . $jobDoc?->first_party_signature) }}" alt=" "
@@ -232,7 +232,7 @@
         <p style="float: right">Citeureup, @php
             $endDate = $kontrak->resign_date ?? $kontrak->end_date;
         @endphp
-            {{ $endDate ? $endDate->isoFormat('D MMMM Y') : '' }}</p>
+            {{ $endDate ? \Carbon\Carbon::parse($endDate)->isoFormat('D MMMM Y') : '' }}</p>
         <br style="clear: both; height: 5px;">
         <div>
             <p class="to">Kepada Yth,</p>
@@ -263,15 +263,19 @@
         <p class="to">Per tanggal @php
             $endDate = $kontrak->resign_date ?? $kontrak->end_date;
         @endphp
-            {{ $endDate ? $endDate->isoFormat('D MMMM Y') : '' }}, sudah tidak bekerja / keluar
+            {{ $endDate ? \Carbon\Carbon::parse($endDate)->isoFormat('D MMMM Y') : '' }}, sudah tidak bekerja / keluar
             dari PT. Astra Visteon Indonesia.</p>
         <p class="to">Demikian kami sampaikan, atas perhatian dan kerjasamanya kami ucapkan terima kasih.</p>
         <br>
         <div class="signature-section">
-            <div>Citeureup, @php
-                $endDate = $kontrak->resign_date ?? $kontrak->end_date;
+            <div>Citeureup, 
+                @php
+                    $endDate = $kontrak->resign_date ?? $kontrak->end_date;
+                @endphp
+                {{ $endDate ? \Carbon\Carbon::parse($endDate)->isoFormat('D MMMM Y') : '' }}
+            </div>
             @endphp
-                {{ $endDate ? $endDate->isoFormat('D MMMM Y') : '' }}</div>
+                {{ $endDate ? \Carbon\Carbon::parse($endDate)->isoFormat('D MMMM Y') : '' }}</div>
             <div>Hormat kami,</div>
             <div class="signature">
                 <img src="{{ public_path('storage/' . $jobDoc?->first_party_signature) }}" alt=" "

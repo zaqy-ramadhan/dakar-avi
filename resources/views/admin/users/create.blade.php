@@ -17,7 +17,7 @@
             <div class="row mb-3">
                 <div class="col-sm-4 col-md-4 col-lg-4 mb-3">
                     <label for="name" class="form-label">NPK</label>
-                    <input type="number" class="form-control" id="name" name="npk" value="{{ old('npk') }}"
+                    <input type="text" class="form-control" id="name" name="npk" value="{{ old('npk') }}"
                         required>
                     @error('npk')
                         <div class="text-danger">{{ $message }}</div>

@@ -154,4 +154,17 @@ class OffboardingController extends Controller
             return back()->with('error', 'Terjadi kesalahan saat memperbarui data.' . $e->getMessage());
         }
     }
+
+    public function exitIntv(Request $request, $id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->offboarding()->update([
+                'exit_interview' => $request->exit_gform,
+            ]);
+        }catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat memperbarui data.' . $e->getMessage()) ;
+        }   
+    }
 }

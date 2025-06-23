@@ -157,7 +157,7 @@
 
                         @endif
 
-                        @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+                        @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
                             <ul id="sidebarnav">
                                 <li class="nav-small-cap">
                                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -224,110 +224,127 @@
                                         <i class="ti ti-chevron-down toggle-arrow"></i>
                                     </a>
                                     <ul class="collapse first-level">
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/divisions" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-sitemap"></i>
-                                                </span>
-                                                <span class="hide-menu">Division</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/departments" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-building"></i>
-                                                </span>
-                                                <span class="hide-menu">Department</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/sections" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-section"></i>
-                                                </span>
-                                                <span class="hide-menu">Section</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/positions" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-location"></i>
-                                                </span>
-                                                <span class="hide-menu">Position</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/level" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-stairs-up"></i>
-                                                </span>
-                                                <span class="hide-menu">Level</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/job_status" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-checklist"></i>
-                                                </span>
-                                                <span class="hide-menu">Job Status</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/cost_center" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-cash"></i>
-                                                </span>
-                                                <span class="hide-menu">Cost Center</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/golongan" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-users"></i>
-                                                </span>
-                                                <span class="hide-menu">Golongan</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/sub_golongan" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-users"></i>
-                                                </span>
-                                                <span class="hide-menu">Sub Golongan</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/line" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-line"></i>
-                                                </span>
-                                                <span class="hide-menu">Line</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/group" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-layers-linked"></i>
-                                                </span>
-                                                <span class="hide-menu">Group</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/job_type" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-briefcase"></i>
-                                                </span>
-                                                <span class="hide-menu">Job Type</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/work_hour" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-hourglass"></i>
-                                                </span>
-                                                <span class="hide-menu">Work Hour</span>
-                                            </a>
-                                        </li>
+                                        @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/divisions"
+                                                    aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-sitemap"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Division</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/departments"
+                                                    aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-building"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Department</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/sections" aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-section"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Section</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/positions"
+                                                    aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-location"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Position</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/level" aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-stairs-up"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Level</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/job_status"
+                                                    aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-checklist"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Job Status</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/cost_center"
+                                                    aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-cash"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Cost Center</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/golongan" aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-users"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Golongan</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/sub_golongan"
+                                                    aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-users"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Sub Golongan</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/line" aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-line"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Line</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/group" aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-layers-linked"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Group</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/job_type" aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-briefcase"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Job Type</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/work_hour"
+                                                    aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-hourglass"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Work Hour</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/disnaker" aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-chisel"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Kepala Dinas Tenaga Kerja</span>
+                                                </a>
+                                            </li>
+                                        @endif
                                         <li class="sidebar-item">
                                             <a class="sidebar-link" href="/admin/item" aria-expanded="false">
                                                 <span>
@@ -342,15 +359,7 @@
                                                 <span>
                                                     <i class="ti ti-building-warehouse"></i>
                                                 </span>
-                                                <span class="hide-menu">Inventaris Rule</span>
-                                            </a>
-                                        </li>
-                                        <li class="sidebar-item">
-                                            <a class="sidebar-link" href="/admin/disnaker" aria-expanded="false">
-                                                <span>
-                                                    <i class="ti ti-chisel"></i>
-                                                </span>
-                                                <span class="hide-menu">Kepala Dinas Tenaga Kerja</span>
+                                                <span class="hide-menu">Starter Kit Rule</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -406,13 +415,15 @@
                                                     <div class="accordion-body p-0">
                                                         <ul class="list-group">
                                                             @foreach (Auth::user()->adminNotif()['personal_completed'] as $personal)
-                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <li
+                                                                    class="list-group-item d-flex justify-content-between align-items-center">
                                                                     <div>
                                                                         <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
                                                                             class="text-decoration-none">
                                                                             {{ $personal->fullname }}
                                                                         </a>
-                                                                        <div class="text-muted" style="font-size: 0.85em;">
+                                                                        <div class="text-muted"
+                                                                            style="font-size: 0.85em;">
                                                                             NPK : {{ $personal->npk ?? '-' }}
                                                                         </div>
                                                                     </div>
@@ -436,13 +447,15 @@
                                                     <div class="accordion-body p-0">
                                                         <ul class="list-group">
                                                             @foreach (Auth::user()->adminNotif()['employment_completed'] as $personal)
-                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <li
+                                                                    class="list-group-item d-flex justify-content-between align-items-center">
                                                                     <div>
                                                                         <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
                                                                             class="text-decoration-none">
                                                                             {{ $personal->fullname }}
                                                                         </a>
-                                                                        <div class="text-muted" style="font-size: 0.85em;">
+                                                                        <div class="text-muted"
+                                                                            style="font-size: 0.85em;">
                                                                             NPK : {{ $personal->npk ?? '-' }}
                                                                         </div>
                                                                     </div>
@@ -466,13 +479,15 @@
                                                     <div class="accordion-body p-0">
                                                         <ul class="list-group">
                                                             @foreach (Auth::user()->adminNotif()['wage_filled'] as $personal)
-                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <li
+                                                                    class="list-group-item d-flex justify-content-between align-items-center">
                                                                     <div>
                                                                         <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
                                                                             class="text-decoration-none">
                                                                             {{ $personal->fullname }}
                                                                         </a>
-                                                                        <div class="text-muted" style="font-size: 0.85em;">
+                                                                        <div class="text-muted"
+                                                                            style="font-size: 0.85em;">
                                                                             NPK : {{ $personal->npk ?? '-' }}
                                                                         </div>
                                                                     </div>
@@ -485,7 +500,8 @@
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header" id="notifHeadingStarterkit">
                                                     <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#notifCollapseStarterkit"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#notifCollapseStarterkit"
                                                         aria-expanded="false" aria-controls="notifCollapseStarterkit">
                                                         Starter Kit Provided
                                                     </button>
@@ -496,13 +512,15 @@
                                                     <div class="accordion-body p-0">
                                                         <ul class="list-group">
                                                             @foreach (Auth::user()->adminNotif()['starterkit_given'] as $personal)
-                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <li
+                                                                    class="list-group-item d-flex justify-content-between align-items-center">
                                                                     <div>
                                                                         <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
                                                                             class="text-decoration-none">
                                                                             {{ $personal->fullname }}
                                                                         </a>
-                                                                        <div class="text-muted" style="font-size: 0.85em;">
+                                                                        <div class="text-muted"
+                                                                            style="font-size: 0.85em;">
                                                                             NPK : {{ $personal->npk ?? '-' }}
                                                                         </div>
                                                                     </div>
@@ -515,8 +533,9 @@
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header" id="notifHeadingContract">
                                                     <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#notifCollapseContract"
-                                                        aria-expanded="false" aria-controls="notifCollapseContract">
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#notifCollapseContract" aria-expanded="false"
+                                                        aria-controls="notifCollapseContract">
                                                         Contract Signed
                                                     </button>
                                                 </h2>
@@ -526,13 +545,15 @@
                                                     <div class="accordion-body p-0">
                                                         <ul class="list-group">
                                                             @foreach (Auth::user()->adminNotif()['contract_signed'] as $personal)
-                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <li
+                                                                    class="list-group-item d-flex justify-content-between align-items-center">
                                                                     <div>
                                                                         <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
                                                                             class="text-decoration-none">
                                                                             {{ $personal->fullname }}
                                                                         </a>
-                                                                        <div class="text-muted" style="font-size: 0.85em;">
+                                                                        <div class="text-muted"
+                                                                            style="font-size: 0.85em;">
                                                                             NPK : {{ $personal->npk ?? '-' }}
                                                                         </div>
                                                                     </div>
@@ -545,24 +566,29 @@
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header" id="notifHeadingCompensation">
                                                     <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#notifCollapseCompensation"
-                                                        aria-expanded="false" aria-controls="notifCollapseCompensation">
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#notifCollapseCompensation"
+                                                        aria-expanded="false"
+                                                        aria-controls="notifCollapseCompensation">
                                                         Compensation Signed
                                                     </button>
                                                 </h2>
-                                                <div id="notifCollapseCompensation" class="accordion-collapse collapse"
+                                                <div id="notifCollapseCompensation"
+                                                    class="accordion-collapse collapse"
                                                     aria-labelledby="notifHeadingCompensation"
                                                     data-bs-parent="#notificationAccordion">
                                                     <div class="accordion-body p-0">
                                                         <ul class="list-group">
                                                             @foreach (Auth::user()->adminNotif()['compensation_signed'] as $personal)
-                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <li
+                                                                    class="list-group-item d-flex justify-content-between align-items-center">
                                                                     <div>
                                                                         <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
                                                                             class="text-decoration-none">
                                                                             {{ $personal->fullname }}
                                                                         </a>
-                                                                        <div class="text-muted" style="font-size: 0.85em;">
+                                                                        <div class="text-muted"
+                                                                            style="font-size: 0.85em;">
                                                                             NPK : {{ $personal->npk ?? '-' }}
                                                                         </div>
                                                                     </div>
@@ -575,24 +601,29 @@
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header" id="notifHeadingDigitalAccount">
                                                     <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#notifCollapseDigitalAccount"
-                                                        aria-expanded="false" aria-controls="notifCollapseDigitalAccount">
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#notifCollapseDigitalAccount"
+                                                        aria-expanded="false"
+                                                        aria-controls="notifCollapseDigitalAccount">
                                                         Digital Account Given
                                                     </button>
                                                 </h2>
-                                                <div id="notifCollapseDigitalAccount" class="accordion-collapse collapse"
+                                                <div id="notifCollapseDigitalAccount"
+                                                    class="accordion-collapse collapse"
                                                     aria-labelledby="notifHeadingDigitalAccount"
                                                     data-bs-parent="#notificationAccordion">
                                                     <div class="accordion-body p-0">
                                                         <ul class="list-group">
                                                             @foreach (Auth::user()->adminNotif()['digital_account_given'] as $personal)
-                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <li
+                                                                    class="list-group-item d-flex justify-content-between align-items-center">
                                                                     <div>
                                                                         <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
                                                                             class="text-decoration-none">
                                                                             {{ $personal->fullname }}
                                                                         </a>
-                                                                        <div class="text-muted" style="font-size: 0.85em;">
+                                                                        <div class="text-muted"
+                                                                            style="font-size: 0.85em;">
                                                                             NPK : {{ $personal->npk ?? '-' }}
                                                                         </div>
                                                                     </div>
