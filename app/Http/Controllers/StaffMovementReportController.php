@@ -26,6 +26,7 @@ class StaffMovementReportController extends Controller
         'Employee Pemagangan Extension',
         'One Year Service',
         'Termination',
+        'Expired Contract',
     ];
 
     public function index(Request $request)
@@ -51,7 +52,8 @@ class StaffMovementReportController extends Controller
                 'Employee Transfer' => $this->EmployeeContractPositionChange($request)->getData(true),
                 'Employee Department Mutation' => $this->EmployeeDepartmentMutation($request)->getData(true),
                 'One Year Service' => $this->EmployeeContractLongTerm($request)->getData(true),
-                'Termination' => $this->expiredContract($request)->getData(true),
+                'Termination' => $this->termination($request)->getData(true),
+                'Expired Contract' => $this->expiredContract($request)->getData(true),
                 default => collect(),
             };
             $export = match ($note) {
@@ -133,6 +135,17 @@ class StaffMovementReportController extends Controller
                     'Status' => $item['status'],
                 ]),
 
+                'Expired Contract' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Department' => $item['department'],
+                    'Position' => $item['position'],
+                    'Start Date' => $item['start_date'],
+                    'End Date' => $item['end_date'],
+                    'Status' => $item['status'],
+                ]),
+
 
                 default => collect($employees['data']),
             };
@@ -150,7 +163,8 @@ class StaffMovementReportController extends Controller
             'Employee Transfer' => $this->EmployeeContractPositionChange($request),
             'Employee Department Mutation' => $this->EmployeeDepartmentMutation($request),
             'One Year Service' => $this->EmployeeContractLongTerm($request),
-            'Termination' => $this->expiredContract($request),
+            'Termination' => $this->termination($request),
+            'Expired Contract' => $this->expiredContract($request),
             default => response()->json([]),
         };
     }
@@ -442,23 +456,55 @@ class StaffMovementReportController extends Controller
         $expiredContracts = EmployeeJob::with(['user', 'department', 'position'])
             ->whereBetween('end_date', [$date, $endDate])
             ->get();
+        // dd($expiredContracts);
 
-        $transformedContracts = $expiredContracts->transform(function($job) {
+        $transformedContracts = $expiredContracts->transform(function ($job) {
             $user = $job->user;
             return [
                 'npk' => $user ? $user->npk : 'N/A',
                 'fullname' => $user ? $user->fullname : 'N/A',
                 'department' => $job->department ? $job->department->department_name : 'N/A',
-                'position'=> $job->position ? $job->position->position_name : 'N/A',
+                'position' => $job->position ? $job->position->position_name : 'N/A',
                 'start_date' => $job->start_date ? Carbon::parse((string)$job->start_date)->isoFormat('D MMMM Y') : 'N/A',
                 'end_date' => $job->end_date ? Carbon::parse((string)$job->end_date)->isoFormat('D MMMM Y') : 'N/A',
-                'out_date' => $user && $user->offboarding?->resign_date ? Carbon::parse((string)$user->offboarding->resign_date)->isoFormat('D MMMM Y') : 'N/A',
-                'reason' => $user && $user->offboarding?->reason ? $user->offboarding->reason : 'N/A',
                 'status' => $job->contract,
             ];
         });
 
         return DataTables::of($transformedContracts)
+            ->addIndexColumn()
+            ->make(true);
+    }
+
+    public function termination(Request $request)
+    {
+        $date = $request->input('date')
+            ? Carbon::parse($request->input('date'))->startOfMonth()
+            : Carbon::now()->startOfMonth();
+
+        $endDate = $date->copy()->endOfMonth();
+
+        $termination = User::whereHas('offboarding')->whereHas('latestEmployeeJob', function($q) use ($date, $endDate) {
+            $q->where('employment_status', false);
+            $q->whereBetween('resign_date', [$date, $endDate]);
+        })->get();
+        // dd($termination);
+        
+        $termination = $termination->transform(function ($user) {
+            return [
+                'npk' => $user->npk,
+                'fullname' => $user->fullname,
+                'department' => $user->latestEmployeeJob->department->department_name,
+                'position' => $user->latestEmployeeJob->position->position_name,
+                'start_date' => $user->latestEmployeeJob->start_date ? Carbon::parse((string)$user->latestEmployeeJob->start_date)->isoFormat('D MMMM Y') : 'N/A',
+                'end_date' => $user->latestEmployeeJob->end_date ? Carbon::parse((string)$user->latestEmployeeJob->end_date)->isoFormat('D MMMM Y') : 'N/A',
+                'out_date' => $user->latestEmployeeJob->resign_date ? Carbon::parse((string)$user->latestEmployeeJob->resign_date)->isoFormat('D MMMM Y') : 'N/A',
+                'reason' => $user->offboarding->reason ? $user->offboarding->reason : 'N/A',
+                'status' => $user->latestEmployeeJob->contract,
+            ];
+        });
+
+        return DataTables::of($termination)
             ->addIndexColumn()
             ->make(true);
     }

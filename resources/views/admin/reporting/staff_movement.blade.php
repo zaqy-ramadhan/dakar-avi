@@ -14,6 +14,7 @@
                         'New Employee Tetap',
                         'New Employee Pemagangan',
                         'New Employee Internship',
+                        'Expired Contract',
                         'Termination',
                         'Extension Contract',
                         'Employee Transfer',
@@ -104,6 +105,11 @@
                         <th>Out Date</th>
                         <th>Termination Reason</th>
                         <th>Status</th>
+                    @elseif($note == 'Expired Contract')
+                        <th>Department</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
                     @endif
                 </tr>
             </thead>
@@ -158,6 +164,12 @@
                         <th>End Date</th>
                         <th>Out Date</th>
                         <th>Termination Reason</th>
+                        <th>Status</th>`;
+                    break;
+                 case 'Expired Contract':
+                    extra = `<th>Department</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
                         <th>Status</th>`;
                     break;
             }
@@ -299,6 +311,15 @@
                 }, {
                     data: 'reason'
                 }, {
+                    data: 'status'
+                }],
+                'Expired Contract': [{
+                    data: 'department'
+                }, {
+                    data: 'start_date'
+                }, {
+                    data: 'end_date'
+                },{
                     data: 'status'
                 }]
             };
