@@ -11,6 +11,7 @@ use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class UserDataTables extends DataTable
 {
@@ -42,9 +43,13 @@ class UserDataTables extends DataTable
                     $q->whereRaw("LOWER(position_name) LIKE ?", ["%" . strtolower($keyword) . "%"]);
                 });
             })
+            ->addColumn('join_date', function($user){
+                $firstJob = $user->firstEmployeeJob;
+                return optional($firstJob)->start_date ? $firstJob->start_date->isoFormat('D MMMM YYYY') : '';
+            })
             ->addColumn('latest_end_date', function ($user) {
                 $latestJob = $user->latestEmployeeJob;
-                return optional($latestJob)->end_date ? $latestJob->end_date->format('Y-m-d') : '';
+                return optional($latestJob)->end_date ? $latestJob->end_date->isoFormat('D MMMM YYYY') : '';
             })
             ->addColumn('type', function ($user) {
                 $latestJob = $user->latestEmployeeJob;

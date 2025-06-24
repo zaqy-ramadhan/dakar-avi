@@ -57,9 +57,13 @@
         }
 
         .label {
-            font-size: 0.8rem;
+            /* font-size: 0.8rem; */
             margin-top: 5px;
             color: #495057;
+        }
+
+        span #select2-section_id-container{
+            font-size: 14px;
         }
     </style>
 @endpush
@@ -195,7 +199,7 @@
                         $allowWageTab = true;
                     }
                 } else {
-                    if (in_array($userRole, ['admin', 'admin 1', 'admin 2'])) {
+                    if (in_array($userRole, ['admin', 'admin 2', 'admin 3'])) {
                         $allowWageTab = true;
                     }
                 }

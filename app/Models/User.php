@@ -320,7 +320,7 @@ class User extends Authenticatable
         return $progress;
     }
 
-    public function progressOnbaordingEmployee()
+    public function progressOnboardingEmployee()
     {
         $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
 
@@ -445,6 +445,15 @@ class User extends Authenticatable
             ];
         }
 
+        $totalInventory = $job->inventory->where('employee_job_id', $job->id)->where('status', 'Diterima')?->count();
+        if ($totalInventory > 0) {
+            $progress = 52;
+        } else {
+            return [
+                'progress' => $progress,
+            ];
+        }
+
         if ($job && $job->jobDoc->isNotEmpty()) {
             $contractDoc = $job->jobDoc->firstWhere('type', 'contract');
             if ($contractDoc && $contractDoc->first_party_signature) {
@@ -513,6 +522,9 @@ class User extends Authenticatable
             }),
             'starterkit_given' => $users->filter(function ($user) {
                 return $user->progressOnboardingAdmin()['progress'] === 51;
+            }),
+            'starterkit_accepted' => $users->filter(function ($user) {
+                return $user->progressOnboardingAdmin()['progress'] === 52;
             }),
             'contract_signed' => $users->filter(function ($user) {
                 return $user->progressOnboardingAdmin()['progress'] === 68;

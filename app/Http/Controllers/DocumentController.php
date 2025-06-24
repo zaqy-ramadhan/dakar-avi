@@ -18,6 +18,8 @@ use App\Exports\JoinedThisMonthExport;
 use App\Exports\uniformRefreshExport;
 use App\Models\DakarRole;
 use App\Models\JobDoc;
+use App\Models\EmployeeInventoryNumber;
+use App\Models\Item;
 use App\Models\JobWageAllowance;
 use App\Exports\UsersBirthdayExport;
 use App\Models\Offboarding;
@@ -176,6 +178,11 @@ class DocumentController extends Controller
             })->first();
 
             $offboarding = Offboarding::where('user_id', $kontrak->user_id)->latest()->first() ?? null;
+            $bpjstkId = Item::where('item_name', 'BPJS TK')->value('id');
+            $bpjstk = EmployeeInventoryNumber::where('user_id', $kontrak->user_id)
+                ->where('item_id', $bpjstkId)
+                ->first()?->number ?? null;
+            // dd($bpjstk);
 
             $jobDoc = JobDoc::where('employee_job_id', $kontrak->id)->where('type', 'paklaring')->first() ?? null;
             $is_admin = in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']);;
@@ -206,7 +213,7 @@ class DocumentController extends Controller
                 return view('admin.users.signature', compact('id', 'employeeJob', 'type'))->with('warning', 'Please complete the signature process before generating.');
             }
 
-            $pdf = PDF::loadView('documents.paklaring', compact('kontrak', 'hr', 'jobDoc', 'offboarding'))
+            $pdf = PDF::loadView('documents.paklaring', compact('kontrak', 'hr', 'jobDoc', 'offboarding', 'bpjstk'))
                 ->setPaper('a4', 'portrait');
             $filename = 'paklaring_' . str_replace(' ', '_', $kontrak->user->fullname) . '.pdf';
 
@@ -225,6 +232,10 @@ class DocumentController extends Controller
             })->first();
 
             $offboarding = Offboarding::where('user_id', $kontrak->user_id)->latest()->first();
+            $bpjstkId = Item::where('item_name', 'BPJS TK')->value('id');
+            $bpjstk = EmployeeInventoryNumber::where('user_id', $kontrak->user_id)
+                ->where('item_id', $bpjstkId)
+                ->first()?->number ?? null;
 
             $jobDoc = JobDoc::where('employee_job_id', $kontrak->id)->where('type', 'paklaring')->first() ?? null;
             $is_admin = in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']);;
@@ -251,7 +262,7 @@ class DocumentController extends Controller
             $year = date('y', strtotime($kontrak->start_date));
             $kontrak->nomor = $kontrak->user->npk . '/HRD/AVI/' . $romanMonth . '/' . $year;
 
-            $pdf = PDF::loadView('documents.paklaring', compact('kontrak', 'hr', 'jobDoc', 'offboarding'))
+            $pdf = PDF::loadView('documents.paklaring', compact('kontrak', 'hr', 'jobDoc', 'offboarding', 'bpjstk'))
                 ->setPaper('a4', 'portrait');
             $filename = 'paklaring_' . str_replace(' ', '_', $kontrak->user->fullname) . '.pdf';
 

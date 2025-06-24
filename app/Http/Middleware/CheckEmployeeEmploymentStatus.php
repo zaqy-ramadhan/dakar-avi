@@ -14,7 +14,7 @@ class CheckEmployeeEmploymentStatus
     {
         $user = Auth::user();
 
-        if ($user->employeeJob->isNotEmpty()) {
+        if ($user?->employeeJob?->isNotEmpty()) {
             $employeeJob = $user->latestEmployeeJob;
             $employeeOffboarding = $user->offboarding;
             $employeeJob = $user->latestEmployeeJob;

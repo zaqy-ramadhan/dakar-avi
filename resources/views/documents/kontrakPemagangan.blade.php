@@ -257,7 +257,7 @@
         <ol>
             <li>Selama jangka waktu Program Magang, Pihak Pertama akan memberikan kepada Pihak Kedua
                 {{ Str::lower(optional($wage)->type ?? 'Uang Saku') }} sebesar
-                Rp {{optional($wage)->amount ?? '2.500.000' }}
+                {{optional($wage)->amount ?? 'Rp2.500.000' }}
                 {{ optional($wage)->calculation ?? 'per bulan' }} ("{{ optional($wage)->type ?? 'Uang Saku' }}") dan
                 akan diperhitungkan secara proporsional apabila Pihak Kedua
                 tidak masuk kerja.</li>

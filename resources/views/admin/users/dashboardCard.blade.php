@@ -61,7 +61,7 @@
     </style>
 @endpush
 
-<div class="employee-card card">
+<div class="employee-card card pe-0">
     <div class="card-header text-center p-4">
         {{-- <h4>Employee Information</h4> --}}
         <p class="fs-6 fw-bold">Employee Information</p>
@@ -145,7 +145,11 @@
         <div class="row mt-2">
             <div class="col-md-6">
                 <div class="info-label">Join Date:</div>
-                <div class="info-value">{{ \Carbon\Carbon::parse(optional($user)->join_date)->isoFormat('D MMMM YYYY') }}</div>
+                @if (optional($user)->firstEmployeeJob?->start_date)
+                    <div class="info-value">{{ \Carbon\Carbon::parse(optional($user)->firstEmployeeJob->start_date)->isoFormat('D MMMM YYYY') }}</div>
+                @else
+                    <div class="info-value">-</div>
+                @endif
             </div>
             <div class="col-md-6">
                 <div class="info-label">Length of Service:</div>

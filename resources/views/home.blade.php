@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @push('styles')
     <style>
-        .card{
+        .card {
             border-radius: 20px;
         }
 
@@ -66,34 +66,42 @@
 @section('content')
     <div class="row">
         @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
-            <p class="fs-8 fw-bold">Welcome {{ Auth::user()->fullname }}</p>
-            @if(Auth::user()->progressOnbaordingEmployee()['progress'] == 100)
-            <div class="alert alert-success fade show" role="alert">
-            @else
-            <div class="alert alert-warning fade show" role="alert">
-            @endif
-                {{ Auth::user()->progressOnbaordingEmployee()['message'] }}
-           </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <p class="fs-8 fw-bold">Welcome {{ Auth::user()->fullname }}</p>
+                @if (Auth::user()->progressOnboardingEmployee()['progress'] == 100)
+                <div class="alert alert-success fade show" role="alert" style="border-radius: 20px">
+                    {{ Auth::user()->progressOnboardingEmployee()['message'] }}
+                </div>
+                @else
+                <div class="alert alert-warning fade show" role="alert" style="border-radius: 20px">
+                    {{ Auth::user()->progressOnboardingEmployee()['message'] }}
+                </div>
+                @endif
+            </div>
             <div class="col-lg-7 col-md-12 col-sm-12">
                 <div class="card" style="border-radius: 20px">
                     <div class="card-header">
                         <p class="fs-6 fw-bold">Onboarding Progress</p>
                     </div>
                     <div class="card-body">
-                        <p class="fw-bolder mb-0">Your first day is on
-                            {{ Carbon\Carbon::parse(Auth::user()->join_date)->isoFormat('D MMMM YYYY') }}</p>
-                        @if (Auth::user()->progressOnbaordingEmployee()['progress'] > 0)
+                        @if (Auth::user()->firstEmployeeJob?->start_date)
+                            <p class="fw-bolder mb-0">Your first day is on
+                                {{ \Carbon\Carbon::parse(Auth::user()->firstEmployeeJob->start_date)->isoFormat('D MMMM YYYY') }}
+                            </p>
+                        @else
+                            <p class="fw-bolder mb-0">Your first day is on -</p>
+                        @endif
+                        @if (Auth::user()->progressOnboardingEmployee()['progress'] > 0)
                             <div class="progress mt-4 mb-3">
                                 <div class="progress-bar" role="progressbar"
-                                    style="width: {{ Auth::user()->progressOnbaordingEmployee()['progress'] }}%;"
-                                    aria-valuenow="{{ Auth::user()->progressOnbaordingEmployee()['progress'] }}" aria-valuemin="0"
-                                    aria-valuemax="100">
-                                    {{ Auth::user()->progressOnbaordingEmployee()['progress'] }}%
+                                    style="width: {{ Auth::user()->progressOnboardingEmployee()['progress'] }}%;"
+                                    aria-valuenow="{{ Auth::user()->progressOnboardingEmployee()['progress'] }}"
+                                    aria-valuemin="0" aria-valuemax="100">
+                                    {{ Auth::user()->progressOnboardingEmployee()['progress'] }}%
                                 </div>
                             </div>
                             <p class="text-muted">
                                 <span>Make sure to have the following items completed before.</span>
-                                {{-- <strong>{{ Auth::user()->progressOnboarding() }}%</strong>. --}}
                             </p>
                         @else
                             <p class="text-muted">{{ __('No onboarding progress data available.') }}</p>
@@ -143,7 +151,7 @@
                                 </div>
                             </a>
 
-                             <a href="{{ route('users.index.onboarding') }}">
+                            <a href="{{ route('users.index.onboarding') }}">
                                 <div class="step-vertical d-flex">
                                     <div class="circle-vertical-container">
                                         <div class="circle-vertical @if ($spk_status) active @endif"><i
@@ -202,8 +210,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12 col-lg-5 col-sm-12 row d-flex justify-content-between">
-                <div class="col">
+            <div class="col-md-12 col-lg-5 col-sm-12 pe-0 row d-flex justify-content-between">
+                <div class="col pe-0">
                     @include('admin.users.dashboardCard')
                     <div class="col">
                         <div class="card" style="border-radius:20px">

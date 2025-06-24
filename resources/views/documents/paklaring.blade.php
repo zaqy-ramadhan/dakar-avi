@@ -257,7 +257,7 @@
             <tr>
                 <td>KPJ</td>
                 <td class="space">:</td>
-                <td>{{ $kontrak->user->npk }}</td>
+                <td>{{ $bpjstk ?? '-' }}</td>
             </tr>
         </table>
         <p class="to">Per tanggal @php
@@ -274,8 +274,6 @@
                 @endphp
                 {{ $endDate ? \Carbon\Carbon::parse($endDate)->isoFormat('D MMMM Y') : '' }}
             </div>
-            @endphp
-                {{ $endDate ? \Carbon\Carbon::parse($endDate)->isoFormat('D MMMM Y') : '' }}</div>
             <div>Hormat kami,</div>
             <div class="signature">
                 <img src="{{ public_path('storage/' . $jobDoc?->first_party_signature) }}" alt=" "

@@ -531,6 +531,39 @@
                                                 </div>
                                             </div>
                                             <div class="accordion-item">
+                                                <h2 class="accordion-header" id="notifHeadingStarterkitAccepted">
+                                                    <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#notifCollapseStarterkitAccepted"
+                                                        aria-expanded="false" aria-controls="notifCollapseStarterkitAccepted">
+                                                        Starter Kit Accepted
+                                                    </button>
+                                                </h2>
+                                                <div id="notifCollapseStarterkitAccepted" class="accordion-collapse collapse"
+                                                    aria-labelledby="notifHeadingStarterkitAccepted"
+                                                    data-bs-parent="#notificationAccordion">
+                                                    <div class="accordion-body p-0">
+                                                        <ul class="list-group">
+                                                            @foreach (Auth::user()->adminNotif()['starterkit_accepted'] as $personal)
+                                                                <li
+                                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    <div>
+                                                                        <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
+                                                                            class="text-decoration-none">
+                                                                            {{ $personal->fullname }}
+                                                                        </a>
+                                                                        <div class="text-muted"
+                                                                            style="font-size: 0.85em;">
+                                                                            NPK : {{ $personal->npk ?? '-' }}
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="accordion-item">
                                                 <h2 class="accordion-header" id="notifHeadingContract">
                                                     <button class="accordion-button collapsed" type="button"
                                                         data-bs-toggle="collapse"
@@ -640,16 +673,16 @@
                                         aria-labelledby="notificationDropdown"
                                         style="min-width: 350px; right: 0; left: auto;"
                                         onclick="event.stopPropagation();">
-                                        @if (Auth::user()->progressOnbaordingEmployee()['progress'] > 0)
+                                        @if (Auth::user()->progressOnboardingEmployee()['progress'] > 0)
                                             <p class="text-muted">
-                                                <span>{{ Auth::user()->progressOnbaordingEmployee()['message'] }}</span>
+                                                <span>{{ Auth::user()->progressOnboardingEmployee()['message'] }}</span>
                                             </p>
                                             <div class="progress">
                                                 <div class="progress-bar" role="progressbar"
-                                                    style="width: {{ Auth::user()->progressOnbaordingEmployee()['progress'] }}%;"
-                                                    aria-valuenow="{{ Auth::user()->progressOnbaordingEmployee()['progress'] }}"
+                                                    style="width: {{ Auth::user()->progressOnboardingEmployee()['progress'] }}%;"
+                                                    aria-valuenow="{{ Auth::user()->progressOnboardingEmployee()['progress'] }}"
                                                     aria-valuemin="0" aria-valuemax="100">
-                                                    {{ Auth::user()->progressOnbaordingEmployee()['progress'] }}%
+                                                    {{ Auth::user()->progressOnboardingEmployee()['progress'] }}%
                                                 </div>
                                             </div>
                                         @else

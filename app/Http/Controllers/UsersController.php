@@ -377,7 +377,7 @@ class UsersController extends Controller
             $user = User::create([
                 'npk' => $request->npk,
                 'username' => $request->npk,
-                'join_date' => now(),
+                // 'join_date' => now(),
                 'password' => $request->password,
                 'password_hash' => bcrypt($request->password)
             ]);

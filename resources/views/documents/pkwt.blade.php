@@ -307,7 +307,7 @@
                     </li>
                 @elseif($wage->type === 'Gaji Pokok')
                     @if ($kontrak->level->level_name === 'Operator' || $kontrak->level->level_name === 'Admin')
-                    <li>{{ $wage->type . ' : UMSK Kab. Bogor'  }}
+                    <li>{{ $wage->type . ' : ' . $wage->amount  }}
                     </li>
                     @else
                     <li>{{ $wage->type . ' : ' . $wage->amount . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
