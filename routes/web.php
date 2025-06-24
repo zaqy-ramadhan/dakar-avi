@@ -126,7 +126,7 @@ Route::middleware(['auth'])->middleware('active_employee')->group(function () {
 
             Route::get('disnaker', [DisnakerController::class, 'index'])->name('disnaker.index');
             Route::post('disnaker', [DisnakerController::class, 'store'])->name('disnaker.store');
-            Route::put('disnaker/{nip}', [DisnakerController::class, 'update'])->name(('disnaker.update'));
+            Route::put('disnaker/{id}', [DisnakerController::class, 'update'])->name(('disnaker.update'));
         });
 
         #export pdf and excel
