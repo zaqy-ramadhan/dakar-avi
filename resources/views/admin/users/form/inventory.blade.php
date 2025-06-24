@@ -1,5 +1,5 @@
 {{-- <div class="container card p-4"> --}}
-<h2 class="mb-4">Inventaris</h2>
+<h2 class="mb-4">Starter Kit</h2>
 
 <form
     action="{{ $user->inventory->isNotEmpty() ? route('inventory.update', $user->id) : route('inventory.store', $user->id) }}"
