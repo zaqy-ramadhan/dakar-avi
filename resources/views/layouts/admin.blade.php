@@ -12,6 +12,7 @@
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}"> --}}
     <style>
         .body-wrapper .container-fluid {
             max-width: 100%;

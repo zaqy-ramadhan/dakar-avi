@@ -206,6 +206,7 @@
             @endphp
             @if ($user->firstEmployeeJob && $allowWageTab)
                 <li class="nav-item" role="presentation">
+                    {{-- @dd($allowWageTab) --}}
                     <button class="nav-link" id="wage-tab" data-bs-toggle="tab" data-bs-target="#wage" type="button"
                         role="tab" aria-controls="wage" aria-selected="false">Wage/Allowance</button>
                 </li>
