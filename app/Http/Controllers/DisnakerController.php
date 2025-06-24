@@ -34,14 +34,14 @@ class DisnakerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Disnaker $disnaker)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'nama' => 'required|string|max:255',
             'nip' => 'required|string|max:255'
         ]);
 
-        $disnaker = Disnaker::findOrFail($request->nip);
+        $disnaker = Disnaker::findOrFail($id);
         $disnaker->update($request->all());
 
         return redirect()->route('disnaker.index')->with('success', 'Data berhasil diupdate');

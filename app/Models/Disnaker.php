@@ -10,8 +10,6 @@ class Disnaker extends Model
 
     public $timestamps = false;
 
-    protected $primaryKey = 'npk';
-
     protected $fillable = [
         "nama",
         "nip",

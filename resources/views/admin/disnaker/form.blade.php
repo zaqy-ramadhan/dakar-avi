@@ -4,12 +4,7 @@
     <div class="container-fluid">
         <div class="card p-4">
             <h3>Kepala Dinas Tenaga Kerja</h3>
-            @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
-            <form class="mt-4" action="{{ $disnaker ? route('disnaker.update', $disnaker->nip) : route('disnaker.store') }}" method="POST">
+            <form class="mt-4" action="{{ $disnaker ? route('disnaker.update', $disnaker->id) : route('disnaker.store') }}" method="POST">
                 @csrf
                 @if ($disnaker)
                     @method('PUT')
