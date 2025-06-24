@@ -110,7 +110,7 @@
             vertical-align: top;
         }
 
-         .watermark-background {
+        .watermark-background {
             position: fixed;
             top: 0;
             left: 0;
@@ -149,7 +149,7 @@
         </tr>
     </table>
     <hr style="border: 0.5px solid black"> --}}
-     @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+    @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
         <div class="watermark-background">
             @for ($i = 0; $i < 15; $i++)
                 @for ($j = 0; $j < 5; $j++)
@@ -175,7 +175,9 @@
                     Pihak Perusahaan
                 </td>
                 <td>
-                    PT. Astra Visteon Indonesia beralamat di Jl. Lanbau Karang Asem Barat diwakili oleh Sdri. {{$hr->fullname}} (HRGA & EHS Department Head), bertindak untuk dan atas nama Perusahaan, selanjutnya disebut Pihak I.
+                    PT. Astra Visteon Indonesia beralamat di Jl. Lanbau Karang Asem Barat diwakili oleh Sdri.
+                    {{ $hr->fullname }} (HRGA & EHS Department Head), bertindak untuk dan atas nama Perusahaan,
+                    selanjutnya disebut Pihak I.
             </tr>
 
             <tr>
@@ -186,12 +188,21 @@
                     Pihak Karyawan
                 </td>
                 <td>
-                    Sdr. {{ $kontrak->user->fullname }} (No. KTP : {{ $kontrak->user->employeeDetail->no_ktp ?? '-' }}) selaku karyawan PT. Astra Visteon Indonesia yang beralamat di
+                    Sdr. {{ $kontrak->user->fullname }} (No. KTP : {{ $kontrak->user->employeeDetail->no_ktp ?? '-' }})
+                    selaku karyawan PT. Astra Visteon Indonesia yang beralamat di
                     {{ $kontrak->user->employeeDetail->current_address ?? '-' }}
                 </td>
             </tr>
         </table>
-        <p>Bahwa pada hari ini, {{ $kontrak->end_date?->isoFormat('D MMMM Y') }} berdasarkan ketentuan Undang-Undang Nomor 2 Tahun 2004, Undang-Undang No.
+        <p>Bahwa pada hari ini, 
+            @if (!empty($kontrak->resign_date))
+                {{ \Carbon\Carbon::parse($kontrak->resign_date)->subMonth()->isoFormat('D MMMM Y') }}
+            @elseif (!empty($kontrak->end_date))
+                {{ \Carbon\Carbon::parse($kontrak->end_date)->subMonth()->isoFormat('D MMMM Y') }}
+            @else
+                -
+            @endif
+            berdasarkan ketentuan Undang-Undang Nomor 2 Tahun 2004, Undang-Undang No.
             13 Tahun 2003, dan Undang-Undang No. 11 Tahun 2020, kedua belah pihak mencari penyelesaian permasalahan
             sebagai berikut :
         </p><br>
@@ -203,7 +214,14 @@
         </p>
         <ol>
             <li>Bahwa Pihak I dan Pihak II sepakat untuk mengadakan pengakhiran hubungan kerja terhitung tanggal
-                {{ $kontrak->end_date?->isoFormat('D MMMM Y') }} Bahwa Pihak I akan membayarkan gaji dan hak lainnya hingga hari terakhir
+                @if (!empty($kontrak->resign_date))
+                    {{ \Carbon\Carbon::parse($kontrak->resign_date)->isoFormat('D MMMM Y') }}
+                @elseif (!empty($kontrak->end_date))
+                    {{ \Carbon\Carbon::parse($kontrak->end_date)->isoFormat('D MMMM Y') }}
+                @else
+                    -
+                @endif
+                Bahwa Pihak I akan membayarkan gaji dan hak lainnya hingga hari terakhir
                 bekerja sesuai dengan tanggal pembayaran yang berlaku di Perusahaan.
             </li>
             <li>Bahwa dengan adanya pengakhiran hubungan kerja ini, Pihak I memberikan uang kompensasi sesuai dengan
@@ -220,7 +238,8 @@
             <li>
                 Bahwa dengan dipenuhinya Hak dan Kewajiban masing-masing pihak menurut surat ini, maka
                 segala permasalahan yang menyangkut hubungan kerja dinyatakan selesai dan kedua belah pihak saling
-                mengamankan isi surat keterangan selesai masa kerja ini dan tidak akan mengajukan tuntutan dalam bentuk apapun
+                mengamankan isi surat keterangan selesai masa kerja ini dan tidak akan mengajukan tuntutan dalam bentuk
+                apapun
                 dikemudian hari.
             </li>
         </ol>
@@ -230,9 +249,18 @@
             adanya paksaan dari pihak lain, untuk dilaksanakan dengan penuh rasa tanggung jawab
         </p>
         <br>
-        <p>Citeureup, {{ $kontrak->end_date?->isoFormat('D MMMM Y') }}</p>
+        <p>
+            Citeureup,
+            @if (!empty($kontrak->resign_date))
+                {{ \Carbon\Carbon::parse($kontrak->resign_date)->subMonth()->isoFormat('D MMMM Y') }}
+            @elseif (!empty($kontrak->end_date))
+                {{ \Carbon\Carbon::parse($kontrak->end_date)->subMonth()->isoFormat('D MMMM Y') }}
+            @else
+                -
+            @endif
+        </p>
         <div class="signature" style="margin-right: 240px">
-            <div class="fw-3" >Pihak I</div>
+            <div class="fw-3">Pihak I</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}" alt=" "
                 style="width: auto; height: 60px;">
             <div>{{ $hr->fullname }}</div>
@@ -245,7 +273,7 @@
             <div>{{ $kontrak->user->fullname }}</div>
         </div>
     </div>
-        <p style="position:absolute; bottom: 20px;">Auto Generated by System</p>
+    <p style="position:absolute; bottom: 20px;">Auto Generated by System</p>
 
 </body>
 
