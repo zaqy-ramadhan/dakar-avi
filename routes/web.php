@@ -38,6 +38,7 @@ use App\Http\Controllers\EmployeeBirthdayController;
 use App\Http\Controllers\EmployeeDetailReportController;
 use App\Http\Controllers\ExpiredContractController;
 use App\Http\Controllers\JoinedEmployeeController;
+use App\Http\Controllers\OffboardingReasonController;
 use App\Http\Controllers\StaffMovementReportController;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -123,6 +124,7 @@ Route::middleware(['auth'])->middleware('active_employee')->group(function () {
             Route::resource('job_type', JobTypeController::class);
             Route::resource('job_status', JobStatusController::class);
             Route::resource('item', ItemController::class);
+            Route::resource('offboarding_reason', OffboardingReasonController::class);
 
             Route::get('disnaker', [DisnakerController::class, 'index'])->name('disnaker.index');
             Route::post('disnaker', [DisnakerController::class, 'store'])->name('disnaker.store');

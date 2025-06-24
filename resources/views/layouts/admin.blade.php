@@ -338,6 +338,15 @@
                                                 </a>
                                             </li>
                                             <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/offboarding_reason"
+                                                    aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-circle-off"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Offboarding Reason</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
                                                 <a class="sidebar-link" href="/admin/disnaker" aria-expanded="false">
                                                     <span>
                                                         <i class="ti ti-chisel"></i>

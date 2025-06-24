@@ -17,9 +17,16 @@ method="post">
 </div>
 <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
     <label for="" class="form-label">Termination reason</label>
-    <input type="text" class="form-control" id="reason" name="reason"
-        @if($user->latestEmployeeJob?->employment_status == false)value="{{ $user->offboarding?->reason ?? null }}" @endif
-        @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])) readonly @endif>
+    <select class="form-control" id="reason" name="reason"
+        @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])) disabled @endif>
+        <option value="">-- Select reason --</option>
+        @foreach($reason as $item)
+            <option value="{{ $item->reason }}"
+                @if(($user->latestEmployeeJob?->employment_status == false) && ($user->offboarding?->reason == $item->reason)) selected @endif>
+                {{ $item->reason }}
+            </option>
+        @endforeach
+    </select>
     @error('reason')
         <div class="text-danger">{{ $message }}</div>
     @enderror

@@ -17,6 +17,7 @@ use App\Models\JobStatus;
 use App\Models\JobType;
 use App\Models\Level;
 use App\Models\Line;
+use App\Models\OffboardingReason;
 use App\Models\Position;
 use App\Models\User;
 use App\Models\WorkHour;
@@ -74,6 +75,7 @@ class OffboardingController extends Controller
             $lastContractInventory = optional(optional($user->employeeJob->last())->inventory)->isEmpty() ?? true;
             $acceptedItems = collect($inventories ?? [])->where('status', 'Diterima');
             $groupedItems = $acceptedItems->groupBy('item_name');
+            $reason = OffboardingReason::all();
 
             return $dataTable->render('admin.onboarding.onboarding', compact(
                 'user',
@@ -98,6 +100,7 @@ class OffboardingController extends Controller
                 'rule',
                 'groupedItems',
                 'previousRole',
+                'reason',
             ));
         } catch (\Exception $e) {
             // Log error
