@@ -2,7 +2,7 @@
 <div class="row mb-3">
     <div class="col-sm-3">
         <label for="npk" class="form-label">NPK</label>
-        <input type="number" class="form-control" id="npk" name="npk" value="{{ old('npk', $user->npk ?? '') }}"
+        <input type="text" class="form-control" id="npk" name="npk" value="{{ old('npk', $user->npk ?? '') }}"
             readonly>
         @error('npk')
             <div class="text-danger">{{ $message }}</div>

@@ -1219,6 +1219,46 @@ class UsersController extends Controller
         }
     }
 
+    // private function determineJobNotes(EmployeeJob|null $lastJob, string $user_role, Request $request, bool $isFirstJob): string
+    // {
+    //     if ($isFirstJob || $lastJob === null) {
+    //         if ($user_role === 'karyawan') {
+    //             return match ($request->job_status) {
+    //                 'tetap' => 'New Employee Tetap',
+    //                 'asing' => 'New Employee Asing',
+    //                 default => 'New Employee Kontrak',
+    //             };
+    //         } elseif ($user_role === 'pemagangan') {
+    //             return 'New Employee Pemagangan';
+    //         } elseif ($user_role === 'internship') {
+    //             return 'New Employee Internship';
+    //         }
+    //     } else {
+    //         if ($user_role === 'karyawan') {
+    //             if (
+    //                 $lastJob->position_id !== $request->position_id ||
+    //                 $lastJob->role_level_id !== $request->level_id
+    //             ) {
+    //                 return 'Employee Transfer';
+    //             } elseif (
+    //                 $lastJob->department_id !== $request->department_id ||
+    //                 $lastJob->division_id !== $request->division_id
+    //             ) {
+    //                 return 'Employee Department Mutation';
+    //             } else {
+    //                 return 'Extension Contract';
+    //             }
+    //         } elseif ($user_role === 'pemagangan') {
+    //             return 'Employee Pemagangan Extension';
+    //         } elseif ($user_role === 'internship') {
+    //             return 'Employee Internship Extension';
+    //         }
+    //     }
+
+    //     return '';
+    // }
+
+
     private function determineJobNotes(EmployeeJob|null $lastJob, string $user_role, Request $request, bool $isFirstJob): string
     {
         if ($isFirstJob || $lastJob === null) {
@@ -1237,16 +1277,13 @@ class UsersController extends Controller
             if ($user_role === 'karyawan') {
                 if (
                     $lastJob->position_id !== $request->position_id ||
-                    $lastJob->role_level_id !== $request->level_id
-                ) {
-                    return 'Employee Contract Position Change';
-                } elseif (
+                    $lastJob->role_level_id !== $request->level_id ||
                     $lastJob->department_id !== $request->department_id ||
                     $lastJob->division_id !== $request->division_id
                 ) {
-                    return 'Employee Department Mutation';
+                    return 'Employee Transfer';
                 } else {
-                    return 'Employee Contract Extension';
+                    return 'Extension Contract';
                 }
             } elseif ($user_role === 'pemagangan') {
                 return 'Employee Pemagangan Extension';
@@ -1257,7 +1294,6 @@ class UsersController extends Controller
 
         return '';
     }
-
 
     public function storeJob(Request $request, $id)
     {

@@ -19,13 +19,13 @@ class StaffMovementReportController extends Controller
         'New Employee Tetap',
         'New Employee Pemagangan',
         'New Employee Internship',
-        'Employee Contract Extension',
-        'Employee Contract Position Change',
+        'Extension Contract',
+        'Employee Transfer',
         'Employee Department Mutation',
         'Employee Internship Extension',
         'Employee Pemagangan Extension',
         'One Year Service',
-        'Expired Contract',
+        'Termination',
     ];
 
     public function index(Request $request)
@@ -47,11 +47,11 @@ class StaffMovementReportController extends Controller
                 'New Employee Kontrak' => $this->newEmployeeKontrak($request)->getData(true),
                 'New Employee Pemagangan' => $this->newEmployeePemagangan($request)->getData(true),
                 'New Employee Internship' => $this->newEmployeeIntern($request)->getData(true),
-                'Employee Contract Extension' => $this->EmployeeContractExtension($request)->getData(true),
-                'Employee Contract Position Change' => $this->EmployeeContractPositionChange($request)->getData(true),
+                'Extension Contract' => $this->EmployeeContractExtension($request)->getData(true),
+                'Employee Transfer' => $this->EmployeeContractPositionChange($request)->getData(true),
                 'Employee Department Mutation' => $this->EmployeeDepartmentMutation($request)->getData(true),
                 'One Year Service' => $this->EmployeeContractLongTerm($request)->getData(true),
-                'Expired Contract' => $this->expiredContract($request)->getData(true),
+                'Termination' => $this->expiredContract($request)->getData(true),
                 default => collect(),
             };
             $export = match ($note) {
@@ -74,26 +74,27 @@ class StaffMovementReportController extends Controller
                     'Duration' => $item['duration'],
                 ]),
 
-                'Employee Contract Extension' =>
+                'Extension Contract' =>
                 collect($employees['data'])->map(fn($item) => [
                     'NPK' => $item['npk'],
                     'Fullname' => $item['fullname'],
                     'Department' => $item['department'],
-                    'Section' => $item['section'],
                     'Position' => $item['position'],
                     'Start Date' => $item['start_date'],
                     'End Date' => $item['end_date'],
                     'Duration' => $item['duration'],
+                    'Length of Service' => $item['LOS'],
                     'Contract' => $item['contract'],
                 ]),
 
-                'Employee Contract Position Change' =>
+                'Employee Transfer' =>
                 collect($employees['data'])->map(fn($item) => [
                     'NPK' => $item['npk'],
                     'Fullname' => $item['fullname'],
-                    'Department' => $item['department'],
-                    'Section' => $item['section'],
-                    'Old Position' => $item['old_position'],
+                    'Last Department' => $item['last_department'],
+                    'New Department' => $item['department'],
+                    // 'Section' => $item['section'],
+                    'Last Position' => $item['last_position'],
                     'New Position' => $item['position'],
                     'Start Date' => $item['start_date'],
                 ]),
@@ -119,13 +120,16 @@ class StaffMovementReportController extends Controller
                     'Start Date' => $item['start_date'],
                 ]),
 
-                'Expired Contract' =>
+                'Termination' =>
                 collect($employees['data'])->map(fn($item) => [
                     'NPK' => $item['npk'],
                     'Fullname' => $item['fullname'],
                     'Department' => $item['department'],
+                    'Position' => $item['position'],
                     'Start Date' => $item['start_date'],
                     'End Date' => $item['end_date'],
+                    'Out Date' => $item['out_date'],
+                    'Reason' => $item['reason'],
                     'Status' => $item['status'],
                 ]),
 
@@ -142,11 +146,11 @@ class StaffMovementReportController extends Controller
             'New Employee Kontrak' => $this->newEmployeeKontrak($request),
             'New Employee Pemagangan' => $this->newEmployeePemagangan($request),
             'New Employee Internship' => $this->newEmployeeIntern($request),
-            'Employee Contract Extension' => $this->EmployeeContractExtension($request),
-            'Employee Contract Position Change' => $this->EmployeeContractPositionChange($request),
+            'Extension Contract' => $this->EmployeeContractExtension($request),
+            'Employee Transfer' => $this->EmployeeContractPositionChange($request),
             'Employee Department Mutation' => $this->EmployeeDepartmentMutation($request),
             'One Year Service' => $this->EmployeeContractLongTerm($request),
-            'Expired Contract' => $this->expiredContract($request),
+            'Termination' => $this->expiredContract($request),
             default => response()->json([]),
         };
     }
@@ -252,7 +256,7 @@ class StaffMovementReportController extends Controller
         $endDate = $date->copy()->endOfMonth();
 
         $query = EmployeeJob::with(['user', 'position', 'department'])
-            ->where('notes', 'Employee Contract Extension')
+            ->where('notes', 'Extension Contract')
             ->whereBetween('start_date', [$date, $endDate]);
 
         return DataTables::of($query)
@@ -260,11 +264,12 @@ class StaffMovementReportController extends Controller
             ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
             ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
             ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
-            ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
+            // ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
             ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
             ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
             ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
             ->addColumn('end_date', fn($job) => Carbon::parse($job->end_date)->isoFormat('D MMM Y'))
+            ->addColumn('LOS', fn($job) => $job->user->LOS() ?? 'N/A')
             ->addColumn('duration', fn($job) => $job->duration() ?? 'N/A')
             ->addColumn('contract', fn($job) => $job->contract ?? 'N/A')
             ->make(true);
@@ -279,7 +284,7 @@ class StaffMovementReportController extends Controller
         $endDate = $date->copy()->endOfMonth();
 
         $query = EmployeeJob::with(['user', 'position', 'department'])
-            ->where('notes', 'Employee Contract Position Change')
+            ->where('notes', 'Employee Transfer')
             ->whereBetween('start_date', [$date, $endDate]);
 
         return DataTables::of($query)
@@ -287,9 +292,9 @@ class StaffMovementReportController extends Controller
             ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
             ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
             ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
-            ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
+            // ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
             ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
-            ->addColumn('old_position', function ($job) {
+            ->addColumn('last_position', function ($job) {
                 $oldJob = EmployeeJob::with('position')
                     ->where('user_id', $job->user_id)
                     ->where('start_date', '<', $job->start_date)
@@ -299,6 +304,14 @@ class StaffMovementReportController extends Controller
                 return $oldJob?->position?->position_name ?? '-';
             })
             ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
+            ->addColumn('last_department', function ($job) {
+                $oldJob = EmployeeJob::with('department')
+                    ->where('user_id', $job->user_id)
+                    ->where('start_date', '<', $job->start_date)
+                    ->orderByDesc('start_date')
+                    ->first();
+                return $oldJob?->department?->department_name ?? '-';
+            })
             ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
             ->make(true);
     }
@@ -426,18 +439,24 @@ class StaffMovementReportController extends Controller
 
         $endDate = $date->copy()->endOfMonth();
 
-        $expiredContracts = EmployeeJob::with(['user', 'department'])
+        $expiredContracts = EmployeeJob::with(['user', 'department', 'position'])
             ->whereBetween('end_date', [$date, $endDate])
             ->get();
 
-        $transformedContracts = $expiredContracts->transform(fn($job) => [
-            'npk' => $job->user ? $job->user->npk : 'N/A',
-            'fullname' => $job->user ? $job->user->fullname : 'N/A',
-            'department' => $job->department ? $job->department->department_name : 'N/A',
-            'start_date' => $job->start_date ? Carbon::parse($job->start_date)->isoFormat('D MMMM Y') : 'N/A',
-            'end_date' => $job->end_date ? Carbon::parse($job->end_date)->isoFormat('D MMMM Y') : 'N/A',
-            'status' => $job->contract,
-        ]);
+        $transformedContracts = $expiredContracts->transform(function($job) {
+            $user = $job->user;
+            return [
+                'npk' => $user ? $user->npk : 'N/A',
+                'fullname' => $user ? $user->fullname : 'N/A',
+                'department' => $job->department ? $job->department->department_name : 'N/A',
+                'position'=> $job->position ? $job->position->position_name : 'N/A',
+                'start_date' => $job->start_date ? Carbon::parse((string)$job->start_date)->isoFormat('D MMMM Y') : 'N/A',
+                'end_date' => $job->end_date ? Carbon::parse((string)$job->end_date)->isoFormat('D MMMM Y') : 'N/A',
+                'out_date' => $user && $user->offboarding?->resign_date ? Carbon::parse((string)$user->offboarding->resign_date)->isoFormat('D MMMM Y') : 'N/A',
+                'reason' => $user && $user->offboarding?->reason ? $user->offboarding->reason : 'N/A',
+                'status' => $job->contract,
+            ];
+        });
 
         return DataTables::of($transformedContracts)
             ->addIndexColumn()

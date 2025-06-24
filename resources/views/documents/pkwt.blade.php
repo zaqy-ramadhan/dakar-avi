@@ -300,10 +300,10 @@
         <ol type="a">
             @foreach ($wages as $wage)
                 @if ($wage->type === 'Tunjangan Makan')
-                    <li>{{ $wage->type . ' : ' . number_format($wage->amount, 0, ',', '.') . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation . ' hadir kerja yang disediakan dalam bentuk uang saku/makan' }}
+                    <li>{{ $wage->type . ' : ' . $wage->amount. ' /' . Str::lower($wage->status) . ' ' . $wage->calculation . ' hadir kerja yang disediakan dalam bentuk uang saku/makan' }}
                     </li>
                 @elseif($wage->type === 'Tunjangan Transport')
-                    <li>{{ $wage->type . ' : ' . number_format($wage->amount, 0, ',', '.') . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation . ' hadir kerja' }}
+                    <li>{{ $wage->type . ' : ' . $wage->amount. ' /' . Str::lower($wage->status) . ' ' . $wage->calculation . ' hadir kerja' }}
                     </li>
                 @elseif($wage->type === 'Gaji Pokok')
                     @if ($kontrak->level->level_name === 'Operator' || $kontrak->level->level_name === 'Admin')
@@ -314,7 +314,7 @@
                     </li>
                     @endif
                 @else
-                    <li>{{ $wage->type . ' : ' . number_format($wage->amount, 0, ',', '.') . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
+                    <li>{{ $wage->type . ' : ' . $wage->amount. ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
                     </li>
                 @endif
             @endforeach

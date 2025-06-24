@@ -14,10 +14,10 @@
                         'New Employee Tetap',
                         'New Employee Pemagangan',
                         'New Employee Internship',
-                        'Expired Contract',
-                        'Employee Contract Extension',
-                        'Employee Contract Position Change',
-                        'Employee Department Mutation',
+                        'Termination',
+                        'Extension Contract',
+                        'Employee Transfer',
+                        // 'Employee Department Mutation',
                         'One Year Service',
                     ];
                 @endphp
@@ -72,18 +72,18 @@
                         <th>Department</th>
                         <th>Start Date</th>
                         <th>Duration</th>
-                    @elseif($note == 'Employee Contract Extension')
+                    @elseif($note == 'Extension Contract')
                         <th>Department</th>
-                        <th>Section</th>
                         <th>Position</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Duration</th>
+                        <th>Length Of Service</th>
                         <th>Status</th>
-                    @elseif($note == 'Employee Contract Position Change')
-                        <th>Department</th>
-                        <th>Section</th>
-                        <th>Old Position</th>
+                    @elseif($note == 'Employee Transfer')
+                        <th>Last Department</th>
+                        <th>New Department</th>
+                        <th>Last Position</th>
                         <th>New Position</th>
                         <th>Start Date</th>
                     @elseif($note == 'Employee Department Mutation')
@@ -97,10 +97,12 @@
                         <th>Section</th>
                         <th>Position</th>
                         <th>Start Date</th>
-                    @elseif($note == 'Expired Contract')
+                    @elseif($note == 'Termination')
                         <th>Department</th>
                         <th>Start Date</th>
                         <th>End Date</th>
+                        <th>Out Date</th>
+                        <th>Termination Reason</th>
                         <th>Status</th>
                     @endif
                 </tr>
@@ -119,48 +121,66 @@
             let extra = '';
 
             switch (note) {
-            case 'New Employee Kontrak':
-            case 'New Employee Tetap':
-            case 'New Employee Pemagangan':
-            case 'One Year Service':
-                extra = `<th>Department</th><th>Section</th><th>Position</th><th>Start Date</th>`;
-                break;
-            case 'New Employee Internship':
-                extra = `<th>Department</th><th>Start Date</th><th>Duration</th>`;
-                break;
-            case 'Employee Contract Extension':
-                extra = `<th>Department</th><th>Section</th><th>Position</th><th>Start Date</th><th>End Date</th><th>Duration</th><th>Status</th>`;
-                break;
-            case 'Employee Contract Position Change':
-                extra = `<th>Department</th><th>Section</th><th>Old Position</th><th>New Position</th><th>Start Date</th>`;
-                break;
-            case 'Employee Department Mutation':
-                extra = `<th>Old Department</th><th>New Department</th><th>Section</th><th>Position</th><th>Start Date</th>`;
-                break;
-            case 'Expired Contract':
-                extra = `<th>Department</th><th>Start Date</th><th>End Date</th><th>Status</th>`;
-                break;
+                case 'New Employee Kontrak':
+                case 'New Employee Tetap':
+                case 'New Employee Pemagangan':
+                case 'One Year Service':
+                    extra = `<th>Department</th><th>Section</th><th>Position</th><th>Start Date</th>`;
+                    break;
+                case 'New Employee Internship':
+                    extra = `<th>Department</th><th>Start Date</th><th>Duration</th>`;
+                    break;
+                case 'Extension Contract':
+                    extra =
+                        `<th>Department</th>
+                        <th>Position</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Duration</th>
+                        <th>Length Of Service</th>
+                        <th>Status</th>`;
+                    break;
+                case 'Employee Transfer':
+                    extra =
+                        `<th>Last Department</th>
+                        <th>New Department</th>
+                        <th>Last Position</th>
+                        <th>New Position</th>
+                        <th>Start Date</th>`;
+                    break;
+                case 'Employee Department Mutation':
+                    extra =
+                        `<th>Old Department</th><th>New Department</th><th>Section</th><th>Position</th><th>Start Date</th>`;
+                    break;
+                case 'Termination':
+                    extra = `<th>Department</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Out Date</th>
+                        <th>Termination Reason</th>
+                        <th>Status</th>`;
+                    break;
             }
             $('#datatable').html(`<thead><tr>${base}${extra}</tr></thead>`);
         }
 
         function loadDataTable(note, date) {
             if (datatable) {
-            datatable.destroy();
+                datatable.destroy();
             }
             renderTableHeader(note);
 
             datatable = $('#datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: "{{ route('staff-movement.data') }}",
-                data: {
-                note: note,
-                date: date
-                }
-            },
-            columns: getColumnsByNote(note)
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('staff-movement.data') }}",
+                    data: {
+                        note: note,
+                        date: date
+                    }
+                },
+                columns: getColumnsByNote(note)
             });
         }
 
@@ -216,10 +236,8 @@
                 }, {
                     data: 'duration'
                 }],
-                'Employee Contract Extension': [{
+                'Extension Contract': [{
                         data: 'department'
-                    }, {
-                        data: 'section'
                     }, {
                         data: 'position'
                     }, {
@@ -230,15 +248,17 @@
                     }, {
                         data: 'duration'
                     }, {
+                        data: 'LOS'
+                    }, {
                         data: 'contract'
                     }
                 ],
-                'Employee Contract Position Change': [{
+                'Employee Transfer': [{
+                        data: 'last_department'
+                    }, {
                         data: 'department'
                     }, {
-                        data: 'section'
-                    }, {
-                        data: 'old_position'
+                        data: 'last_position'
                     },
                     {
                         data: 'position'
@@ -268,12 +288,16 @@
                 }, {
                     data: 'start_date'
                 }],
-                'Expired Contract': [{
+                'Termination': [{
                     data: 'department'
                 }, {
                     data: 'start_date'
                 }, {
                     data: 'end_date'
+                }, {
+                    data: 'out_date'
+                }, {
+                    data: 'reason'
                 }, {
                     data: 'status'
                 }]
@@ -375,7 +399,7 @@
                             data: 'duration',
                             name: 'duration'
                         },
-                    @elseif ($note == 'Employee Contract Extension') {
+                    @elseif ($note == 'Extension Contract') {
                             data: 'department',
                             name: 'department'
                         }, {
@@ -397,7 +421,7 @@
                             data: 'contract',
                             name: 'contract'
                         },
-                    @elseif ($note == 'Employee Contract Position Change') {
+                    @elseif ($note == 'Employee Transfer') {
                             data: 'department',
                             name: 'department'
                         }, {

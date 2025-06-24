@@ -33,7 +33,7 @@ class JobWageAllowanceController extends Controller
                 abort(403, 'Unauthorized');
             }
         } else {
-            if (!in_array($userRole, ['admin', 'admin 1', 'admin 2'])) {
+            if (!in_array($userRole, ['admin', 'admin 2', 'admin 3'])) {
                 abort(403, 'Unauthorized');
             }
         }
@@ -78,7 +78,7 @@ class JobWageAllowanceController extends Controller
                 abort(403, 'Unauthorized');
             }
         } else {
-            if (!in_array($userRole, ['admin', 'admin 1', 'admin 2'])) {
+            if (!in_array($userRole, ['admin', 'admin 2', 'admin 3'])) {
                 abort(403, 'Unauthorized');
             }
         }
