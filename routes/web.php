@@ -68,7 +68,7 @@ Route::get('api/v1/position/{id}', [ApiPositionController::class, 'show']);
 Route::get('/offboarding/exit-interview', [OffboardingController::class, 'exitIntvButton'])->name('offboarding.exit-interview')->middleware('auth');
 
 
-Route::middleware(['auth'])->middleware('active_employee')->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['role:admin,admin 2,admin 3,admin 4'])->group(function () {
 
