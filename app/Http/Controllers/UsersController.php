@@ -29,6 +29,7 @@ use App\Models\JobType;
 use App\Models\JobWageAllowance;
 use App\Models\Level;
 use App\Models\Line;
+use App\Models\OffboardingReason;
 use App\Models\Position;
 use App\Models\User;
 use App\Models\WorkHour;
@@ -299,6 +300,7 @@ class UsersController extends Controller
             $lastContractInventory = optional(optional($user->employeeJob->last())->inventory)->isEmpty() ?? true;
             $acceptedItems = collect($inventories)->where('status', 'Diterima');
             $groupedItems = $acceptedItems->groupBy('item_name');
+            $reason = OffboardingReason::all();
 
             return view('admin.onboarding.onboarding', compact(
                 'user',
@@ -323,6 +325,7 @@ class UsersController extends Controller
                 'rule',
                 'groupedItems',
                 'previousRole',
+                'reason';
             ));
         }
 
