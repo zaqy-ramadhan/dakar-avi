@@ -299,24 +299,53 @@
             selanjutnya disebut upah yang dibayar tunai pada akhir bulan, yaitu berupa :</p>
         <ol type="a">
             @foreach ($wages as $wage)
-                @if ($wage->type === 'Tunjangan Makan')
-                    <li>{{ $wage->type . ' : ' . $wage->amount. ' /' . Str::lower($wage->status) . ' ' . $wage->calculation . ' hadir kerja yang disediakan dalam bentuk uang saku/makan' }}
-                    </li>
-                @elseif($wage->type === 'Tunjangan Transport')
-                    <li>{{ $wage->type . ' : ' . $wage->amount. ' /' . Str::lower($wage->status) . ' ' . $wage->calculation . ' hadir kerja' }}
-                    </li>
-                @elseif($wage->type === 'Gaji Pokok')
-                    @if ($kontrak->level->level_name === 'Operator' || $kontrak->level->level_name === 'Admin')
-                    <li>{{ $wage->type . ' : ' . $wage->amount  }}
-                    </li>
-                    @else
-                    <li>{{ $wage->type . ' : ' . $wage->amount . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
-                    </li>
-                    @endif
-                @else
-                    <li>{{ $wage->type . ' : ' . $wage->amount. ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
-                    </li>
-                @endif
+                <li>
+                    <table style="width:100%; border-collapse: collapse;">
+                        @if ($wage->type === 'Tunjangan Makan')
+                            <tr>
+                                <td style="vertical-align: top; width: 150px;">{{ $wage->type }}</td>
+                                <td style="vertical-align: top; width: 5px;">:</td>
+                                <td>
+                                    {{ $wage->amount . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation . ' hadir kerja yang disediakan dalam bentuk uang saku/makan' }}
+                                </td>
+                            </tr>
+                        @elseif($wage->type === 'Tunjangan Transport')
+                            <tr>
+                                <td style="vertical-align: top; width: 150px;">{{ $wage->type }}</td>
+                                <td style="vertical-align: top; width: 5px;">:</td>
+                                <td>
+                                    {{ $wage->amount . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation . ' hadir kerja' }}
+                                </td>
+                            </tr>
+                        @elseif($wage->type === 'Gaji Pokok')
+                            @if ($kontrak->level->level_name === 'Operator' || $kontrak->level->level_name === 'Admin')
+                                <tr>
+                                    <td style="vertical-align: top; width: 150px;">{{ $wage->type }}</td>
+                                    <td style="vertical-align: top; width: 5px;">:</td>
+                                    <td>
+                                        {{ $wage->amount }}
+                                    </td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <td style="vertical-align: top; width: 150px;">{{ $wage->type }}</td>
+                                    <td style="vertical-align: top; width: 5px;">:</td>
+                                    <td>
+                                        {{ $wage->amount . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
+                                    </td>
+                                </tr>
+                            @endif
+                        @else
+                            <tr>
+                                <td style="vertical-align: top; width: 150px;">{{ $wage->type }}</td>
+                                <td style="vertical-align: top; width: 10px;">:</td>
+                                <td>
+                                    {{ $wage->amount . ' /' . Str::lower($wage->status) . ' ' . $wage->calculation }}
+                                </td>
+                            </tr>
+                        @endif
+                    </table>
+                </li>
             @endforeach
             <li>Tunjangan pengobatan/perawatan kesehatan kepada Pihak Kedua diberikan dalam bentuk fasilitas BPJS
                 Kesehatan sesuai dengan peraturan pemerintah yang berlaku.</li>
