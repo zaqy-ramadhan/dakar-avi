@@ -325,7 +325,7 @@ class UsersController extends Controller
                 'rule',
                 'groupedItems',
                 'previousRole',
-                'reason';
+                'reason',
             ));
         }
 
