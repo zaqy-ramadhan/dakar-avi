@@ -12,7 +12,13 @@
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}">
+    @if (Auth::check())
+        <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}">
+    @else
+        <script>
+            window.location.href = "{{ route('login') }}";
+        </script>
+    @endif
     <style>
         .body-wrapper .container-fluid {
             max-width: 100%;
@@ -545,11 +551,13 @@
                                                     <button class="accordion-button collapsed" type="button"
                                                         data-bs-toggle="collapse"
                                                         data-bs-target="#notifCollapseStarterkitAccepted"
-                                                        aria-expanded="false" aria-controls="notifCollapseStarterkitAccepted">
+                                                        aria-expanded="false"
+                                                        aria-controls="notifCollapseStarterkitAccepted">
                                                         Starter Kit Accepted
                                                     </button>
                                                 </h2>
-                                                <div id="notifCollapseStarterkitAccepted" class="accordion-collapse collapse"
+                                                <div id="notifCollapseStarterkitAccepted"
+                                                    class="accordion-collapse collapse"
                                                     aria-labelledby="notifHeadingStarterkitAccepted"
                                                     data-bs-parent="#notificationAccordion">
                                                     <div class="accordion-body p-0">
