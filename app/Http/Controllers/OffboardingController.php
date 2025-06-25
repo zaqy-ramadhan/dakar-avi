@@ -176,10 +176,11 @@ class OffboardingController extends Controller
     {
         try {
             $user = Auth::user();
-            $user->offboarding->update([
+            $offboarding = $user->offboarding;
+            $offboarding->update([
                 'exit_interview' => true,
             ]);
-            // return redirect()->back()->with('success', 'Terima kasih sudah mengisi exit interview.');
+
             return view('admin.offboarding.exit')->with('success', 'Terima kasih sudah mengisi exit interview.');
         } catch (\Exception $e) {
             Log::error($e->getMessage());

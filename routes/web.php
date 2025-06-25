@@ -65,6 +65,9 @@ Route::get('api/v1/department/{id}', [ApiDepartmentController::class, 'show']);
 Route::get('api/v1/position', [ApiPositionController::class, 'index']);
 Route::get('api/v1/position/{id}', [ApiPositionController::class, 'show']);
 
+Route::get('/offboarding/exit-interview', [OffboardingController::class, 'exitIntvButton'])->name('offboarding.exit-interview')->middleware('auth');
+
+
 Route::middleware(['auth'])->middleware('active_employee')->group(function () {
 
     Route::middleware(['role:admin,admin 2,admin 3,admin 4'])->group(function () {
@@ -197,8 +200,6 @@ Route::middleware(['auth'])->middleware('active_employee')->group(function () {
     })->name('user.offboarding');
 
     Route::post('/offboarding/{id}/exit-interview', [OffboardingController::class, 'exitIntv'])->name('offboarding.exit-interview');
-    Route::get('/offboarding/exit-interview', [OffboardingController::class, 'exitIntvButton'])->name('offboarding.exit-interview');
-
 
     //dakar form
     Route::get('/admin/form/profile', [UsersController::class, 'details'])->name('users.details');

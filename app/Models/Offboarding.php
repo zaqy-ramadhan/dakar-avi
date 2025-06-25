@@ -12,6 +12,7 @@ class Offboarding extends Model
         'user_id',
         'resign_date',
         'reason',
+        'exit_interview',
     ];
 
     public function user()
