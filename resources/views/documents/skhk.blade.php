@@ -176,7 +176,7 @@
                 </td>
                 <td>
                     PT. Astra Visteon Indonesia beralamat di Jl. Lanbau Karang Asem Barat diwakili oleh Sdri.
-                    {{ $hr->fullname }} (HRGA & EHS Department Head), bertindak untuk dan atas nama Perusahaan,
+                    {{ $hr?->fullname }} (HRGA & EHS Department Head), bertindak untuk dan atas nama Perusahaan,
                     selanjutnya disebut Pihak I.
             </tr>
 
@@ -263,7 +263,7 @@
             <div class="fw-3">Pihak I</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}" alt=" "
                 style="width: auto; height: 60px;">
-            <div>{{ $hr->fullname }}</div>
+            <div>{{ $hr?->fullname }}</div>
             <div>HRGA & EHS Dept. Head</div>
         </div>
         <div class="signature">
