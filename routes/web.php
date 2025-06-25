@@ -50,10 +50,10 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home.index');
 
 
-Route::get('kp', function () {
-    $pdf = Pdf::loadView('documents.sertif')->setPaper('a4', 'landscape');
-    return $pdf->stream('kp.pdf');
-});
+// Route::get('kp', function () {
+//     $pdf = Pdf::loadView('documents.sertif')->setPaper('a4', 'landscape');
+//     return $pdf->stream('kp.pdf');
+// });
 
 #api routes
 Route::get('api/v1/users', [ApiUsersController::class, 'index']);
@@ -197,6 +197,7 @@ Route::middleware(['auth'])->middleware('active_employee')->group(function () {
     })->name('user.offboarding');
 
     Route::post('/offboarding/{id}/exit-interview', [OffboardingController::class, 'exitIntv'])->name('offboarding.exit-interview');
+    Route::get('/offboarding/exit-interview', [OffboardingController::class, 'exitIntvButton'])->name('offboarding.exit-interview');
 
 
     //dakar form

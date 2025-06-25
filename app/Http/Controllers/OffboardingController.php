@@ -23,6 +23,7 @@ use App\Models\User;
 use App\Models\WorkHour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class OffboardingController extends Controller
 {
@@ -165,9 +166,24 @@ class OffboardingController extends Controller
             $user->offboarding()->update([
                 'exit_interview' => $request->exit_gform,
             ]);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             Log::error($e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan saat memperbarui data.' . $e->getMessage()) ;
-        }   
+            return back()->with('error', 'Terjadi kesalahan saat memperbarui data.' . $e->getMessage());
+        }
+    }
+
+    public function exitIntvButton()
+    {
+        try {
+            $user = Auth::user();
+            $user->offboarding->update([
+                'exit_interview' => true,
+            ]);
+            // return redirect()->back()->with('success', 'Terima kasih sudah mengisi exit interview.');
+            return view('admin.offboarding.exit')->with('success', 'Terima kasih sudah mengisi exit interview.');
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat memperbarui data.' . $e->getMessage());
+        }
     }
 }
