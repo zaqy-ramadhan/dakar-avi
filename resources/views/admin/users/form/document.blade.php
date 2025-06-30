@@ -17,7 +17,7 @@
     <div class="col-sm-6 col-md-6 col-lg-6 mb-3">
         <label for="diploma_file" class="form-label">Ijazah dan Transkrip Nilai<span class="text-danger">*</span></label>
         <input type="file" class="form-control" id="diploma_file" name="diploma_file">
-        <small class="text-muted">Wajib diisi</small>
+        <small class="text-muted">Wajib diisi. Maksimal 1 MB. Format: pdf/jpg/jpeg/png</small>
         @if ($diploma)
             <p>File yang ada: <a href="{{ asset('storage/' . $diploma->doc_path) }}" target="_blank">Lihat File</a></p>
         @endif
@@ -29,7 +29,7 @@
     <div class="col-sm-6 col-md-6 col-lg-6 mb-3">
         <label for="ktp_file" class="form-label">KTP<span class="text-danger">*</span></label>
         <input type="file" class="form-control" id="ktp_file" name="ktp_file">
-        <small class="text-muted">Wajib diisi</small>
+        <small class="text-muted">Wajib diisi. Maksimal 1 MB. Format: pdf/jpg/jpeg/png</small>
         @if ($ktp)
             <p>File yang ada: <a href="{{ asset('storage/' . $ktp->doc_path) }}" target="_blank">Lihat File</a></p>
         @endif
@@ -67,7 +67,7 @@
     <div class="col-sm-4 col-md-4 col-lg-4 mb-3">
         <label for="family_card_file" class="form-label">Kartu Keluarga<span class="text-danger">*</span></label>
         <input type="file" class="form-control" id="family_card_file" name="family_card_file">
-        <small class="text-muted">Wajib diisi</small>
+        <small class="text-muted">Wajib diisi. Maksimal 1 MB. Format: pdf/jpg/jpeg/png</small>
         @if ($familyCard)
             <p>File yang ada: <a href="{{ asset('storage/' . $familyCard->doc_path) }}" target="_blank">Lihat File</a>
             </p>
@@ -80,7 +80,7 @@
     <div class="col-sm-4 col-md-4 col-lg-4 mb-3">
         <label for="resume_file" class="form-label">CV / Resume Anda<span class="text-danger">*</span></label>
         <input type="file" class="form-control" id="resume_file" name="resume_file">
-        <small class="text-muted">Wajib diisi</small>
+        <small class="text-muted">Wajib diisi. Maksimal 1 MB. Format: pdf/jpg/jpeg/png</small>
         @if ($resume)
             <p>File yang ada: <a href="{{ asset('storage/' . $resume->doc_path) }}" target="_blank">Lihat File</a></p>
         @endif
@@ -120,7 +120,7 @@
         <label for="photo_file" class="form-label">Foto Rekening Bank <span
                 class="text-danger">*</span></label>
         <input type="file" class="form-control" id="bank_file" name="bank_file">
-        <small class="text-muted">Wajib diisi</small>
+        <small class="text-muted">Wajib diisi. Maksimal 1 MB. Format: pdf/jpg/jpeg/png</small>
         @if ($bank)
             <p>File yang ada: <a href="{{ asset('storage/' . $bank->doc_path) }}" target="_blank">Lihat File</a></p>
         @endif
@@ -133,7 +133,7 @@
         <label for="photo_file" class="form-label">Pas Foto dalam bentuk .jpeg <span
                 class="text-danger">*</span></label>
         <input type="file" class="form-control" id="photo_file" name="photo_file" accept=".jpeg">
-        <small class="text-muted">Wajib diisi</small>
+        <small class="text-muted">Wajib diisi. Maksimal 1 MB. Format: pdf/jpg/jpeg/png</small>
         @if ($photo)
             <p>File yang ada: <a href="{{ asset('storage/' . $photo->doc_path) }}" target="_blank">Lihat File</a></p>
         @endif
