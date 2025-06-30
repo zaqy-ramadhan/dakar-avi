@@ -310,7 +310,7 @@
 
 @if (Request::is('*offboarding*'))
     <div class="tab-pane py-4 px-2 fade" id="exit" role="tabpanel" aria-labelledby="exit">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfFq_-XYzyZbe9ZCzXijt1YaLoPeR-LZljjH5moqu8WVvb-Wg/viewform?usp=preview"
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeY78tz9mnYx2bc_T1twUdPrfMaWTT4xog3J2eHBcqR8EJc7Q/viewform"
             target="_blank" class="btn btn-primary mb-3">
             <i class="ti ti-list-check fs-4"></i> Exit Interview (Google Form)
         </a>

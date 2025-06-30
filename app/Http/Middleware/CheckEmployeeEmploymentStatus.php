@@ -24,7 +24,7 @@ class CheckEmployeeEmploymentStatus
             $isEmployed = $employeeJob->employment_status;
             $isOffboarded = $employeeOffboarding?->exit_interview;
 
-            if (!$isEmployed && $isOffboarded && !$paklaring && !$sksmk) {
+            if (!$isEmployed && $isOffboarded && $paklaring && $sksmk) {
                 Auth::logout();
                 return redirect()->route('login')->withErrors([
                     'npk' => 'Akun Anda sudah dinonaktifkan.',

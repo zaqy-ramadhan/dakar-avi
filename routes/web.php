@@ -43,7 +43,7 @@ use App\Http\Controllers\StaffMovementReportController;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
-Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->middleware('active_employee');
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('active_employee');
@@ -68,7 +68,7 @@ Route::get('api/v1/position/{id}', [ApiPositionController::class, 'show']);
 Route::get('/offboarding/exit-interview', [OffboardingController::class, 'exitIntvButton'])->name('offboarding.exit-interview')->middleware('auth');
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->middleware('active_employee')->group(function () {
 
     Route::middleware(['role:admin,admin 2,admin 3,admin 4'])->group(function () {
 

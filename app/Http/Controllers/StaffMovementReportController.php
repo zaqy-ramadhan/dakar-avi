@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EmployeeInventoryNumber;
 use App\Models\EmployeeJob;
+use App\Models\Item;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -27,6 +29,7 @@ class StaffMovementReportController extends Controller
         'One Year Service',
         'Termination',
         'Expired Contract',
+        'Onboarding Report'
     ];
 
     public function index(Request $request)
@@ -54,6 +57,7 @@ class StaffMovementReportController extends Controller
                 'One Year Service' => $this->EmployeeContractLongTerm($request)->getData(true),
                 'Termination' => $this->termination($request)->getData(true),
                 'Expired Contract' => $this->expiredContract($request)->getData(true),
+                'Onboarding Report' => $this->onboardingReport($request)->getData(true),
                 default => collect(),
             };
             $export = match ($note) {
@@ -146,6 +150,20 @@ class StaffMovementReportController extends Controller
                     'Status' => $item['status'],
                 ]),
 
+                'Onboarding Report' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Department' => $item['department'],
+                    'Position' => $item['position'],
+                    'Start Date' => $item['start_date'],
+                    'Deadline Pre' => $item['deadline_pre'],
+                    'Create Employee' => $item['create_employee'],
+                    'Deadline On' => $item['deadline_on'],
+                    'Employment Data' => $item['employment_data'],
+                    'Starter Kit' => $item['starter_kit'],
+                    'Deadline Post' => $item['deadline_post'],
+                ]),
 
                 default => collect($employees['data']),
             };
@@ -165,6 +183,7 @@ class StaffMovementReportController extends Controller
             'One Year Service' => $this->EmployeeContractLongTerm($request),
             'Termination' => $this->termination($request),
             'Expired Contract' => $this->expiredContract($request),
+            'Onboarding Report' => $this->onboardingReport($request),
             default => response()->json([]),
         };
     }
@@ -484,12 +503,12 @@ class StaffMovementReportController extends Controller
 
         $endDate = $date->copy()->endOfMonth();
 
-        $termination = User::whereHas('offboarding')->whereHas('latestEmployeeJob', function($q) use ($date, $endDate) {
+        $termination = User::whereHas('offboarding')->whereHas('latestEmployeeJob', function ($q) use ($date, $endDate) {
             $q->where('employment_status', false);
             $q->whereBetween('resign_date', [$date, $endDate]);
         })->get();
         // dd($termination);
-        
+
         $termination = $termination->transform(function ($user) {
             return [
                 'npk' => $user->npk,
@@ -506,6 +525,289 @@ class StaffMovementReportController extends Controller
 
         return DataTables::of($termination)
             ->addIndexColumn()
+            ->make(true);
+    }
+
+    public function onboardingReport(Request $request)
+    {
+        $date = $request->input('date')
+            ? Carbon::parse($request->input('date'))->startOfMonth()
+            : Carbon::now()->startOfMonth();
+
+        $endDate = $date->copy()->endOfMonth();
+
+        $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
+            ->whereIn('notes', [
+                'New Employee Kontrak',
+                'New Employee Tetap',
+                'New Employee Pemagangan',
+                'New Employee Internship'
+            ])
+            ->whereBetween('start_date', [$date, $endDate]);
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
+            ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
+            ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
+            ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
+            ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
+            ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
+            ->addColumn('deadline_pre', function ($job) {
+                $user = $job->user;
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) {
+                    return 'N/A';
+                }
+                $startDate = Carbon::parse($job->start_date)->endOfDay();
+                $deadline = $startDate->copy()->subDay();
+                return $deadline->isoFormat('D MMMM YYYY') ?? 'N/A';
+            })
+            ->addColumn('create_employee', function ($job) {
+                $user = $job->user;
+                $user = $job->user;
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+
+                $startDate = Carbon::parse($job->start_date)->startOfDay();
+                $deadline = $startDate->copy()->subDay(); // H-1
+                $completionDate = $user->created_at;
+
+                if ($completionDate) {
+                    $completion = Carbon::parse($completionDate)->startOfDay();
+                    if ($completion->lte($deadline)) {
+                        return '<span class="badge bg-success">On Time</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($completion);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    }
+                } else {
+                    $now = Carbon::now()->startOfDay();
+                    if ($now->lte($deadline)) {
+                        return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($now);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    }
+                }
+            })
+            ->addColumn('deadline_on', function ($job) {
+                $user = $job->user;
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+                return $job->start_date->isoFormat('D MMMM YYYY') ?? 'N/A';
+            })
+            ->addColumn('employment_data', function ($job) {
+                $user = $job->user;
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+
+                $startDate = Carbon::parse($job->start_date)->startOfDay();
+                $deadline = $startDate->copy();
+                $isCompleted = $user->progressOnboardingAdmin()['progress'] >= 17;
+                $completionDate = null;
+                if ($isCompleted) {
+                    $completionDate = $job?->created_at ?? null;
+                }
+
+                if ($completionDate) {
+                    $completion = Carbon::parse($completionDate)->startOfDay();
+                    if ($completion->lte($deadline)) {
+                        return '<span class="badge bg-success">On Time</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($completion);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    }
+                } else {
+                    $now = Carbon::now()->startOfDay();
+                    if ($now->lte($deadline)) {
+                        return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($now);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    }
+                }
+            })
+            ->addColumn('starter_kit', function ($job) {
+                $user = $job->user;
+
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+
+                $startDate = Carbon::parse($job->start_date)->startOfDay();
+                $deadline = $startDate->copy();
+                $isCompleted = $user->progressOnboardingAdmin()['progress'] >= 51;
+                $completionDate = null;
+                if ($isCompleted) {
+                    $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at ?? null;
+                }
+
+                if ($completionDate) {
+                    $completion = Carbon::parse($completionDate)->startOfDay();
+                    if ($completion->lte($deadline)) {
+                        return '<span class="badge bg-success">On Time</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($completion);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    }
+                } else {
+                    $now = Carbon::now()->startOfDay();
+                    if ($now->lte($deadline)) {
+                        return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($now);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    }
+                }
+            })
+            ->addColumn('deadline_post', function ($job) {
+                $user = $job->user;
+
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) {
+                    return 'N/A';
+                }
+                $startDate = Carbon::parse($job->start_date)->addMonth();
+                $deadline = $startDate->copy()->subDay();
+                return $deadline->isoFormat('D MMMM YYYY') ?? 'N/A';
+            })
+            ->addColumn('greatday', function ($job) {
+                $user = $job->user;
+
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+
+                $startDate = Carbon::parse($job->start_date)->startOfDay();
+                $deadline = $startDate->copy(); // Deadline on start date
+                $greatdayId = Item::where('item_name', 'User Account Great Day')->value('id');
+                $greatday = EmployeeInventoryNumber::where('user_id', $user->id)
+                    ->where('item_id', $greatdayId)
+                    ->orderByDesc('created_at')
+                    ->first();
+
+                $completionDate = $greatday ? $greatday->created_at : null;
+
+                if ($completionDate) {
+                    $completion = Carbon::parse($completionDate)->startOfDay();
+                    if ($completion->lte($deadline)) {
+                        return '<span class="badge bg-success">On Time</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($completion);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    }
+                } else {
+                    $now = Carbon::now()->startOfDay();
+                    if ($now->lte($deadline)) {
+                        return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($now);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    }
+                }
+            })
+            ->addColumn('eslip', function ($job) {
+                $user = $job->user;
+
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+
+                $startDate = Carbon::parse($job->start_date)->startOfDay();
+                $deadline = $startDate->copy(); // Deadline on start date
+                $eslipId = Item::where('item_name', 'User Account E-Slip')->value('id');
+                $eslip = EmployeeInventoryNumber::where('user_id', $user->id)
+                    ->where('item_id', $eslipId)
+                    ->orderByDesc('created_at')
+                    ->first();
+
+                $completionDate = $eslip ? $eslip->created_at : null;
+
+                if ($completionDate) {
+                    $completion = Carbon::parse($completionDate)->startOfDay();
+                    if ($completion->lte($deadline)) {
+                        return '<span class="badge bg-success">On Time</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($completion);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    }
+                } else {
+                    $now = Carbon::now()->startOfDay();
+                    if ($now->lte($deadline)) {
+                        return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($now);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    }
+                }
+            })
+            ->addColumn('bpjskes', function ($job) {
+                $user = $job->user;
+
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+
+                $startDate = Carbon::parse($job->start_date)->startOfDay();
+                $deadline = $startDate->copy(); // Deadline on start date
+                $bpjskesId = Item::where('item_name', 'BPJS Kesehatan')->value('id');
+                $bpjskes = EmployeeInventoryNumber::where('user_id', $user->id)
+                    ->where('item_id', $bpjskesId)
+                    ->orderByDesc('created_at')
+                    ->first();
+
+                $completionDate = $bpjskes ? $bpjskes->created_at : null;
+
+                if ($completionDate) {
+                    $completion = Carbon::parse($completionDate)->startOfDay();
+                    if ($completion->lte($deadline)) {
+                        return '<span class="badge bg-success">On Time</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($completion);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    }
+                } else {
+                    $now = Carbon::now()->startOfDay();
+                    if ($now->lte($deadline)) {
+                        return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($now);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    }
+                }
+            })
+            ->addColumn('bpjstk', function ($job) {
+                $user = $job->user;
+
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+
+                $startDate = Carbon::parse($job->start_date)->startOfDay();
+                $deadline = $startDate->copy(); // Deadline on start date
+                $bpjstkId = Item::where('item_name', 'BPJS TK')->value('id');
+                $bpjstk = EmployeeInventoryNumber::where('user_id', $user->id)
+                    ->where('item_id', $bpjstkId)
+                    ->orderByDesc('created_at')
+                    ->first();
+
+                $completionDate = $bpjstk ? $bpjstk->created_at : null;
+
+                if ($completionDate) {
+                    $completion = Carbon::parse($completionDate)->startOfDay();
+                    if ($completion->lte($deadline)) {
+                        return '<span class="badge bg-success">On Time</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($completion);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small>' . $completion->format('d M Y') . '</small>';
+                    }
+                } else {
+                    $now = Carbon::now()->startOfDay();
+                    if ($now->lte($deadline)) {
+                        return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    } else {
+                        $overdueDays = $deadline->diffInDays($now);
+                        return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+                    }
+                }
+            })
+            ->rawColumns(['pre_onboarding', 'onboarding', 'post_onboarding', 'create_employee', 'employment_data', 'starter_kit', 'greatday', 'eslip', 'bpjskes', 'bpjstk'])
             ->make(true);
     }
 

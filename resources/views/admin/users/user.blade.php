@@ -128,64 +128,64 @@
                             searchable: true,
                             orderable: true
                         },
-                        {
-                            data: 'deadline_pre',
-                            name: 'deadline_pre'
-                        },
-                        {
-                            data: 'create_employee',
-                            name: 'create_employee'
-                        },
-                        {
-                            data: 'deadline_on',
-                            name: 'deadline_on'
-                        },
-                        {
-                            data: 'employment_data',
-                            name: 'employment_data'
-                        },
-                        {
-                            data: 'starter_kit',
-                            name: 'starter_kit'
-                        },
-                        {
-                            data:'deadline_post',
-                            name: 'deadline_post'
-                        },
-                        {
-                            data:'greatday',
-                            name: 'greatday'
-                        },
-                        {
-                            data:'eslip',
-                            name: 'eslip'
-                        },
-                        {
-                            data:'bpjskes',
-                            name: 'bpjskes'
-                        },
-                        {
-                            data:'bpjstk',
-                            name: 'bpjstk'
-                        },
                         // {
-                        //     data: 'checklist',
-                        //     name: 'checklist',
-                        //     searchable: false,
-                        //     orderable: false
+                        //     data: 'deadline_pre',
+                        //     name: 'deadline_pre'
                         // },
                         // {
-                        //     data: 'pre_onboarding',
-                        //     name: 'pre_onboarding',
+                        //     data: 'create_employee',
+                        //     name: 'create_employee'
                         // },
                         // {
-                        //     data: 'onboarding',
-                        //     name: 'onboarding',
+                        //     data: 'deadline_on',
+                        //     name: 'deadline_on'
                         // },
                         // {
-                        //     data: 'post_onboarding',
-                        //     name: 'post_onboarding',
+                        //     data: 'employment_data',
+                        //     name: 'employment_data'
                         // },
+                        // {
+                        //     data: 'starter_kit',
+                        //     name: 'starter_kit'
+                        // },
+                        // {
+                        //     data:'deadline_post',
+                        //     name: 'deadline_post'
+                        // },
+                        // {
+                        //     data:'greatday',
+                        //     name: 'greatday'
+                        // },
+                        // {
+                        //     data:'eslip',
+                        //     name: 'eslip'
+                        // },
+                        // {
+                        //     data:'bpjskes',
+                        //     name: 'bpjskes'
+                        // },
+                        // {
+                        //     data:'bpjstk',
+                        //     name: 'bpjstk'
+                        // },
+                        {
+                            data: 'checklist',
+                            name: 'checklist',
+                            searchable: false,
+                            orderable: false
+                        },
+                        {
+                            data: 'pre_onboarding',
+                            name: 'pre_onboarding',
+                        },
+                        {
+                            data: 'onboarding',
+                            name: 'onboarding',
+                        },
+                        {
+                            data: 'post_onboarding',
+                            name: 'post_onboarding',
+                        },
                         {
                             data: 'actions',
                             name: 'actions'

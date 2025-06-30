@@ -20,6 +20,7 @@
                         'Employee Transfer',
                         // 'Employee Department Mutation',
                         'One Year Service',
+                        'Onboarding Report',
                     ];
                 @endphp
 
@@ -57,63 +58,79 @@
             </dic>
         </div>
 
-        <table id="datatable" class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Full Name</th>
-                    <th>NPK</th>
+        <div class="card" style="border-radius: 20px">
+            <table id="datatable" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Full Name</th>
+                        <th>NPK</th>
 
-                    @if (in_array($note, ['New Employee Kontrak', 'New Employee Pemagangan', 'New Employee Tetap']))
-                        <th>Department</th>
-                        <th>Section</th>
-                        <th>Position</th>
-                        <th>Start Date</th>
-                    @elseif($note == 'New Employee Internship')
-                        <th>Department</th>
-                        <th>Start Date</th>
-                        <th>Duration</th>
-                    @elseif($note == 'Extension Contract')
-                        <th>Department</th>
-                        <th>Position</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Duration</th>
-                        <th>Length Of Service</th>
-                        <th>Status</th>
-                    @elseif($note == 'Employee Transfer')
-                        <th>Last Department</th>
-                        <th>New Department</th>
-                        <th>Last Position</th>
-                        <th>New Position</th>
-                        <th>Start Date</th>
-                    @elseif($note == 'Employee Department Mutation')
-                        <th>Old Department</th>
-                        <th>New Department</th>
-                        <th>Section</th>
-                        <th>Position</th>
-                        <th>Start Date</th>
-                    @elseif($note == 'One Year Service')
-                        <th>Department</th>
-                        <th>Section</th>
-                        <th>Position</th>
-                        <th>Start Date</th>
-                    @elseif($note == 'Termination')
-                        <th>Department</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Out Date</th>
-                        <th>Termination Reason</th>
-                        <th>Status</th>
-                    @elseif($note == 'Expired Contract')
-                        <th>Department</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Status</th>
-                    @endif
-                </tr>
-            </thead>
-        </table>
+                        @if (in_array($note, ['New Employee Kontrak', 'New Employee Pemagangan', 'New Employee Tetap']))
+                            <th>Department</th>
+                            <th>Section</th>
+                            <th>Position</th>
+                            <th>Start Date</th>
+                        @elseif($note == 'New Employee Internship')
+                            <th>Department</th>
+                            <th>Start Date</th>
+                            <th>Duration</th>
+                        @elseif($note == 'Extension Contract')
+                            <th>Department</th>
+                            <th>Position</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Duration</th>
+                            <th>Length Of Service</th>
+                            <th>Status</th>
+                        @elseif($note == 'Employee Transfer')
+                            <th>Last Department</th>
+                            <th>New Department</th>
+                            <th>Last Position</th>
+                            <th>New Position</th>
+                            <th>Start Date</th>
+                        @elseif($note == 'Employee Department Mutation')
+                            <th>Old Department</th>
+                            <th>New Department</th>
+                            <th>Section</th>
+                            <th>Position</th>
+                            <th>Start Date</th>
+                        @elseif($note == 'One Year Service')
+                            <th>Department</th>
+                            <th>Section</th>
+                            <th>Position</th>
+                            <th>Start Date</th>
+                        @elseif($note == 'Termination')
+                            <th>Department</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Out Date</th>
+                            <th>Termination Reason</th>
+                            <th>Status</th>
+                        @elseif($note == 'Expired Contract')
+                            <th>Department</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                        @elseif($note == 'Onboarding Report')
+                            <th>Department</th>
+                            <th>Position</th>
+                            <th>Start Date</th>
+                            <th>Deadline Pre</th>
+                            <th>Overdue Create Employee</th>
+                            <th>Create Employee</th>
+                            <th>Employment Data</th>
+                            <th>Starter Kit</th>
+                            <th>Deadline Post</th>
+                            <th>BPJS Kes</th>
+                            <th>BPJS TK</th>
+                            <th>Greatday</th>
+                            <th>Eslip</th>
+                        @endif
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
 @endsection
 
@@ -166,11 +183,26 @@
                         <th>Termination Reason</th>
                         <th>Status</th>`;
                     break;
-                 case 'Expired Contract':
+                case 'Expired Contract':
                     extra = `<th>Department</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Status</th>`;
+                case 'Onboarding Report':
+                    extra = `<th>Department</th>
+                        <th>Position</th>
+                        <th>Start Date</th>
+                        <th>Deadline Pre</th>
+                        <th>Create Employee</th>
+                        <th>Deadline On</th>
+                        <th>Employment Data</th>
+                        <th>Starter Kit</th>
+                        <th>Deadline Post</th>
+                        <th>BPJS Kes</th>
+                        <th>BPJS TK</th>
+                        <th>Greatday</th>
+                        <th>Eslip</th>
+                        `;
                     break;
             }
             $('#datatable').html(`<thead><tr>${base}${extra}</tr></thead>`);
@@ -319,9 +351,40 @@
                     data: 'start_date'
                 }, {
                     data: 'end_date'
-                },{
+                }, {
                     data: 'status'
-                }]
+                }],
+                'Onboarding Report': [{
+                        data: 'department'
+                    }, {
+                        data: 'position'
+                    }, {
+                        data: 'start_date'
+                    }, {
+                        data: 'deadline_pre'
+                    }, {
+                        data: 'create_employee'
+                    }, {
+                        data: 'deadline_on'
+                    }, {
+                        data: 'employment_data'
+                    }, {
+                        data: 'starter_kit'
+                    }, {
+                        data: 'deadline_post'
+                    }, {
+                        data: 'bpjskes'
+                    }, {
+                        data: 'bpjstk'
+                    }, {
+                        data: 'greatday'
+                    }, {
+                        data: 'eslip'
+                    }
+                    //  {
+                    //     data: 'status'
+                    // }
+                ],
             };
 
             return base.concat(columnsByNote[note] || []);
