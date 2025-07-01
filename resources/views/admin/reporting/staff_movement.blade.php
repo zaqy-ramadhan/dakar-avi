@@ -58,7 +58,7 @@
             </dic>
         </div>
 
-        <div class="card" style="border-radius: 20px">
+        <div class="card" style="overflow-x: auto; width: 100%; border-radius: 20px;">
             <table id="datatable" class="table table-bordered">
                 <thead>
                     <tr>
@@ -116,11 +116,12 @@
                             <th>Department</th>
                             <th>Position</th>
                             <th>Start Date</th>
+                            <th>Status</th>
                             <th>Deadline Pre</th>
-                            <th>Overdue Create Employee</th>
                             <th>Create Employee</th>
                             <th>Employment Data</th>
                             <th>Starter Kit</th>
+                            <th>Deadline On</th>
                             <th>Deadline Post</th>
                             <th>BPJS Kes</th>
                             <th>BPJS TK</th>
@@ -192,11 +193,12 @@
                     extra = `<th>Department</th>
                         <th>Position</th>
                         <th>Start Date</th>
+                        <th>Status</th>
                         <th>Deadline Pre</th>
                         <th>Create Employee</th>
-                        <th>Deadline On</th>
                         <th>Employment Data</th>
                         <th>Starter Kit</th>
+                        <th>Deadline On</th>
                         <th>Deadline Post</th>
                         <th>BPJS Kes</th>
                         <th>BPJS TK</th>
@@ -361,15 +363,17 @@
                     }, {
                         data: 'start_date'
                     }, {
+                        data: 'status'
+                    }, {
                         data: 'deadline_pre'
                     }, {
                         data: 'create_employee'
                     }, {
-                        data: 'deadline_on'
-                    }, {
                         data: 'employment_data'
                     }, {
                         data: 'starter_kit'
+                    }, {
+                        data: 'deadline_on'
                     }, {
                         data: 'deadline_post'
                     }, {

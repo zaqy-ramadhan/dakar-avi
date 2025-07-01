@@ -1589,6 +1589,7 @@ class UsersController extends Controller
     {
         try {
             $user = User::findOrFail($id);
+            $user->employeeJob()->delete();
             $user->delete();
 
             return redirect()->back()->with('success', 'user deleted successfully');

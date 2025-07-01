@@ -354,6 +354,11 @@ class UserBoardingDataTables extends DataTable
                 }
             })
             ->addColumn('post_onboarding', function ($user) {
+                $isKaryawan = $user->dakarRole->contains(function ($role) {
+                    return strtolower($role->role_name) === 'karyawan';
+                });
+                if (!$isKaryawan) return 'N/A';
+
                 $job = $user->firstEmployeeJob;
                 if (!$job || !$job->start_date) return 'N/A';
 
