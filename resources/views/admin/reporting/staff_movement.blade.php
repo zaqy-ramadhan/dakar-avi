@@ -122,6 +122,8 @@
                             <th>Employment Data</th>
                             <th>Starter Kit</th>
                             <th>Deadline On</th>
+                            <th>Starter Kit Accepted</th>
+                            <th>Contract Signature</th>
                             <th>Deadline Post</th>
                             <th>BPJS Kes</th>
                             <th>BPJS TK</th>
@@ -199,6 +201,8 @@
                         <th>Employment Data</th>
                         <th>Starter Kit</th>
                         <th>Deadline On</th>
+                         <th>Starter Kit Accepted</th>
+                          <th>Contract Signature</th>
                         <th>Deadline Post</th>
                         <th>BPJS Kes</th>
                         <th>BPJS TK</th>
@@ -375,6 +379,12 @@
                     }, {
                         data: 'deadline_on'
                     }, {
+                        data: 'starter_kit_acc'
+                    },
+                    {
+                        data: 'contract_signature'
+                    },
+                    {
                         data: 'deadline_post'
                     }, {
                         data: 'bpjskes'

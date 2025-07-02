@@ -159,11 +159,26 @@ class StaffMovementReportController extends Controller
                     'Start Date' => $item['start_date'],
                     'Status' => $item['status'],
                     'Deadline Pre' => $item['deadline_pre'],
-                    'Create Employee' => $item['create_employee'],
+                    'Create Employee Overdue' => $item['create_employee_overdue_days'],
+                    'Create Employee Date' => $item['create_employee_completion_date'],
+                    'Employment Data Overdue' => $item['employment_data_overdue_days'],
+                    'Employment Data Date' => $item['employment_data_completion_date'],
+                    'Starter Kit Overdue' => $item['starter_kit_overdue_days'],
+                    'Starter Kit Date' => $item['starter_kit_completion_date'],
                     'Deadline On' => $item['deadline_on'],
-                    'Employment Data' => $item['employment_data'],
-                    'Starter Kit' => $item['starter_kit'],
+                    'Starter Kit Accepted Overdue' => $item['starter_kit_acc_overdue_days'],
+                    'Starter Kit Accepted Date' => $item['starter_kit_acc_completion_date'],
+                    'Contract Signature Overdue' => $item['contract_signature_overdue_days'],
+                    'Contract Signature Date' => $item['contract_signature_completion_date'],
                     'Deadline Post' => $item['deadline_post'],
+                    'Eslip Overdue' => $item['eslip_overdue_days'],
+                    'Eslip Date' => $item['eslip_completion_date'],
+                    'Greatday Overdue' => $item['greatday_overdue_days'],
+                    'Greatday Date' => $item['greatday_completion_date'],
+                    'BPJS Kes Overdue' => $item['bpjskes_overdue_days'],
+                    'BPJS Kes Date' => $item['bpjskes_completion_date'],
+                    'BPJS TK Overdue' => $item['bpjstk_overdue_days'],
+                    'BPJS TK Date' => $item['bpjstk_completion_date'],
                 ]),
 
                 default => collect($employees['data']),
@@ -610,20 +625,64 @@ class StaffMovementReportController extends Controller
                     return optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
                 }, '-1 day');
             })
-             ->addColumn('deadline_on', function ($job) {
-                $user = $job->user;
-                $job = $user->firstEmployeeJob;
-                if (!$job || !$job->start_date) return 'N/A';
-                return $job->start_date->isoFormat('D MMMM YYYY') ?? 'N/A';
-            })
-
             ->addColumn('starter_kit_completion_date', function ($job) {
                 $user = $job->user;
                 $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
                 return $completionDate ? $completionDate->format('Y-m-d') : '-';
             })
 
-              ->addColumn('deadline_post', function ($job) {
+            ->addColumn('deadline_on', function ($job) {
+                $user = $job->user;
+                $job = $user->firstEmployeeJob;
+                if (!$job || !$job->start_date) return 'N/A';
+                return $job->start_date->isoFormat('D MMMM YYYY') ?? 'N/A';
+            })
+
+            ->addColumn('starter_kit_acc', function ($job) {
+                return $this->checkStepStatus($job, function ($user, $job) {
+                    return optional($job?->inventory)->where('employee_job_id', $job?->id)?->where('status', 'Diterima')?->last()?->updated_at;
+                }, '0 day');
+            })
+
+             ->addColumn('starter_kit_acc_overdue_days', function ($job) {
+                return $this->getOverdueDays($job, function ($user, $job) {
+                    return optional($job?->inventory)->where('employee_job_id', $job?->id)?->where('status', 'Diterima')?->last()?->created_at;
+                }, '0 day');
+            })
+            ->addColumn('starter_kit_acc_completion_date', function ($job) {
+                $user = $job->user;
+                $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)?->where('status', 'Diterima')?->last()?->created_at;
+                return $completionDate ? $completionDate->format('Y-m-d') : '-';
+            })
+
+            ->addColumn('contract_signature', function ($job) {
+                return $this->checkStepStatus($job, function ($user, $job) {
+                    return optional($job?->jobDoc)
+                        ->where('employee_job_id', $job?->id)
+                        ->where('type', 'contract')
+                        ->whereNotNull('first_party_signature')
+                        ?->last()?->updated_at;
+                }, '0 day');
+            })
+            ->addColumn('contract_signature_completion_date', function ($job) {
+                $completionDate = optional($job?->jobDoc)
+                    ->where('employee_job_id', $job?->id)
+                    ->where('type', 'contract')
+                    ->whereNotNull('first_party_signature')
+                    ?->last()?->updated_at;
+                return $completionDate ? $completionDate->format('Y-m-d') : '-';
+            })
+            ->addColumn('contract_signature_overdue_days', function ($job) {
+                return $this->getOverdueDays($job, function ($user, $job) {
+                    return optional($job?->jobDoc)
+                        ->where('employee_job_id', $job?->id)
+                        ->where('type', 'contract')
+                        ->whereNotNull('first_party_signature')
+                        ?->last()?->updated_at;
+                }, '0 day');
+            })
+
+            ->addColumn('deadline_post', function ($job) {
                 $user = $job->user;
                 $isKaryawan = $user->dakarRole->contains(function ($role) {
                     return strtolower($role->role_name) === 'karyawan';
@@ -687,7 +746,7 @@ class StaffMovementReportController extends Controller
                 return $completion ? $completion->format('Y-m-d') : '-';
             })
 
-            ->rawColumns(['create_employee', 'employment_data', 'starter_kit', 'greatday', 'eslip', 'bpjskes', 'bpjstk'])
+            ->rawColumns(['create_employee', 'employment_data', 'starter_kit', 'greatday', 'eslip', 'bpjskes', 'bpjstk', 'starter_kit_acc', 'contract_signature'])
             ->make(true);
     }
 
