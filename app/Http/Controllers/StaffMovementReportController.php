@@ -700,10 +700,10 @@ class StaffMovementReportController extends Controller
 
             // STEP: Greatday
             ->addColumn('greatday', function ($job) {
-                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account Great Day'), '0 day', true);
+                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account Great Day'), '30 day', true);
             })
             ->addColumn('greatday_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account Great Day'), '0 day', true);
+                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account Great Day'), '30 day', true);
             })
             ->addColumn('greatday_completion_date', function ($job) {
                 $completion = $this->getItemCompletion($job->user, 'User Account Great Day');
@@ -712,10 +712,10 @@ class StaffMovementReportController extends Controller
 
             // STEP: E-Slip
             ->addColumn('eslip', function ($job) {
-                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account E-Slip'), '0 day', true);
+                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account E-Slip'), '30 day', true);
             })
             ->addColumn('eslip_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account E-Slip'), '0 day', true);
+                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account E-Slip'), '30 day', true);
             })
             ->addColumn('eslip_completion_date', function ($job) {
                 $completion = $this->getItemCompletion($job->user, 'User Account E-Slip');
@@ -724,10 +724,10 @@ class StaffMovementReportController extends Controller
 
             // STEP: BPJS Kesehatan
             ->addColumn('bpjskes', function ($job) {
-                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS Kesehatan'), '0 day', true);
+                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS Kesehatan'), '30 day', true);
             })
             ->addColumn('bpjskes_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS Kesehatan'), '0 day', true);
+                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS Kesehatan'), '30 day', true);
             })
             ->addColumn('bpjskes_completion_date', function ($job) {
                 $completion = $this->getItemCompletion($job->user, 'BPJS Kesehatan');
@@ -736,10 +736,10 @@ class StaffMovementReportController extends Controller
 
             // STEP: BPJS TK
             ->addColumn('bpjstk', function ($job) {
-                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS TK'), '0 day', true);
+                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS TK'), '30 day', true);
             })
             ->addColumn('bpjstk_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS TK'), '0 day', true);
+                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS TK'), '30 day', true);
             })
             ->addColumn('bpjstk_completion_date', function ($job) {
                 $completion = $this->getItemCompletion($job->user, 'BPJS TK');
