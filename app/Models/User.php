@@ -435,7 +435,7 @@ class User extends Authenticatable
             ];
         }
 
-        
+
         $totalInventory = $user->inventory_set_status()['status'];
         if ($totalInventory) {
             $message = '🚀 Sign the contract to continue the onboarding process.';
@@ -446,7 +446,7 @@ class User extends Authenticatable
                 'message' => $message,
             ];
         }
-        
+
         $totalInventory = $user->inventory_acc_status()['status'];
         if ($totalInventory) {
             $progress = 52;
@@ -570,7 +570,9 @@ class User extends Authenticatable
         $job = $this->firstEmployeeJob;
         $is_not_empty = $nonSpecificInventories->isNotEmpty();
         if ($is_not_empty && $job !== null) {
-            $set_item = $nonSpecificInventories->where('employee_job_id', $job->id)->where('status', '-')->count();
+            $set_item = $nonSpecificInventories->filter(function($item){
+                return $item->status === '-';
+            })->count();
             if ($set_item > 0) {
                 return [
                     'status' => true,
@@ -599,8 +601,12 @@ class User extends Authenticatable
         $job = $this->firstEmployeeJob;
         $is_not_empty = $nonSpecificInventories->isNotEmpty();
         if ($is_not_empty && $job !== null) {
-            $count = $nonSpecificInventories->where('employee_job_id', $job->id)->whereNotIn('status', ['Dikembalikan', 'Dinonaktifkan'])->count();
-            $acc = $nonSpecificInventories->where('employee_job_id', $job->id)->where('status', 'Diterima')->count();
+            $count = $nonSpecificInventories->filter(function ($item) {
+                return $item->status !== 'Dikembalikan' && $item->status !== 'Dinonaktifkan';
+            })->count();
+            $acc = $nonSpecificInventories->filter(function ($item) {
+                return $item->status === 'Diterima';
+            })->count();
             if ($count == $acc) {
                 return [
                     'status' => true,
