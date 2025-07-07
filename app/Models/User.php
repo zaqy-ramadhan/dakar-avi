@@ -278,7 +278,7 @@ class User extends Authenticatable
             return $progress;
         }
 
-        $given = $this->inventory_set_status()['status'];
+        $given = $user->inventory_set_status()['status'];
         if ($given) {
             $progress = 50;
         } else {
@@ -570,10 +570,7 @@ class User extends Authenticatable
         $job = $this->firstEmployeeJob;
         $is_not_empty = $nonSpecificInventories->isNotEmpty();
         if ($is_not_empty && $job !== null) {
-            $set_item = $nonSpecificInventories->filter(function($item){
-                return $item->status === '-';
-            })->count();
-            if ($set_item > 0) {
+            if ($is_not_empty) {
                 return [
                     'status' => true,
                     'date' => $nonSpecificInventories->where('employee_job_id', $job->id)->where('status', '-')->last()?->updated_at,
