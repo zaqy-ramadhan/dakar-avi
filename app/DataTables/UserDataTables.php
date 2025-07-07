@@ -88,17 +88,6 @@ class UserDataTables extends DataTable
                         });
                 }
             })
-            // ->orderColumn('is_active', function ($query, $order) {
-            //     $query->leftJoin('dakar_employee_job as ej', 'users.id', '=', 'ej.user_id')
-            //             ->select('users.*')
-            //             ->orderByRaw("
-            //                 CASE
-            //                     WHEN ej.employment_status = 1 THEN 1
-            //                     WHEN ej.employment_status = 0 THEN 2
-            //                     ELSE 3
-            //                 END $order
-            //             ");
-            // })
             ->addColumn('actions', function ($row) {
                 $detailUrl = route('users.details.update', $row->id);
                 $onboardingUrl = route('users.index.onboarding.detail', $row->id);

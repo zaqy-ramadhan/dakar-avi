@@ -249,6 +249,15 @@
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                        <label for="npk" class="form-label">Update NPK</label>
+                        <input type="text" class="form-control" id="npk" name="npk"
+                            value="{{ $user->npk }}">
+                        @error('npk')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
                 @if ($user->firstEmployeeJob === null && Request::is('*onboarding*'))
                     <button type="submit" class="btn btn-primary">Submit</button>

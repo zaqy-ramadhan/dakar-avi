@@ -88,6 +88,7 @@ class ImportController extends Controller
                     'tax_status' => $row[33 + 8],
                     'marital_status' => $row[34 + 8],
                     'married_year' => $row[36 + 8],
+                    'is_draft' => false,
                 ]);
 
                 if ($row[35 + 8]) {
@@ -271,13 +272,13 @@ class ImportController extends Controller
                 $subgol = SubGolongan::whereRaw('LOWER(sub_golongan_name) = ?', [$subgolInput])->first();
                 $role = DakarRole::whereRaw('LOWER(role_name) = ?', [strtolower($row[30])])->first();
 
-                // if ($row[97+8] == 'Aktif') {
-                //     $jobStatus = true;
-                // } elseif ($row[97+8] == 'Nonaktif') {
-                //     $jobStatus = false;
-                // } else {
-                //     $jobStatus = null;
-                // }
+                if ($row[97+8] == 'Aktif') {
+                    $jobStatus = true;
+                } elseif ($row[97+8] == 'Inactive') {
+                    $jobStatus = false;
+                } else {
+                    $jobStatus = null;
+                }
                 // dd(strtolower($row[19]));
                 $lastJob = null;
                 for ($i = 0; $i < 5; $i++) {
@@ -345,7 +346,7 @@ class ImportController extends Controller
                                 'job_status' => strtolower($row[19]),
                                 'user_dakar_role' => strtolower($row[30]),
                                 'is_onboarding_completed' => true,
-                                'employment_status' => $employmentStatus,
+                                'employment_status' => ($jobStatus !== true) ? $jobStatus : $employmentStatus,
                                 'work_hour_code_id' => $work ? $work->id : null,
                                 'notes' => $notes
                             ]);

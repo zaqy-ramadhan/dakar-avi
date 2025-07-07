@@ -262,12 +262,13 @@ class User extends Authenticatable
 
         $progress = 0;
 
-        $personal_status = ($user->employeeDetail ? $user->employeeDetail->is_draft == 0 : false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+        $personal_status = $user->personal_status()['status'];
         if ($personal_status) {
             $progress = 10;
         } else {
             return $progress;
         }
+
 
         $job = $user->employeeJob->first();
         $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty();
@@ -277,36 +278,22 @@ class User extends Authenticatable
             return $progress;
         }
 
-        $given = $job->inventory->where('employee_job_id', $job->id)->isNotEmpty();
+        $given = $this->inventory_set_status()['status'];
         if ($given) {
             $progress = 50;
         } else {
             return $progress;
         }
 
-        $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
-        $inventories_status = false;
-        if ($job && $job->inventory->isNotEmpty()) {
-            $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
-                return !in_array(strtolower($item->item->item_name), $specificItems);
-            });
-            $inventories_status = $nonSpecificInventories->where('status', '-')->isEmpty();
-        }
-        if (optional($user->firstEmployeeJob)->user_dakar_role != 'karyawan') {
-            if ($inventories_status) {
-                $progress = 100;
-            } else {
-                return $progress;
-            }
+        $inventories_status = $user->inventory_acc_status()['status'];
+        if ($inventories_status) {
+            $progress = 75;
         } else {
-            if ($inventories_status) {
-                $progress = 75;
-            } else {
-                return $progress;
-            }
+            return $progress;
         }
 
-        $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
+
+        $inumber_status = $user->inumber_status()['status'];
         if ($inumber_status) {
             $progress = 100;
             if ($user->firstEmployeeJob && $user->firstEmployeeJob->is_onboarding_completed == false) {
@@ -327,7 +314,14 @@ class User extends Authenticatable
         $progress = 0;
         $message = '🚀 Complete your personal data and supporting documents to start the onboarding process.';
 
-        $personal_status = ($user->employeeDetail ? $user->employeeDetail->is_draft == 0 : false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+        if ($user->firstEmployeeJob->is_onboarding_completed === true) {
+            return [
+                'progress' => 100,
+                'message' => '🎉 Onboarding completed!'
+            ];
+        }
+
+        $personal_status = $user->personal_status()['status'];
         if ($personal_status) {
             $progress = 25;
             $message = '🚀 Your Contract will land soon. Stay tuned!';
@@ -370,16 +364,26 @@ class User extends Authenticatable
             ];
         }
 
-        // $totalInventory = $job->inventory->where('employee_job_id', $job->id)->count();
-        $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
-        $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
-            return !in_array(strtolower($item->item->item_name), $specificItems);
-        });
-        $totalInventory = $nonSpecificInventories->count();
+        // // $totalInventory = $job->inventory->where('employee_job_id', $job->id)->count();
+        // $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
+        // $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
+        //     return !in_array(strtolower($item->item->item_name), $specificItems);
+        // });
+        // $totalInventory = $nonSpecificInventories->count();
 
-        $acceptedCount = $nonSpecificInventories->where('employee_job_id', $job->id)
-            ->where('status', 'Diterima')->count();
-        if ($totalInventory > 0 && $acceptedCount === $totalInventory) {
+        // $acceptedCount = $nonSpecificInventories->where('employee_job_id', $job->id)
+        //     ->where('status', 'Diterima')->count();
+        // if ($totalInventory > 0 && $acceptedCount === $totalInventory) {
+        //     $progress = 100;
+        //     $message = '🎉 Your onboarding tasks have been completed. Welcome aboard!';
+        // } else {
+        //     return [
+        //         'progress' => $progress,
+        //         'message' => $message,
+        //     ];
+        // }
+        $acc_inventory = $user->inventory_acc_status()['status'];
+        if ($acc_inventory) {
             $progress = 100;
             $message = '🎉 Your onboarding tasks have been completed. Welcome aboard!';
         } else {
@@ -402,7 +406,7 @@ class User extends Authenticatable
         $progress = 0;
         $message = '🚀 Complete the employment data to start the onboarding process.';
 
-        $personal_status = ($user->employeeDetail ? $user->employeeDetail->is_draft == 0 : false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+        $personal_status = $user->personal_status()['status'];
         if ($personal_status) {
             $progress = 10;
             $message = '🚀 Prepare or fill the employment data to continue the onboarding process.';
@@ -431,11 +435,9 @@ class User extends Authenticatable
             ];
         }
 
-        $job = $user->firstEmployeeJob;
-        $employment_status = false;
-
-        $totalInventory = $job->inventory->where('employee_job_id', $job->id)->count();
-        if ($totalInventory > 0) {
+        
+        $totalInventory = $user->inventory_set_status()['status'];
+        if ($totalInventory) {
             $message = '🚀 Sign the contract to continue the onboarding process.';
             $progress = 51;
         } else {
@@ -444,15 +446,17 @@ class User extends Authenticatable
                 'message' => $message,
             ];
         }
-
-        $totalInventory = $job->inventory->where('employee_job_id', $job->id)->where('status', 'Diterima')?->count();
-        if ($totalInventory > 0) {
+        
+        $totalInventory = $user->inventory_acc_status()['status'];
+        if ($totalInventory) {
             $progress = 52;
         } else {
             return [
                 'progress' => $progress,
             ];
         }
+
+        $job = $user->firstEmployeeJob;
 
         if ($job && $job->jobDoc->isNotEmpty()) {
             $contractDoc = $job->jobDoc->firstWhere('type', 'contract');
@@ -483,7 +487,7 @@ class User extends Authenticatable
             ];
         }
 
-        $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
+        $inumber_status = $this->inumber_status()['status'];
         if ($inumber_status) {
             $progress = 100;
             $message = '🎉 Onboarding completed!';
@@ -538,6 +542,101 @@ class User extends Authenticatable
         ];
 
         return $notif;
+    }
+
+    public function inumber_status()
+    {
+        $count = $this->employeeInventoryNumber->count();
+        if ($count == 6) {
+            $complete_date = $this->employeeInventoryNumber->last()?->created_at;
+            return [
+                'status' => true,
+                'date' => $complete_date,
+            ];
+        } else {
+            return [
+                'status' => false,
+                'date' => null,
+            ];
+        }
+    }
+
+    public function inventory_set_status()
+    {
+        $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
+        $nonSpecificInventories = $this->inventory->filter(function ($item) use ($specificItems) {
+            return !in_array(strtolower($item->item->item_name), $specificItems);
+        });
+        $job = $this->firstEmployeeJob;
+        $is_not_empty = $nonSpecificInventories->isNotEmpty();
+        if ($is_not_empty && $job !== null) {
+            $set_item = $nonSpecificInventories->where('employee_job_id', $job->id)->where('status', '-')->count();
+            if ($set_item > 0) {
+                return [
+                    'status' => true,
+                    'date' => $nonSpecificInventories->where('employee_job_id', $job->id)->where('status', '-')->last()?->updated_at,
+                ];
+            } else {
+                return [
+                    'status' => false,
+                    'date' => null,
+                ];
+            }
+        } else {
+            return [
+                'status' => false,
+                'date' => null,
+            ];
+        }
+    }
+
+    public function inventory_acc_status()
+    {
+        $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
+        $nonSpecificInventories = $this->inventory->filter(function ($item) use ($specificItems) {
+            return !in_array(strtolower($item->item->item_name), $specificItems);
+        });
+        $job = $this->firstEmployeeJob;
+        $is_not_empty = $nonSpecificInventories->isNotEmpty();
+        if ($is_not_empty && $job !== null) {
+            $count = $nonSpecificInventories->where('employee_job_id', $job->id)->whereNotIn('status', ['Dikembalikan', 'Dinonaktifkan'])->count();
+            $acc = $nonSpecificInventories->where('employee_job_id', $job->id)->where('status', 'Diterima')->count();
+            if ($count == $acc) {
+                return [
+                    'status' => true,
+                    'date' => $nonSpecificInventories->last()?->updated_at,
+                ];
+            } else {
+                return [
+                    'status' => false,
+                    'date' => null,
+                ];
+            }
+        } else {
+            return [
+                'status' => false,
+                'date' => null,
+            ];
+        }
+    }
+
+    public function personal_status()
+    {
+        $hasDetail = $this->employeeDetail && $this->employeeDetail->is_draft == 0;
+        $hasEducations = $this->employeeEducations && $this->employeeEducations->isNotEmpty();
+        $hasBanks = $this->employeeBanks && $this->employeeBanks->isNotEmpty();
+        $hasDocs = $this->employeeDocs && $this->employeeDocs->isNotEmpty();
+
+        $status = $hasDetail && $hasEducations && $hasBanks && $hasDocs;
+        $date = null;
+        if ($status) {
+            $date = $this->employeeDocs->max('created_at');
+        }
+
+        return [
+            'status' => $status,
+            'date' => $date,
+        ];
     }
 
     public function rule()

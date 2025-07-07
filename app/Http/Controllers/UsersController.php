@@ -48,7 +48,6 @@ class UsersController extends Controller
         $jobStatus = JobStatus::all();
         $type = request()->route('role');
 
-
         $page = 'Employee Management';
 
         $userRole = Auth::user()->getRole();
@@ -107,9 +106,11 @@ class UsersController extends Controller
                 }
 
                 // $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft === false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
-                $personal_status = ($user->employeeDetail) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
-                // dd($personal_status);
-                $personal_date = optional($user->employeeDocs)->last()?->created_at;
+                // $personal_status = ($user->employeeDetail) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+                // // dd($personal_status);
+                // $personal_date = optional($user->employeeDocs)->last()?->created_at;
+                $personal_status = $user->personal_status()['status'];
+                $personal_date = $user->personal_status()['date'];
 
                 $job = $user->employeeJob->first();
                 $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id)->isNotEmpty();
@@ -122,17 +123,20 @@ class UsersController extends Controller
                 // dd($contractDoc);
 
                 $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
-                $inventories_status = false;
-                if ($job && $job->inventory->isNotEmpty()) {
-                    $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
-                        return !in_array(strtolower($item->item->item_name), $specificItems);
-                    });
-                    $inventories_status = $nonSpecificInventories->where('status', '-')->isEmpty();
-                }
-                $inventories_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->updated_at ?? null;
+                // $inventories_status = false;
+                // if ($job && $job->inventory->isNotEmpty()) {
+                //     $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
+                //         return !in_array(strtolower($item->item->item_name), $specificItems);
+                //     });
+                //     $inventories_status = $nonSpecificInventories->where('status', '-')->isEmpty();
+                // }
+                // $inventories_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->updated_at ?? null;
 
-                $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
-                $inumber_date = optional($user->employeeInventoryNumber)->last()?->created_at;
+                $inventories_status = $user->inventory_acc_status()['status'];
+                $inventories_date = $user->inventory_acc_status()['date'];
+
+                $inumber_status = $user->inumber_status()['status'];
+                $inumber_date = $user->inumber_status()['date'];
 
                 $inventories = $user->inventory->map(function ($inventory) {
                     return [
@@ -1317,7 +1321,8 @@ class UsersController extends Controller
             'group_id' => 'nullable|exists:dakar_group,id',
             'line_id' => 'nullable|exists:dakar_line,id',
             'employment_status' => 'nullable|exists:dakar_role,id',
-            'work_hour' => 'nullable|string|max:255|exists:dakar_work_hour_code,id'
+            'work_hour' => 'nullable|string|max:255|exists:dakar_work_hour_code,id',
+            'npk' => 'required|string|max:20',
         ]);
 
         try {
@@ -1358,9 +1363,9 @@ class UsersController extends Controller
             $user = User::findOrFail($id);
             if (isset($request->employment_status)) {
                 $user->dakarRole()->sync($request->employment_status);
+                $user->npk = $request->npk;
+                $user->save();
             }
-
-            // DB::commit();
 
             return redirect()->back()
                 ->with('success', 'Job Employment created successfully');
@@ -1394,11 +1399,12 @@ class UsersController extends Controller
             'group_id' => 'nullable|exists:dakar_group,id',
             'line_id' => 'nullable|exists:dakar_line,id',
             'employment_status' => 'nullable|exists:dakar_role,id',
-            'work_hour' => 'nullable|string|max:255|exists:dakar_work_hour_code,id'
+            'work_hour' => 'nullable|string|max:255|exists:dakar_work_hour_code,id',
+            'npk' => 'required|string|max:20',
         ]);
 
         try {
-            // DB::beginTransaction();
+            DB::beginTransaction();
 
             $job = EmployeeJob::findOrFail($id);
             $user = $job->user;
@@ -1431,9 +1437,11 @@ class UsersController extends Controller
 
             if ($request->employment_status) {
                 $user->dakarRole()->sync([$request->employment_status]);
+                $user->npk = $request->npk;
+                $user->save();
             }
 
-            // DB::commit();
+            DB::commit();
 
             return redirect()->back()->with('success', 'Job Employment updated successfully');
         } catch (\Exception $e) {

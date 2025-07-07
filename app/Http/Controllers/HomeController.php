@@ -152,40 +152,12 @@ class HomeController extends Controller
 
                 return view('home', compact('pemagangan', 'uncomplete', 'internship', 'karyawan', 'jobType', 'departments', 'expiredThisMonth', 'uniformRefresh', 'birthdays'));
             } else {
-                // $user = User::with(['employeeDocs', 'employeeJob.department'])->find(Auth::user()->id);
+                $user = User::with(['employeeDocs', 'employeeJob.department'])->find(Auth::user()->id);
 
                 // $personal_status = $user->employeeDetail && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
                 // $personal_date = optional($user->employeeDetail)->created_at;
-
-                // $job = $user->employeeJob->first();
-                // $contractDoc = $job?->jobDoc?->firstWhere('type', 'contract');
-                // $contract_status = $contractDoc && $contractDoc?->second_party_signature;
-                // $contract_date = optional($contractDoc)->created_at;
-
-                // $spkDoc = $job->jobDoc?->firstWhere('type', 'kerahasiaan');
-                // $spk_status = $spkDoc && $spkDoc?->second_party_signature;
-                // $spk_date = optional($spkDoc)->created_at;
-
-                // // $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id);
-                // // $employment_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
-
-                // $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
-                // $inventories_status = false;
-                // if ($job && $job->inventory->isNotEmpty()) {
-                //     $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
-                //         return !in_array(strtolower($item->item->item_name), $specificItems);
-                //     });
-                //     $inventories_status = $nonSpecificInventories->where('status', 'Diterima')->isNotEmpty();
-                //     // dd($nonSpecificInventories->where('status', 'Diterima'));
-                // }
-                // $inventories_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->updated_at ?? null;
-
-                // $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
-                // $inumber_date = optional($user->employeeInventoryNumber)->last()?->created_at;
-                $user = User::with(['employeeDocs', 'employeeJob.department'])->find(Auth::user()->id);
-
-                $personal_status = $user->employeeDetail && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
-                $personal_date = optional($user->employeeDetail)->created_at;
+                $personal_status = $user->personal_status()['status'];
+                $personal_date = $user->personal_status()['date'];
 
                 $job = $user->employeeJob->first();
 
@@ -198,12 +170,15 @@ class HomeController extends Controller
                     $spk_status = $spkDoc && $spkDoc?->second_party_signature;
                     $spk_date = optional($spkDoc)->created_at;
 
-                    $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
-                    $inventories_status = $job->inventory
-                        ->filter(fn($item) => !in_array(strtolower($item->item->item_name), $specificItems))
-                        ->where('status', 'Diterima')
-                        ->isNotEmpty();
-                    $inventories_date = optional($job->inventory)->last()?->updated_at;
+                    // $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
+                    // $inventories_status = $job->inventory
+                    //     ->filter(fn($item) => !in_array(strtolower($item->item->item_name), $specificItems))
+                    //     ->where('status', 'Diterima')
+                    //     ->isNotEmpty();
+                    // $inventories_date = optional($job->inventory)->last()?->updated_at;
+
+                    $inventories_status = $user->inventory_acc_status()['status'];
+                    $inventories_date = $user->inventory_acc_status()['date'];
                 } else {
                     $contract_status = false;
                     $contract_date = null;
@@ -213,8 +188,8 @@ class HomeController extends Controller
                     $inventories_date = null;
                 }
 
-                $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
-                $inumber_date = optional($user->employeeInventoryNumber)->last()?->created_at;
+                $inumber_status = $user->inumber_status()['status'];
+                $inumber_date = $user->inumber_status()['date'];
 
 
                 return view('home', compact(

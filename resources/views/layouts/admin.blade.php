@@ -12,13 +12,13 @@
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @if (Auth::check())
+    {{-- @if (Auth::check())
         <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}">
     @else
         <script>
             window.location.href = "{{ route('login') }}";
         </script>
-    @endif
+    @endif --}}
     <style>
         .body-wrapper .container-fluid {
             max-width: 100%;
@@ -116,7 +116,7 @@
                                         <span>
                                             <i class="ti ti-file"></i>
                                         </span>
-                                        <span class="hide-menu">Data Diri</span>
+                                        <span class="hide-menu">Personal Data</span>
                                     </a>
                                 </li>
                             @endif

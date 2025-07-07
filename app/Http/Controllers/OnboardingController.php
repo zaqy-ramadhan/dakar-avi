@@ -52,8 +52,10 @@ class OnboardingController extends Controller
             //progress
 
             // $personal_status = ($user->employeeDetail && $user->employeeDetail->is_draft === false) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
-            $personal_status = ($user->employeeDetail) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
-            $personal_date = optional($user->employeeDocs)->last()?->created_at;
+            // $personal_status = ($user->employeeDetail) && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
+            // $personal_date = optional($user->employeeDocs)->last()?->created_at;
+            $personal_status = $user->personal_status()['status'];
+            $personal_date = $user->personal_status()['date'];
 
             $job = $user->firstEmployeeJob;
             $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id);
@@ -66,17 +68,19 @@ class OnboardingController extends Controller
             // dd($contractDoc);
 
             $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
-            $inventories_status = false;
-            if ($job && $job->inventory->isNotEmpty()) {
-                $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
-                    return !in_array(strtolower($item->item->item_name), $specificItems);
-                });
-                $inventories_status = $nonSpecificInventories->where('status', '-')->isEmpty();
-            }
-            $inventories_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->updated_at ?? null;
+            // $inventories_status = false;
+            // if ($job && $job->inventory->isNotEmpty()) {
+            //     $nonSpecificInventories = $job->inventory->filter(function ($item) use ($specificItems) {
+            //         return !in_array(strtolower($item->item->item_name), $specificItems);
+            //     });
+            //     $inventories_status = $nonSpecificInventories->where('status', '-')->isEmpty();
+            // }
+            // $inventories_date = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->updated_at ?? null;
+            $inventories_status = $user->inventory_acc_status()['status'];
+            $inventories_date = $user->inventory_acc_status()['date'];
 
-            $inumber_status = (bool) $user->employeeInventoryNumber->isNotEmpty();
-            $inumber_date = optional($user->employeeInventoryNumber)->last()?->created_at;
+            $inumber_status = $user->inumber_status()['status'];
+            $inumber_date = $user->inumber_status()['date'];
 
 
             $inventories = $user->inventory->map(function ($inventory) {

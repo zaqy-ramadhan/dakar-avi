@@ -174,18 +174,18 @@
                             searchable: false,
                             orderable: false
                         },
-                        {
-                            data: 'pre_onboarding',
-                            name: 'pre_onboarding',
-                        },
-                        {
-                            data: 'onboarding',
-                            name: 'onboarding',
-                        },
-                        {
-                            data: 'post_onboarding',
-                            name: 'post_onboarding',
-                        },
+                        // {
+                        //     data: 'pre_onboarding',
+                        //     name: 'pre_onboarding',
+                        // },
+                        // {
+                        //     data: 'onboarding',
+                        //     name: 'onboarding',
+                        // },
+                        // {
+                        //     data: 'post_onboarding',
+                        //     name: 'post_onboarding',
+                        // },
                         {
                             data: 'actions',
                             name: 'actions'
