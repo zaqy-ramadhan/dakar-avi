@@ -65,7 +65,7 @@ class EmploymentController extends Controller
             $jobStatus = JobStatus::all();
             $positions = Position::with(['department.division'])->get();
             $sections = Section::with(['department.division'])->get();
-                        $workHour = WorkHour::get();
+            $workHour = WorkHour::get();
             $departments = Department::with('division')->get();
             $divisions = Division::all();
             $roles = DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get();

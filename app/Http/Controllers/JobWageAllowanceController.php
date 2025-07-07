@@ -12,6 +12,9 @@ class JobWageAllowanceController extends Controller
     {
         $employeeJob = \App\Models\EmployeeJob::find($jobEmploymentId);
 
+        $is_signed = $employeeJob->jobDoc->where('type', 'contract')->whereNotNull('first_party_signature')->whereNotNull('second_party_signature')->isNotEmpty();
+        // dd($is_signed);
+
         if (!$employeeJob) {
             abort(404, 'Employee Job not found');
         }
@@ -51,7 +54,8 @@ class JobWageAllowanceController extends Controller
 
         return view('admin.onboarding.jobWage', [
             'jobWageAllowance' => $jobWageAllowances,
-            'jobEmploymentId' => $jobEmploymentId
+            'jobEmploymentId' => $jobEmploymentId,
+            'is_signed' => $is_signed,
         ]);
     }
 

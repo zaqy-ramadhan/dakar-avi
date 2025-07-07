@@ -67,11 +67,13 @@
 
         {{-- @if (Auth::user()->getRole() === 'admin') --}}
         @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
-            <button type="button" id="remove-wage-allowance" class="btn btn-danger mb-3 me-2"
-                style="display: none;">Remove
-                Wage/Allowance</button>
-            <button type="button" id="add-wage-allowance" class="btn btn-primary mb-3">Add Wage/Allowance</button><br>
-            <button type="submit" class="btn btn-success mb-3">Save</button>
+            @if(!$is_signed || Auth::user()->getRole() === 'admin')
+                <button type="button" id="remove-wage-allowance" class="btn btn-danger mb-3 me-2"
+                    style="display: none;">Remove
+                    Wage/Allowance</button>
+                <button type="button" id="add-wage-allowance" class="btn btn-primary mb-3">Add Wage/Allowance</button><br>
+                <button type="submit" class="btn btn-success mb-3">Save</button>
+            @endif
         @endif
 
     </form>

@@ -113,6 +113,7 @@ class UsersController extends Controller
                 $personal_date = $user->personal_status()['date'];
 
                 $job = $user->employeeJob->first();
+                $is_signed = $job->jobDoc->where('type', 'contract')->whereNotNull('first_party_signature')->whereNotNull('second_party_signature')->isNotEmpty();
                 $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id)->isNotEmpty();
                 $employment_date = optional($job?->created_at);
 
@@ -239,7 +240,7 @@ class UsersController extends Controller
                     'inumber_status',
                     'inumber_date',
                     'previousRole',
-
+                    'is_signed',
                 ));
             }
         }
