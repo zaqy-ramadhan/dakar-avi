@@ -227,7 +227,7 @@
                     <td>{{ $no +=1 }}</td>
                     <td>{{ $wage->type }}</td>
                     <td class="space">:</td>
-                    <td>{{ 'Rp'.$wage->amount.' '.$wage->calculation.' '.$wage->status }}</td>
+                    <td>{{ $wage->amount.' '.$wage->calculation.' '.$wage->status }}</td>
                 </tr>
                 
             @endforeach
