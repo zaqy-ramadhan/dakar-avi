@@ -57,7 +57,7 @@ class ImportController extends Controller
                     'fullname' => $row[1],
                     'username' => $row[0],
                     'email' => $row[2],
-                    'join_date' => $row[3],
+                    'join_date' => $this->parseExcelDate($row[3]),
                     'password' => 'Avi123!',
                     'password_hash' => bcrypt('Avi123!'),
                 ]);
