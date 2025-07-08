@@ -302,10 +302,6 @@
                             name: 'fullname'
                         },
                         {
-                            data: 'email',
-                            name: 'email'
-                        },
-                        {
                             data: 'department_name',
                             name: 'department_name',
                             searchable: true,

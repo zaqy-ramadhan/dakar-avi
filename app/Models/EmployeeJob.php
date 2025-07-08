@@ -70,31 +70,40 @@ class EmployeeJob extends Model
         return $this->belongsTo(Department::class, 'department_id', 'id');
     }
 
-    public function getContractAttribute()
+    public function siblingContractJobs()
     {
-        $jobs = EmployeeJob::with('user')->where('user_id', $this->user_id)
-            ->orderBy('id')
-            ->get();
-
-        $contractJobs = $jobs
+        return $this->hasMany(EmployeeJob::class, 'user_id', 'user_id')
             ->where('job_status', 'kontrak')
             ->where('user_dakar_role', 'karyawan')
-            ->values();
-
-        $index = $contractJobs->search(fn($job) => $job->id === $this->id);
-
-        if ($index !== false) {
-            return 'PKWT-' . ($index + 1);
-        } elseif ($this->user_dakar_role === 'pemagangan') {
-            return 'Pemagangan';
-        } elseif ($this->user_dakar_role === 'internship') {
-            return 'Internship';
-        } elseif ($this->user_dakar_role === 'karyawan') {
-            return 'Tetap';
-        } else {
-            return 'N/A';
-        }
+            ->orderBy('id');
     }
+
+
+    // public function getContractAttribute()
+    // {
+    //     $jobs = EmployeeJob::with('user')->where('user_id', $this->user_id)
+    //         ->orderBy('id')
+    //         ->get();
+
+    //     $contractJobs = $jobs
+    //         ->where('job_status', 'kontrak')
+    //         ->where('user_dakar_role', 'karyawan')
+    //         ->values();
+
+    //     $index = $contractJobs->search(fn($job) => $job->id === $this->id);
+
+    //     if ($index !== false) {
+    //         return 'PKWT-' . ($index + 1);
+    //     } elseif ($this->user_dakar_role === 'pemagangan') {
+    //         return 'Pemagangan';
+    //     } elseif ($this->user_dakar_role === 'internship') {
+    //         return 'Internship';
+    //     } elseif ($this->user_dakar_role === 'karyawan') {
+    //         return 'Tetap';
+    //     } else {
+    //         return 'N/A';
+    //     }
+    // }
 
     // public function is_active($date = null)
     // {
@@ -115,7 +124,28 @@ class EmployeeJob extends Model
     //         (is_null($end) || $filterDateEnd->lessThanOrEqualTo($end));
     // }
 
-    public function is_active($date = null) 
+
+    public function getContractAttribute()
+    {
+        $jobs = $this->relationLoaded('siblingContractJobs')
+            ? $this->siblingContractJobs
+            : $this->siblingContractJobs()->get();
+
+        $index = $jobs->search(fn($job) => $job->id === $this->id);
+
+        if ($index !== false) {
+            return 'PKWT-' . ($index + 1);
+        }
+
+        return match ($this->user_dakar_role) {
+            'pemagangan' => 'Pemagangan',
+            'internship' => 'Internship',
+            'karyawan'   => 'Tetap',
+            default      => 'N/A',
+        };
+    }
+
+    public function is_active($date = null)
     {
         $carbonDate = $date ? Carbon::parse($date) : Carbon::now();
 
@@ -127,8 +157,10 @@ class EmployeeJob extends Model
             ? Carbon::parse($this->resign_date)->endOfDay()
             : ($this->end_date ? Carbon::parse($this->end_date)->endOfDay() : null);
 
-        if ($start->lessThanOrEqualTo($monthEnd) &&
-            (is_null($end) || $end->greaterThanOrEqualTo($monthStart))) {
+        if (
+            $start->lessThanOrEqualTo($monthEnd) &&
+            (is_null($end) || $end->greaterThanOrEqualTo($monthStart))
+        ) {
             return 'active';
         } else {
             return 'inactive';

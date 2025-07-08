@@ -411,279 +411,70 @@
                                     <i class="ti ti-bell-ringing"></i>
                                     <div class="notification bg-primary rounded-circle"></div>
                                 </a>
+                                @php
+                                    $adminNotifications = [
+                                        'personal_completed' => 'Completed Personal Data',
+                                        'employment_completed' => 'Completed Employment Data',
+                                        'wage_filled' => 'Wage Filled',
+                                        'starterkit_given' => 'Starter Kit Provided',
+                                        'starterkit_accepted' => 'Starter Kit Accepted',
+                                        'contract_signed' => 'Contract Signed',
+                                        'compensation_signed' => 'Compensation Signed',
+                                        'digital_account_given' => 'Digital Account Given',
+                                    ];
+
+                                    $notifications = Auth::user()->adminNotif();
+                                @endphp
                                 @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
                                     <div class="dropdown-menu dropdown-menu-end p-0"
                                         aria-labelledby="notificationDropdown"
                                         style="min-width: 350px; right: 0; left: auto;"
                                         onclick="event.stopPropagation();">
+
                                         <div class="accordion" id="notificationAccordion">
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header" id="notifHeadingOne">
-                                                    <button class="accordion-button" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#notifCollapseOne"
-                                                        aria-expanded="true" aria-controls="notifCollapseOne">
-                                                        Completed Personal Data
-                                                    </button>
-                                                </h2>
-                                                <div id="notifCollapseOne" class="accordion-collapse collapse show"
-                                                    aria-labelledby="notifHeadingOne"
-                                                    data-bs-parent="#notificationAccordion">
-                                                    <div class="accordion-body p-0">
-                                                        <ul class="list-group">
-                                                            @foreach (Auth::user()->adminNotif()['personal_completed'] as $personal)
-                                                                <li
-                                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                                    <div>
-                                                                        <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $personal->fullname }}
-                                                                        </a>
-                                                                        <div class="text-muted"
-                                                                            style="font-size: 0.85em;">
-                                                                            NPK : {{ $personal->npk ?? '-' }}
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
+                                            @foreach ($adminNotifications as $key => $title)
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header"
+                                                        id="notifHeading{{ $loop->index }}">
+                                                        <button
+                                                            class="accordion-button {{ $loop->first ? '' : 'collapsed' }}"
+                                                            type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#notifCollapse{{ $loop->index }}"
+                                                            aria-expanded="{{ $loop->first ? 'true' : 'false' }}"
+                                                            aria-controls="notifCollapse{{ $loop->index }}">
+                                                            {{ $title }}
+                                                        </button>
+                                                    </h2>
+                                                    <div id="notifCollapse{{ $loop->index }}"
+                                                        class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}"
+                                                        aria-labelledby="notifHeading{{ $loop->index }}"
+                                                        data-bs-parent="#notificationAccordion">
+                                                        <div class="accordion-body p-0">
+                                                            @if (count($notifications[$key]) > 0)
+                                                                <ul class="list-group">
+                                                                    @foreach ($notifications[$key] as $personal)
+                                                                        <li
+                                                                            class="list-group-item d-flex justify-content-between align-items-center">
+                                                                            <div>
+                                                                                <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
+                                                                                    class="text-decoration-none">
+                                                                                    {{ $personal->fullname }}
+                                                                                </a>
+                                                                                <div class="text-muted"
+                                                                                    style="font-size: 0.85em;">
+                                                                                    NPK : {{ $personal->npk ?? '-' }}
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            @else
+                                                                <div class="p-2 text-muted text-center">No data</div>
+                                                            @endif
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header" id="notifHeadingTwo">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#notifCollapseTwo"
-                                                        aria-expanded="false" aria-controls="notifCollapseTwo">
-                                                        Completed Employment Data
-                                                    </button>
-                                                </h2>
-                                                <div id="notifCollapseTwo" class="accordion-collapse collapse"
-                                                    aria-labelledby="notifHeadingTwo"
-                                                    data-bs-parent="#notificationAccordion">
-                                                    <div class="accordion-body p-0">
-                                                        <ul class="list-group">
-                                                            @foreach (Auth::user()->adminNotif()['employment_completed'] as $personal)
-                                                                <li
-                                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                                    <div>
-                                                                        <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $personal->fullname }}
-                                                                        </a>
-                                                                        <div class="text-muted"
-                                                                            style="font-size: 0.85em;">
-                                                                            NPK : {{ $personal->npk ?? '-' }}
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header" id="notifHeadingWage">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#notifCollapseWage"
-                                                        aria-expanded="false" aria-controls="notifCollapseWage">
-                                                        Wage Filled
-                                                    </button>
-                                                </h2>
-                                                <div id="notifCollapseWage" class="accordion-collapse collapse"
-                                                    aria-labelledby="notifHeadingWage"
-                                                    data-bs-parent="#notificationAccordion">
-                                                    <div class="accordion-body p-0">
-                                                        <ul class="list-group">
-                                                            @foreach (Auth::user()->adminNotif()['wage_filled'] as $personal)
-                                                                <li
-                                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                                    <div>
-                                                                        <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $personal->fullname }}
-                                                                        </a>
-                                                                        <div class="text-muted"
-                                                                            style="font-size: 0.85em;">
-                                                                            NPK : {{ $personal->npk ?? '-' }}
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header" id="notifHeadingStarterkit">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#notifCollapseStarterkit"
-                                                        aria-expanded="false" aria-controls="notifCollapseStarterkit">
-                                                        Starter Kit Provided
-                                                    </button>
-                                                </h2>
-                                                <div id="notifCollapseStarterkit" class="accordion-collapse collapse"
-                                                    aria-labelledby="notifHeadingStarterkit"
-                                                    data-bs-parent="#notificationAccordion">
-                                                    <div class="accordion-body p-0">
-                                                        <ul class="list-group">
-                                                            @foreach (Auth::user()->adminNotif()['starterkit_given'] as $personal)
-                                                                <li
-                                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                                    <div>
-                                                                        <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $personal->fullname }}
-                                                                        </a>
-                                                                        <div class="text-muted"
-                                                                            style="font-size: 0.85em;">
-                                                                            NPK : {{ $personal->npk ?? '-' }}
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header" id="notifHeadingStarterkitAccepted">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#notifCollapseStarterkitAccepted"
-                                                        aria-expanded="false"
-                                                        aria-controls="notifCollapseStarterkitAccepted">
-                                                        Starter Kit Accepted
-                                                    </button>
-                                                </h2>
-                                                <div id="notifCollapseStarterkitAccepted"
-                                                    class="accordion-collapse collapse"
-                                                    aria-labelledby="notifHeadingStarterkitAccepted"
-                                                    data-bs-parent="#notificationAccordion">
-                                                    <div class="accordion-body p-0">
-                                                        <ul class="list-group">
-                                                            @foreach (Auth::user()->adminNotif()['starterkit_accepted'] as $personal)
-                                                                <li
-                                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                                    <div>
-                                                                        <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $personal->fullname }}
-                                                                        </a>
-                                                                        <div class="text-muted"
-                                                                            style="font-size: 0.85em;">
-                                                                            NPK : {{ $personal->npk ?? '-' }}
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header" id="notifHeadingContract">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#notifCollapseContract" aria-expanded="false"
-                                                        aria-controls="notifCollapseContract">
-                                                        Contract Signed
-                                                    </button>
-                                                </h2>
-                                                <div id="notifCollapseContract" class="accordion-collapse collapse"
-                                                    aria-labelledby="notifHeadingContract"
-                                                    data-bs-parent="#notificationAccordion">
-                                                    <div class="accordion-body p-0">
-                                                        <ul class="list-group">
-                                                            @foreach (Auth::user()->adminNotif()['contract_signed'] as $personal)
-                                                                <li
-                                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                                    <div>
-                                                                        <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $personal->fullname }}
-                                                                        </a>
-                                                                        <div class="text-muted"
-                                                                            style="font-size: 0.85em;">
-                                                                            NPK : {{ $personal->npk ?? '-' }}
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header" id="notifHeadingCompensation">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#notifCollapseCompensation"
-                                                        aria-expanded="false"
-                                                        aria-controls="notifCollapseCompensation">
-                                                        Compensation Signed
-                                                    </button>
-                                                </h2>
-                                                <div id="notifCollapseCompensation"
-                                                    class="accordion-collapse collapse"
-                                                    aria-labelledby="notifHeadingCompensation"
-                                                    data-bs-parent="#notificationAccordion">
-                                                    <div class="accordion-body p-0">
-                                                        <ul class="list-group">
-                                                            @foreach (Auth::user()->adminNotif()['compensation_signed'] as $personal)
-                                                                <li
-                                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                                    <div>
-                                                                        <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $personal->fullname }}
-                                                                        </a>
-                                                                        <div class="text-muted"
-                                                                            style="font-size: 0.85em;">
-                                                                            NPK : {{ $personal->npk ?? '-' }}
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header" id="notifHeadingDigitalAccount">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#notifCollapseDigitalAccount"
-                                                        aria-expanded="false"
-                                                        aria-controls="notifCollapseDigitalAccount">
-                                                        Digital Account Given
-                                                    </button>
-                                                </h2>
-                                                <div id="notifCollapseDigitalAccount"
-                                                    class="accordion-collapse collapse"
-                                                    aria-labelledby="notifHeadingDigitalAccount"
-                                                    data-bs-parent="#notificationAccordion">
-                                                    <div class="accordion-body p-0">
-                                                        <ul class="list-group">
-                                                            @foreach (Auth::user()->adminNotif()['digital_account_given'] as $personal)
-                                                                <li
-                                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                                    <div>
-                                                                        <a href="{{ route('users.index.onboarding.detail', $personal->id) }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $personal->fullname }}
-                                                                        </a>
-                                                                        <div class="text-muted"
-                                                                            style="font-size: 0.85em;">
-                                                                            NPK : {{ $personal->npk ?? '-' }}
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 @else
@@ -691,16 +482,19 @@
                                         aria-labelledby="notificationDropdown"
                                         style="min-width: 350px; right: 0; left: auto;"
                                         onclick="event.stopPropagation();">
-                                        @if (Auth::user()->progressOnboardingEmployee()['progress'] > 0)
+
+                                        @php $progress = Auth::user()->progressOnboardingEmployee(); @endphp
+
+                                        @if ($progress['progress'] > 0)
                                             <p class="text-muted">
-                                                <span>{{ Auth::user()->progressOnboardingEmployee()['message'] }}</span>
+                                                <span>{{ $progress['message'] }}</span>
                                             </p>
                                             <div class="progress">
                                                 <div class="progress-bar" role="progressbar"
-                                                    style="width: {{ Auth::user()->progressOnboardingEmployee()['progress'] }}%;"
-                                                    aria-valuenow="{{ Auth::user()->progressOnboardingEmployee()['progress'] }}"
-                                                    aria-valuemin="0" aria-valuemax="100">
-                                                    {{ Auth::user()->progressOnboardingEmployee()['progress'] }}%
+                                                    style="width: {{ $progress['progress'] }}%;"
+                                                    aria-valuenow="{{ $progress['progress'] }}" aria-valuemin="0"
+                                                    aria-valuemax="100">
+                                                    {{ $progress['progress'] }}%
                                                 </div>
                                             </div>
                                         @else
@@ -709,6 +503,7 @@
                                         @endif
                                     </div>
                                 @endif
+
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link d-flex align-items-center gap-2" href="javascript:void(0)"

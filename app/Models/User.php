@@ -217,7 +217,6 @@ class User extends Authenticatable
                         ? \Carbon\Carbon::parse($job->end_date)->endOfDay()
                         : null);
 
-                // Hanya ambil jika tanggal filter >= start && (belum berakhir atau filter <= end)
                 return $date->greaterThanOrEqualTo($start)
                     && (is_null($end) || $date->lessThanOrEqualTo($end));
             })
@@ -258,8 +257,8 @@ class User extends Authenticatable
 
     public function progressOnboarding()
     {
-        $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
-
+        // $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
+        $user = $this;
         $progress = 0;
 
         $personal_status = $user->personal_status()['status'];
@@ -309,7 +308,8 @@ class User extends Authenticatable
 
     public function progressOnboardingEmployee()
     {
-        $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
+        // $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
+        $user = $this;
 
         $progress = 0;
         $message = '🚀 Complete your personal data and supporting documents to start the onboarding process.';
@@ -402,7 +402,8 @@ class User extends Authenticatable
 
     public function progressOnboardingAdmin()
     {
-        $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
+        // $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
+        $user = $this;
 
         $progress = 0;
         $message = '🚀 Complete the employment data to start the onboarding process.';
@@ -509,41 +510,69 @@ class User extends Authenticatable
         ];
     }
 
+    // public function adminNotif()
+    // {
+    //     $users = User::whereHas('employeeDetail', function ($q) {
+    //         $q->where('is_draft', 0);
+    //     })->get(['id', 'fullname', 'npk']);
+
+    //     $notif = [
+    //         'personal_completed' => $users->filter(function ($user) {
+    //             return $user->progressOnboardingAdmin()['progress'] === 0;
+    //         }),
+    //         'employment_completed' => $users->filter(function ($user) {
+    //             return $user->progressOnboardingAdmin()['progress'] === 17;
+    //         }),
+    //         'wage_filled' => $users->filter(function ($user) {
+    //             return $user->progressOnboardingAdmin()['progress'] === 34;
+    //         }),
+    //         'starterkit_given' => $users->filter(function ($user) {
+    //             return $user->progressOnboardingAdmin()['progress'] === 51;
+    //         }),
+    //         'starterkit_accepted' => $users->filter(function ($user) {
+    //             return $user->progressOnboardingAdmin()['progress'] === 52;
+    //         }),
+    //         'contract_signed' => $users->filter(function ($user) {
+    //             return $user->progressOnboardingAdmin()['progress'] === 68;
+    //         }),
+    //         'compensation_signed' => $users->filter(function ($user) {
+    //             return $user->progressOnboardingAdmin()['progress'] === 85;
+    //         }),
+    //         'digital_account_given' => $users->filter(function ($user) {
+    //             return $user->progressOnboardingAdmin()['progress'] === 100;
+    //         }),
+    //     ];
+
+    //     return $notif;
+    // }
+
     public function adminNotif()
     {
         $users = User::whereHas('employeeDetail', function ($q) {
             $q->where('is_draft', 0);
         })->get(['id', 'fullname', 'npk']);
 
+        // Cache progress hanya sekali!
+        $usersWithProgress = $users->map(function ($user) {
+            $user->progress = $user->progressOnboardingAdmin()['progress'];
+            return $user;
+        });
+
+
         $notif = [
-            'personal_completed' => $users->filter(function ($user) {
-                return $user->progressOnboardingAdmin()['progress'] === 0;
-            }),
-            'employment_completed' => $users->filter(function ($user) {
-                return $user->progressOnboardingAdmin()['progress'] === 17;
-            }),
-            'wage_filled' => $users->filter(function ($user) {
-                return $user->progressOnboardingAdmin()['progress'] === 34;
-            }),
-            'starterkit_given' => $users->filter(function ($user) {
-                return $user->progressOnboardingAdmin()['progress'] === 51;
-            }),
-            'starterkit_accepted' => $users->filter(function ($user) {
-                return $user->progressOnboardingAdmin()['progress'] === 52;
-            }),
-            'contract_signed' => $users->filter(function ($user) {
-                return $user->progressOnboardingAdmin()['progress'] === 68;
-            }),
-            'compensation_signed' => $users->filter(function ($user) {
-                return $user->progressOnboardingAdmin()['progress'] === 85;
-            }),
-            'digital_account_given' => $users->filter(function ($user) {
-                return $user->progressOnboardingAdmin()['progress'] === 100;
-            }),
+            'personal_completed' => $usersWithProgress->where('progress', 0),
+            'employment_completed' => $usersWithProgress->where('progress', 17),
+            'wage_filled' => $usersWithProgress->where('progress', 34),
+            'starterkit_given' => $usersWithProgress->where('progress', 51),
+            'starterkit_accepted' => $usersWithProgress->where('progress', 52),
+            'contract_signed' => $usersWithProgress->where('progress', 68),
+            'compensation_signed' => $usersWithProgress->where('progress', 85),
+            'digital_account_given' => $usersWithProgress->where('progress', 100),
         ];
 
         return $notif;
     }
+
 
     public function inumber_status()
     {

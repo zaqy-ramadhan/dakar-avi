@@ -73,7 +73,7 @@ Route::middleware(['auth'])->middleware('active_employee')->group(function () {
     Route::middleware(['role:admin,admin 2,admin 3,admin 4'])->group(function () {
 
         Route::get('/admin/users', [UsersController::class, 'index'])->name('users.index');
-        Route::get('/admin/users/view/{role?}', [UsersController::class, 'index'])->name('users.index.role');
+        Route::get('/admin/users/view/{role?}', [UsersController::class, 'index'])->name('users.index');
 
         Route::get('/admin/users/create', [UsersController::class, 'create'])->name('admin.user.create');
         Route::get('/admin/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
@@ -198,8 +198,6 @@ Route::middleware(['auth'])->middleware('active_employee')->group(function () {
     Route::get('/off', function (UserOffboardingDataTables $dataTable) {
         return $dataTable->render('admin.users.user');
     })->name('user.offboarding');
-
-    // Route::post('/offboarding/{id}/exit-interview', [OffboardingController::class, 'exitIntv'])->name('offboarding.exit-interview');
 
     //dakar form
     Route::get('/admin/form/profile', [UsersController::class, 'details'])->name('users.details');

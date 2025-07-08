@@ -33,28 +33,47 @@ class HomeController extends Controller
     public function index()
     {
         try {
-            if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4'])) {
-                $user = User::query()
-                    ->with(['department', 'employeeJob.position'])
-                    ->select('users.*');
+            $adminRoles = ['admin', 'admin 2', 'admin 3', 'admin 4'];
+            $authRole = Auth::user()->getRole();
 
-                $pemaganganRole = DakarRole::where('role_name', 'pemagangan')->first();
-                $pemagangan = (clone $user)
-                    ->whereHas('dakarRole', function ($q) use ($pemaganganRole) {
-                        $q->where('dakar_role_user.dakar_role_id', $pemaganganRole->id);
-                    })
-                    ->whereHas('latestEmployeeJob', function ($query) {
-                        $query->where('employment_status', true);
-                    })
+            if (in_array($authRole, $adminRoles)) {
+                $baseUser = User::query()
+                    ->with([
+                        'dakarRole',
+                        'latestEmployeeJob',
+                        'latestEmployeeJob.department',
+                        'employeeJob.jobDoc',
+                        'employeeJob.jobWageAllowance',
+                        'employeeJob.inventory.item',
+                        'firstEmployeeJob',
+                        'inventory',
+                        'inventory.item',
+                        'inventory.employeeJob',
+                        'employeeDetail',
+                        'employeeEducations',
+                        'employeeBanks',
+                        'employeeDocs',
+                        'employeeInventoryNumber',
+                    ]);
+
+
+                $pemaganganRoleId = DakarRole::where('role_name', 'pemagangan')->value('id');
+                $internshipRoleId = DakarRole::where('role_name', 'internship')->value('id');
+                $karyawanRoleId = DakarRole::where('role_name', 'karyawan')->value('id');
+
+                $pemagangan = (clone $baseUser)
+                    ->whereHas('dakarRole', fn($q) => $q->where('dakar_role_user.dakar_role_id', $pemaganganRoleId))
+                    ->whereHas('latestEmployeeJob', fn($q) => $q->where('employment_status', true))
                     ->get();
 
-                $internshipRole = DakarRole::where('role_name', 'internship')->first();
-                $internship = (clone $user)->whereHas('dakarRole', function ($y) use ($internshipRole) {
-                    $y->where('dakar_role_user.dakar_role_id', $internshipRole->id);
-                })
-                    ->whereHas('latestEmployeeJob', function ($query) {
-                        $query->where('employment_status', true);
-                    })
+                $internship = (clone $baseUser)
+                    ->whereHas('dakarRole', fn($q) => $q->where('dakar_role_user.dakar_role_id', $internshipRoleId))
+                    ->whereHas('latestEmployeeJob', fn($q) => $q->where('employment_status', true))
+                    ->get();
+
+                $karyawan = (clone $baseUser)
+                    ->whereHas('dakarRole', fn($q) => $q->where('dakar_role_user.dakar_role_id', $karyawanRoleId))
+                    ->whereHas('latestEmployeeJob', fn($q) => $q->where('employment_status', true))
                     ->get();
 
                 $jobType = DB::table('dakar_employee_job as ej')
@@ -64,13 +83,12 @@ class HomeController extends Controller
                     ->groupBy('jt.job_type_name')
                     ->pluck('total', 'jt.job_type_name');
 
-                // dd($jobType);
-
                 $departments = DB::table('dakar_departments')
                     ->leftJoin('dakar_employee_job', function ($join) {
                         $join->on('dakar_departments.id', '=', 'dakar_employee_job.department_id')
                             ->where('dakar_employee_job.employment_status', true);
-                    })->select('dakar_departments.department_name', DB::raw('COUNT(dakar_employee_job.id) as total'))
+                    })
+                    ->select('dakar_departments.department_name', DB::raw('COUNT(dakar_employee_job.id) as total'))
                     ->groupBy('dakar_departments.department_name')
                     ->pluck('total', 'dakar_departments.department_name');
 
@@ -81,133 +99,96 @@ class HomeController extends Controller
                     ->where('user_dakar_role', 'karyawan')
                     ->whereMonth('end_date', $now->month)
                     ->whereYear('end_date', $now->year)
+                    ->take(5)
                     ->get();
-                $expiredThisMonth = $expiredThisMonth->take(5);
 
                 $uniformRefresh = Inventory::with(['user', 'item', 'employeeJob.department'])
-                    ->whereHas('item', function ($query) {
-                        $query->where('type', 'baju');
-                    })
-                    ->whereHas('employeeJob', function ($query) {
-                        $query->where('employment_status', true);
-                    })
+                    ->whereHas('item', fn($q) => $q->where('type', 'baju'))
+                    ->whereHas('employeeJob', fn($q) => $q->where('employment_status', true))
                     ->where('acc_date', '<=', Carbon::now()->subMonths(12))
                     ->where('status', 'Diterima')
                     ->get()
-                    ->map(function ($inventory) {
-                        $user = $inventory->user;
-
-                        return [
-                            'id' => $inventory->user->id,
-                            'npk' => $user?->npk ?? 'N/A',
-                            'name' => $user?->fullname ?? 'N/A',
-                            'department' => $inventory->employeeJob->department->department_name ?? 'N/A',
-                        ];
-                    })
-                    ->unique('user_id')
+                    ->map(fn($inv) => [
+                        'id' => $inv->user_id,
+                        'npk' => $inv->user->npk,
+                        'name' => $inv->user->fullname,
+                        'department' => optional($inv->employeeJob->department)->department_name ?? 'N/A',
+                    ])
+                    ->unique('id')
                     ->values();
-                // dd($uniformRefresh);
 
                 $birthdays = EmployeeDetail::with(['user.latestEmployeeJob.department'])
-                    ->whereMonth('birth_date', (int) Carbon::now()->month)
-                    ->whereHas('user.latestEmployeeJob', function ($query) {
-                        $query->where('employment_status', true);
-                    })
+                    ->whereMonth('birth_date', Carbon::now()->month)
+                    ->whereHas('user.latestEmployeeJob', fn($q) => $q->where('employment_status', true))
+                    ->take(5)
+                    ->get();
+
+                // Onboarding yang belum selesai
+                $uncomplete = User::with(['employeeDetail', 'latestEmployeeJob'])
+                    ->whereHas('employeeDetail', fn($q) => $q->where('is_draft', 0))
                     ->get()
-                    ->take(5);
-                // dd($birthdays);
-
-                $karyawanRole = DakarRole::where('role_name', 'karyawan')->first();
-                if ($karyawanRole) {
-                    $karyawan = (clone $user)->whereHas('dakarRole', function ($z) use ($karyawanRole) {
-                        $z->where('dakar_role_user.dakar_role_id', $karyawanRole->id);
-                    })
-                        ->whereHas('latestEmployeeJob', function ($query) {
-                            $query->where('employment_status', true);
-                        })
-                        ->get();
-                } else {
-                    $karyawan = collect();
-                }
-
-                // $uncomplete = User::whereHas('firstEmployeeJob', function ($query) {
-                //     $query
-                //         ->where('is_onboarding_completed', false)
-                //         ->where('employment_status', true)
-                //         ->whereRaw('id = (SELECT MIN(id) FROM dakar_employee_job WHERE user_id = users.id)')
-                //     ;
-
-                // })->get();
-                $users = User::whereHas('employeeDetail', function ($q) {
-                    $q->where('is_draft', 0);
-                });
-
-                $users = $users->get();
-                $users = $users->filter(function ($user) {
-                    $progress = $user->progressOnboardingAdmin()['progress'];
-                    return $progress < 100;
-                });
-
-                $uncomplete = $users;
-
-                return view('home', compact('pemagangan', 'uncomplete', 'internship', 'karyawan', 'jobType', 'departments', 'expiredThisMonth', 'uniformRefresh', 'birthdays'));
-            } else {
-                $user = User::with(['employeeDocs', 'employeeJob.department'])->find(Auth::user()->id);
-
-                // $personal_status = $user->employeeDetail && $user->employeeEducations && $user->employeeBanks && $user->employeeDocs;
-                // $personal_date = optional($user->employeeDetail)->created_at;
-                $personal_status = $user->personal_status()['status'];
-                $personal_date = $user->personal_status()['date'];
-
-                $job = $user->employeeJob->first();
-
-                if ($job) {
-                    $contractDoc = $job->jobDoc?->firstWhere('type', 'contract');
-                    $contract_status = $contractDoc && $contractDoc?->second_party_signature;
-                    $contract_date = optional($contractDoc)->created_at;
-
-                    $spkDoc = $job->jobDoc?->firstWhere('type', 'kerahasiaan');
-                    $spk_status = $spkDoc && $spkDoc?->second_party_signature;
-                    $spk_date = optional($spkDoc)->created_at;
-
-                    // $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
-                    // $inventories_status = $job->inventory
-                    //     ->filter(fn($item) => !in_array(strtolower($item->item->item_name), $specificItems))
-                    //     ->where('status', 'Diterima')
-                    //     ->isNotEmpty();
-                    // $inventories_date = optional($job->inventory)->last()?->updated_at;
-
-                    $inventories_status = $user->inventory_acc_status()['status'];
-                    $inventories_date = $user->inventory_acc_status()['date'];
-                } else {
-                    $contract_status = false;
-                    $contract_date = null;
-                    $spk_status = false;
-                    $spk_date = null;
-                    $inventories_status = false;
-                    $inventories_date = null;
-                }
-
-                $inumber_status = $user->inumber_status()['status'];
-                $inumber_date = $user->inumber_status()['date'];
-
+                    ->filter(fn($u) => $u->progressOnboardingAdmin()['progress'] < 100);
 
                 return view('home', compact(
-                    'user',
-                    'personal_status',
-                    'personal_date',
-                    'contract_status',
-                    'contract_date',
-                    'spk_status',
-                    'spk_date',
-                    // 'employment_status',
-                    // 'employment_date',
-                    'inventories_status',
-                    'inventories_date',
-                    'inumber_status',
-                    'inumber_date',
+                    'pemagangan',
+                    'internship',
+                    'karyawan',
+                    'jobType',
+                    'departments',
+                    'expiredThisMonth',
+                    'uniformRefresh',
+                    'birthdays',
+                    'uncomplete'
                 ));
             }
+
+            // Karyawan biasa
+            $user = User::with([
+                'employeeDocs',
+                'employeeJob.jobDoc',
+                'employeeJob.department',
+            ])->findOrFail(Auth::id());
+
+            $personal_status = $user->personal_status()['status'];
+            $personal_date = $user->personal_status()['date'];
+            $job = $user->employeeJob->first();
+
+            $contract_status = false;
+            $contract_date = null;
+            $spk_status = false;
+            $spk_date = null;
+            $inventories_status = false;
+            $inventories_date = null;
+
+            if ($job) {
+                $contractDoc = $job->jobDoc->firstWhere('type', 'contract');
+                $contract_status = $contractDoc && $contractDoc->second_party_signature;
+                $contract_date = optional($contractDoc)->created_at;
+
+                $spkDoc = $job->jobDoc->firstWhere('type', 'kerahasiaan');
+                $spk_status = $spkDoc && $spkDoc->second_party_signature;
+                $spk_date = optional($spkDoc)->created_at;
+
+                $inventories_status = $user->inventory_acc_status()['status'];
+                $inventories_date = $user->inventory_acc_status()['date'];
+            }
+
+            $inumber_status = $user->inumber_status()['status'];
+            $inumber_date = $user->inumber_status()['date'];
+
+            return view('home', compact(
+                'user',
+                'personal_status',
+                'personal_date',
+                'contract_status',
+                'contract_date',
+                'spk_status',
+                'spk_date',
+                'inventories_status',
+                'inventories_date',
+                'inumber_status',
+                'inumber_date'
+            ));
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return back()->with('error', 'An error occurred: ' . $e->getMessage());

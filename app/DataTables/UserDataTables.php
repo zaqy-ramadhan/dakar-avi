@@ -43,7 +43,7 @@ class UserDataTables extends DataTable
                     $q->whereRaw("LOWER(position_name) LIKE ?", ["%" . strtolower($keyword) . "%"]);
                 });
             })
-            ->addColumn('join_date', function($user){
+            ->addColumn('join_date', function ($user) {
                 $firstJob = $user->firstEmployeeJob;
                 return optional($firstJob)->start_date ? $firstJob->start_date->isoFormat('D MMMM YYYY') : '';
             })
@@ -114,54 +114,52 @@ class UserDataTables extends DataTable
 
     public function query(User $model): QueryBuilder
     {
-        $roleId = null;
-        $status = null;
-        $active = null;
-
-        $karyawanId = DakarRole::where('role_name', 'karyawan')->first()->id;
-
         $query = $model->newQuery()
             ->with(['department', 'employeeJob.position', 'latestEmployeeJob'])
-            ->whereHas('employeeJob')
             ->select('users.*')
             ->whereDoesntHave('dakarRole', function ($q) {
                 $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3']);
+            })
+            ->whereHas('employeeJob');
+
+        // Ambil inputan filter
+        $statusFilter = request()->input('statusFilter');
+        $activeFilter = request()->input('activeFilter');
+        $roleFilter   = request()->input('roleFilter') ?? request()->input('role');
+
+        // Resolve role IDs sekali saja
+        $roles = DakarRole::whereIn('role_name', ['karyawan', $roleFilter])->pluck('id', 'role_name');
+
+        // Status filter: Job status
+        if ($statusFilter) {
+            $query->whereHas('latestEmployeeJob', function ($q) use ($statusFilter) {
+                $q->where('dakar_employee_job.job_status', $statusFilter);
             });
 
-        if (request()->input('statusFilter')) {
-            $status = request()->input('statusFilter');
-            $query->whereHas('latestEmployeeJob', function ($q) use ($status) {
-                $q->where('dakar_employee_job.job_status', $status);
-            })->whereHas('dakarRole', function ($q) use ($karyawanId) {
-                $q->where('dakar_role_user.dakar_role_id', $karyawanId);
-            });
-        }
-        if (request()->input('activeFilter')) {
-            $active = request()->input('activeFilter');
-            $query->whereHas('latestEmployeeJob', function ($query) use ($active) {
-                $query->where('employment_status', $active);
-            });
-        }
-        if ($role = request()->input('roleFilter')) {
-            $karyawanRole = DakarRole::where('role_name', $role)->first();
-            if ($karyawanRole) {
-                $query->whereHas('dakarRole', function ($q) use ($karyawanRole) {
-                    $q->where('dakar_role_user.dakar_role_id', $karyawanRole->id);
+            if ($roles->has('karyawan')) {
+                $query->whereHas('dakarRole', function ($q) use ($roles) {
+                    $q->where('dakar_role_user.dakar_role_id', $roles['karyawan']);
                 });
             }
-        } elseif (request()->input('role')) {
-            $rolename = request()->input('role');
-            $roleId = DakarRole::where('role_name', $rolename)->first()->id ?? null;
         }
 
-        if ($roleId) {
-            $query->whereHas('dakarRole', function ($q) use ($roleId) {
-                $q->where('dakar_role_user.dakar_role_id', $roleId);
+        // Active filter: Employment status
+        if ($activeFilter !== null) {
+            $query->whereHas('latestEmployeeJob', function ($q) use ($activeFilter) {
+                $q->where('employment_status', $activeFilter);
+            });
+        }
+
+        // Role filter
+        if ($roles->has($roleFilter)) {
+            $query->whereHas('dakarRole', function ($q) use ($roles, $roleFilter) {
+                $q->where('dakar_role_user.dakar_role_id', $roles[$roleFilter]);
             });
         }
 
         return $query;
     }
+
 
     public function html(): HtmlBuilder
     {
@@ -183,7 +181,7 @@ class UserDataTables extends DataTable
                 ->orderable(false),
             Column::make('npk')->title('NPK'),
             Column::make('fullname')->title('Name'),
-            Column::make('email')->title('Email'),
+            // Column::make('email')->title('Email'),
             Column::make('position_name')
                 ->title('Department')
                 ->searchable()
