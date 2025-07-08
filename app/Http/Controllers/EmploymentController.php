@@ -4,9 +4,23 @@ namespace App\Http\Controllers;
 
 use App\DataTables\JobEmploymentDataTables;
 use App\Models\{
-    CostCenter, DakarRole, Department, Division, EmployeeInventoryNumber,
-    Golongan, Section, SubGolongan, Group, Item, JobStatus, JobType,
-    Level, Line, Position, User, WorkHour
+    CostCenter,
+    DakarRole,
+    Department,
+    Division,
+    EmployeeInventoryNumber,
+    Golongan,
+    Section,
+    SubGolongan,
+    Group,
+    Item,
+    JobStatus,
+    JobType,
+    Level,
+    Line,
+    Position,
+    User,
+    WorkHour
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +35,7 @@ class EmploymentController extends Controller
 
             $user = User::with([
                 'employeeJob.jobDoc',
-                'inventory.employeeJob.contract',
+                'inventory.employeeJob', // hanya relasi, JANGAN panggil field
                 'dakarRole',
                 'employeeDetail',
                 'firstEmployeeJob'
@@ -39,26 +53,27 @@ class EmploymentController extends Controller
                     'return_date' => $inventory->return_date,
                     'return_notes' => $inventory->return_notes,
                     'employee_job_id' => $inventory->employee_job_id,
+                    // Ambil field contract dari relasi employeeJob
                     'contract' => optional($inventory->employeeJob)->contract
                 ];
             })->sortBy('item_id')->values();
 
             $masters = [
-                'costCenters' => CostCenter::all(),
-                'levels'      => Level::all(),
-                'types'       => JobType::all(),
-                'golongans'   => Golongan::all(),
-                'sub_golongans' => SubGolongan::all(),
-                'groups'      => Group::all(),
-                'lines'       => Line::all(),
-                'jobStatus'   => JobStatus::all(),
-                'positions'   => Position::with(['department.division'])->get(),
-                'sections'    => Section::with(['department.division'])->get(),
-                'workHour'    => WorkHour::all(),
-                'departments' => Department::with('division')->get(),
-                'divisions'   => Division::all(),
-                'roles'       => DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get(),
-                'allItems'    => Item::whereNotIn('item_name', ['User Password Great Day', 'User Password E-Slip'])->get(),
+                'costCenters'    => CostCenter::all(),
+                'levels'         => Level::all(),
+                'types'          => JobType::all(),
+                'golongans'      => Golongan::all(),
+                'sub_golongans'  => SubGolongan::all(),
+                'groups'         => Group::all(),
+                'lines'          => Line::all(),
+                'jobStatus'      => JobStatus::all(),
+                'positions'      => Position::with(['department.division'])->get(),
+                'sections'       => Section::with(['department.division'])->get(),
+                'workHour'       => WorkHour::all(),
+                'departments'    => Department::with('division')->get(),
+                'divisions'      => Division::all(),
+                'roles'          => DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get(),
+                'allItems'       => Item::whereNotIn('item_name', ['User Password Great Day', 'User Password E-Slip'])->get(),
             ];
 
             $rule  = $user->rule();
@@ -74,9 +89,12 @@ class EmploymentController extends Controller
             $groupedItems = $inventories->where('status', 'Diterima')->groupBy('item_name');
 
             $itemNames = [
-                'BPJS Kesehatan', 'BPJS TK',
-                'User Account Great Day', 'User Account E-Slip',
-                'User Password Great Day', 'User Password E-Slip'
+                'BPJS Kesehatan',
+                'BPJS TK',
+                'User Account Great Day',
+                'User Account E-Slip',
+                'User Password Great Day',
+                'User Password E-Slip'
             ];
             $itemIds = Item::whereIn('item_name', $itemNames)->pluck('id', 'item_name');
 
@@ -89,14 +107,22 @@ class EmploymentController extends Controller
 
             return $dataTable->render('admin.onboarding.onboarding', array_merge(
                 compact(
-                    'user', 'inventories', 'rule', 'items',
-                    'previousRole', 'groupedItems',
-                    'bpjs', 'bpjstk', 'greatday', 'eslip',
-                    'pass_greatday', 'pass_eslip'
+                    'user',
+                    'inventories',
+                    'rule',
+                    'items',
+                    'previousRole',
+                    'groupedItems',
+                    'bpjs',
+                    'bpjstk',
+                    'greatday',
+                    'eslip',
+                    'pass_greatday',
+                    'pass_eslip'
                 ),
                 $masters
             ));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error($e->getMessage());
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
