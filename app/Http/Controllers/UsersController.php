@@ -49,7 +49,6 @@ class UsersController extends Controller
 
         $page = 'Employee Management';
 
-        // ✅ Cache roles & job status kalau master data jarang berubah
         $roles = DakarRole::all();
         $jobStatus = JobStatus::all();
 
@@ -384,18 +383,33 @@ class UsersController extends Controller
                 $items = $user->items();
 
                 // ✅ Cache master data (kalau mau)
-                $costCenters = Cache::remember('cost_centers', 60, fn() => CostCenter::all());
-                $levels = Cache::remember('levels', 60, fn() => Level::all());
-                $types = Cache::remember('job_types', 60, fn() => JobType::all());
-                $golongans = Cache::remember('golongans', 60, fn() => Golongan::all());
-                $sub_golongans = Cache::remember('sub_golongans', 60, fn() => SubGolongan::all());
-                $groups = Cache::remember('groups', 60, fn() => Group::all());
-                $lines = Cache::remember('lines', 60, fn() => Line::all());
-                $positions = Cache::remember('positions', 60, fn() => Position::with(['department.division'])->get());
-                $workHour = Cache::remember('work_hours', 60, fn() => WorkHour::all());
-                $sections = Cache::remember('sections', 60, fn() => Section::with(['department.division'])->get());
-                $departments = Cache::remember('departments', 60, fn() => Department::with('division')->get());
-                $divisions = Cache::remember('divisions', 60, fn() => Division::all());
+                // $costCenters = Cache::remember('cost_centers', 60, fn() => CostCenter::all());
+                // $levels = Cache::remember('levels', 60, fn() => Level::all());
+                // $types = Cache::remember('job_types', 60, fn() => JobType::all());
+                // $golongans = Cache::remember('golongans', 60, fn() => Golongan::all());
+                // $sub_golongans = Cache::remember('sub_golongans', 60, fn() => SubGolongan::all());
+                // $groups = Cache::remember('groups', 60, fn() => Group::all());
+                // $lines = Cache::remember('lines', 60, fn() => Line::all());
+                // $positions = Cache::remember('positions', 60, fn() => Position::with(['department.division'])->get());
+                // $workHour = Cache::remember('work_hours', 60, fn() => WorkHour::all());
+                // $sections = Cache::remember('sections', 60, fn() => Section::with(['department.division'])->get());
+                // $departments = Cache::remember('departments', 60, fn() => Department::with('division')->get());
+                // $divisions = Cache::remember('divisions', 60, fn() => Division::all());
+                // $allItems = Item::whereNotIn('item_name', ['User Password Great Day', 'User Password E-Slip'])->get();
+                $costCenters = CostCenter::all();
+                $levels = Level::all();
+                $types = JobType::all();
+                $golongans = Golongan::all();
+                $sub_golongans = SubGolongan::all();
+                $groups = Group::all();
+                $lines = Line::all();
+                $jobStatus = JobStatus::all();
+                $positions = Position::with(['department.division'])->get();
+                $workHour = WorkHour::get();
+                $sections = Section::with(['department.division'])->get();
+                $departments = Department::with('division')->get();
+                $divisions = Division::all();
+                $roles = DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get();
                 $allItems = Item::whereNotIn('item_name', ['User Password Great Day', 'User Password E-Slip'])->get();
 
                 return view('admin.onboarding.onboarding', compact(
