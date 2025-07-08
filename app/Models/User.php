@@ -296,7 +296,7 @@ class User extends Authenticatable
         $inumber_status = $user->inumber_status()['status'];
         if ($inumber_status) {
             $progress = 100;
-            if ($user->firstEmployeeJob && $user->firstEmployeeJob->is_onboarding_completed == false) {
+            if ($user->firstEmployeeJob && optional($user->firstEmployeeJob)->is_onboarding_completed == false) {
                 $user->firstEmployeeJob->is_onboarding_completed = true;
                 $user->firstEmployeeJob->save();
             }
@@ -314,7 +314,8 @@ class User extends Authenticatable
         $progress = 0;
         $message = '🚀 Complete your personal data and supporting documents to start the onboarding process.';
 
-        if ($user->firstEmployeeJob->is_onboarding_completed === true) {
+        if (optional($user->firstEmployeeJob)->is_onboarding_completed === true) {
+            // Lanjutkan logic
             return [
                 'progress' => 100,
                 'message' => '🎉 Onboarding completed!'
@@ -491,7 +492,7 @@ class User extends Authenticatable
         if ($inumber_status) {
             $progress = 100;
             $message = '🎉 Onboarding completed!';
-            if ($user->firstEmployeeJob && $user->firstEmployeeJob->is_onboarding_completed == false) {
+            if ($user->firstEmployeeJob && optional($user->firstEmployeeJob)->is_onboarding_completed == false) {
                 $user->firstEmployeeJob->is_onboarding_completed = true;
                 $user->firstEmployeeJob->save();
             }
