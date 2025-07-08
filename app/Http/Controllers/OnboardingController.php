@@ -33,7 +33,7 @@ class OnboardingController extends Controller
         try {
             $user = User::with('employeeJob.jobDoc', 'dakarRole', 'employeeDetail', 'employeeDocs', 'firstEmployeeJob', 'employeeJob.inventory.item', 'inventory.employeeJob')->findOrFail($id);
             $jobWageAllowance = JobWageAllowance::where('employee_job_id', optional($user->firstEmployeeJob)->id)->get();
-            $is_signed = $user->firstEmployeeJob->jobDoc->where('type', 'contract')->whereNotNull('first_party_signature')->whereNotNull('second_party_signature')->isNotEmpty();
+            $is_signed = $user->firstEmployeeJob?->jobDoc->where('type', 'contract')->whereNotNull('first_party_signature')->whereNotNull('second_party_signature')->isNotEmpty();
 
 
             if ($jobWageAllowance === null || $jobWageAllowance->count() <= 0) {
