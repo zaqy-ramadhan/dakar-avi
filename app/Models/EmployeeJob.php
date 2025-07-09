@@ -344,4 +344,11 @@ class EmployeeJob extends Model
     {
         return $this->belongsTo(WorkHour::class, 'work_hour_code_id', 'id');
     }
+
+     protected static function booted()
+    {
+        static::saving(function ($employeeJob) {
+            $employeeJob->npk = $employeeJob->user->npk ?? null;
+        });
+    }
 }

@@ -172,7 +172,7 @@
                         :
                     </td>
                     <td>
-                        {{ $kontrak->user->npk }}
+                        {{ $kontrak->npk ?? $kontrak->user->npk }}
                     </td>
                 </tr>
 

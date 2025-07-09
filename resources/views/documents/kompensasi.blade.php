@@ -176,7 +176,7 @@
                 <td>{{ $no +=1 }}</td>
                 <td>NPK</td>
                 <td class="space">:</td>
-                <td>{{ $kontrak->user->npk }}</td>
+                <td>{{ $kontrak->npk ?? $kontrak->user->npk }}</td>
             </tr>
 
             <tr>
@@ -190,7 +190,7 @@
                 <td>{{ $no +=1 }}</td>
                 <td>Tipe Tenaga Kerja / Work Contract</td>
                 <td class="space">:</td>
-                <td>{{ $kontrak->jobType->job_type_name }}
+                <td>{{ $kontrak->jobType?->job_type_name ?? '-' }}
                 </td>
             </tr>
 

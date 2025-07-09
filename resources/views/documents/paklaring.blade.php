@@ -152,7 +152,7 @@
             <tr>
                 <td>NPK</td>
                 <td class="space">:</td>
-                <td>{{ $kontrak->user->npk }}</td>
+                <td>{{ $kontrak->npk ?? $kontrak->user->npk }}</td>
             </tr>
             <tr>
                 <td class="italic">ID Number</td>
