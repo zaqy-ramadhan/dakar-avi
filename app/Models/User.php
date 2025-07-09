@@ -593,84 +593,79 @@ class User extends Authenticatable
 
     public function inventory_set_status()
     {
-        $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
-        $nonSpecificInventories = $this->inventory->filter(function ($item) use ($specificItems) {
-            return !in_array(strtolower($item->item->item_name), $specificItems);
-        });
+        $nonSpecific = $this->nonSpecificInventories();
         $job = $this->firstEmployeeJob;
-        $is_not_empty = $nonSpecificInventories->isNotEmpty();
-        if ($is_not_empty && $job !== null) {
-            if ($is_not_empty) {
-                return [
-                    'status' => true,
-                    'date' => $nonSpecificInventories->where('employee_job_id', $job->id)->where('status', '-')->last()?->updated_at,
-                ];
-            } else {
-                return [
-                    'status' => false,
-                    'date' => null,
-                ];
-            }
-        } else {
+
+        if ($nonSpecific->isNotEmpty() && $job) {
+            $date = $nonSpecific
+                ->where('employee_job_id', $job->id)
+                ->where('status', '-')
+                ->last()?->updated_at;
+
             return [
-                'status' => false,
-                'date' => null,
+                'status' => $date !== null,
+                'date' => $date,
             ];
         }
+
+        return ['status' => false, 'date' => null];
     }
 
     public function inventory_acc_status()
     {
-        $specificItems = ['bpjs kesehatan', 'bpjs tk', 'user account great day', 'user account e-slip'];
-        $nonSpecificInventories = $this->inventory->filter(function ($item) use ($specificItems) {
-            return !in_array(strtolower($item->item->item_name), $specificItems);
-        });
+        $nonSpecific = $this->nonSpecificInventories();
         $job = $this->firstEmployeeJob;
-        $is_not_empty = $nonSpecificInventories->isNotEmpty();
-        if ($is_not_empty && $job !== null) {
-            $count = $nonSpecificInventories->filter(function ($item) {
-                return $item->status !== 'Dikembalikan' && $item->status !== 'Dinonaktifkan';
-            })->count();
-            $acc = $nonSpecificInventories->filter(function ($item) {
-                return $item->status === 'Diterima';
-            })->count();
-            if ($count == $acc) {
-                return [
-                    'status' => true,
-                    'date' => $nonSpecificInventories->last()?->updated_at,
-                ];
-            } else {
-                return [
-                    'status' => false,
-                    'date' => null,
-                ];
-            }
-        } else {
+
+        if ($nonSpecific->isNotEmpty() && $job) {
+            $active = $nonSpecific->reject(function ($item) {
+                return in_array($item->status, ['Dikembalikan', 'Dinonaktifkan']);
+            });
+
+            $accepted = $active->filter(fn($item) => $item->status === 'Diterima');
+
+            $isComplete = $active->count() === $accepted->count();
+
             return [
-                'status' => false,
-                'date' => null,
+                'status' => $isComplete,
+                'date' => $isComplete ? $accepted->last()?->updated_at : null,
             ];
         }
+
+        return ['status' => false, 'date' => null];
     }
 
     public function personal_status()
     {
-        $hasDetail = $this->employeeDetail && $this->employeeDetail->is_draft == 0;
-        $hasEducations = $this->employeeEducations && $this->employeeEducations->isNotEmpty();
-        $hasBanks = $this->employeeBanks && $this->employeeBanks->isNotEmpty();
-        $hasDocs = $this->employeeDocs && $this->employeeDocs->isNotEmpty();
+        $hasDetail = $this->employeeDetail && !$this->employeeDetail->is_draft;
+        $hasEducation = $this->employeeEducations->isNotEmpty();
+        $hasBank = $this->employeeBanks->isNotEmpty();
+        $hasDocs = $this->employeeDocs->isNotEmpty();
 
-        $status = $hasDetail && $hasEducations && $hasBanks && $hasDocs;
-        $date = null;
-        if ($status) {
-            $date = $this->employeeDocs->max('created_at');
-        }
+        $isComplete = $hasDetail && $hasEducation && $hasBank && $hasDocs;
 
         return [
-            'status' => $status,
-            'date' => $date,
+            'status' => $isComplete,
+            'date' => $isComplete ? $this->employeeDocs->max('created_at') : null,
         ];
     }
+
+    /**
+     * Common reusable filter
+     */
+    protected function nonSpecificInventories()
+    {
+        static $specificItems = [
+            'bpjs kesehatan',
+            'bpjs tk',
+            'user account great day',
+            'user account e-slip'
+        ];
+
+        return $this->inventory->filter(function ($item) use ($specificItems) {
+            return !in_array(strtolower($item->item->item_name), $specificItems);
+        });
+    }
+
 
     public function rule()
     {

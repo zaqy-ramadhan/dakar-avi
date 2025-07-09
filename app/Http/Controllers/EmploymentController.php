@@ -94,16 +94,25 @@ class EmploymentController extends Controller
                 'User Account Great Day',
                 'User Account E-Slip',
                 'User Password Great Day',
-                'User Password E-Slip'
+                'User Password E-Slip',
+                'Email AVI',
+                'Email Visteon'
             ];
-            $itemIds = Item::whereIn('item_name', $itemNames)->pluck('id', 'item_name');
+            $itemMap = Item::whereIn('item_name', $itemNames)->pluck('id', 'item_name');
 
-            $bpjs         = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $itemIds['BPJS Kesehatan'] ?? 0)->first();
-            $bpjstk       = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $itemIds['BPJS TK'] ?? 0)->first();
-            $greatday     = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $itemIds['User Account Great Day'] ?? 0)->first();
-            $eslip        = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $itemIds['User Account E-Slip'] ?? 0)->first();
-            $pass_greatday = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $itemIds['User Password Great Day'] ?? 0)->first();
-            $pass_eslip   = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $itemIds['User Password E-Slip'] ?? 0)->first();
+            $inventoryNumbers = EmployeeInventoryNumber::where('user_id', $user->id)
+                ->whereIn('item_id', $itemMap->values())
+                ->get()
+                ->keyBy('item_id');
+
+            $bpjs = $inventoryNumbers[$itemMap['BPJS Kesehatan']] ?? null;
+            $bpjstk = $inventoryNumbers[$itemMap['BPJS TK']] ?? null;
+            $greatday = $inventoryNumbers[$itemMap['User Account Great Day']] ?? null;
+            $eslip = $inventoryNumbers[$itemMap['User Account E-Slip']] ?? null;
+            $pass_greatday = $inventoryNumbers[$itemMap['User Password Great Day']] ?? null;
+            $pass_eslip = $inventoryNumbers[$itemMap['User Password E-Slip']] ?? null;
+            $mail_avi = $inventoryNumbers[$itemMap['Email AVI']] ?? null;
+            $mail_visteon = $inventoryNumbers[$itemMap['Email Visteon']] ?? null;
 
             return $dataTable->render('admin.onboarding.onboarding', array_merge(
                 compact(
@@ -118,7 +127,9 @@ class EmploymentController extends Controller
                     'greatday',
                     'eslip',
                     'pass_greatday',
-                    'pass_eslip'
+                    'pass_eslip',
+                    'mail_avi',
+                    'mail_visteon',
                 ),
                 $masters
             ));

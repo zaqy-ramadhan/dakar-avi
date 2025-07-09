@@ -59,6 +59,20 @@
 
             </div>
         </div>
+        <div class="row">
+            <div class="col-sm-6 col-md-6 col-lg-4 mb-3">
+                <label for="mail_avi" class="form-label">Email AVI</label>
+                <input type="text" class="form-control" id="mail_avi" name="mail_avi"
+                    value="{{ old('mail_avi', $mail_avi ? $mail_avi->number : '') }}"
+                    @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']) || Request::is('*profile*')) disabled @endif>
+            </div>
+            <div class="col-sm-6 col-md-6 col-lg-4 mb-3">
+                <label for="mail_visteon" class="form-label">Email Visteon</label>
+                <input type="text" class="form-control" id="mail_visteon" name="mail_visteon"
+                    value="{{ old('mail_visteon', $mail_visteon ? $mail_visteon->number : '') }}"
+                    @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']) || Request::is('*profile*')) disabled @endif>
+            </div>
+        </div>
         @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']) && !Request::is('*profile*'))
             <div class="col-sm-12">
                 <button type="submit" class="btn btn-primary">Submit</button>

@@ -35,9 +35,9 @@
         <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents"
             type="button" role="tab" aria-controls="documents" aria-selected="false">Dokumen</button>
     </li>
-    <li class="nav-item" role="presentation">
+    {{-- <li class="nav-item" role="presentation">
         <button class="nav-link" id="inventaris-tab" data-bs-toggle="tab" data-bs-target="#inventaris"
             type="button" role="tab" aria-controls="inventaris" aria-selected="false">Kepesertaan & Akun Digital</button>
-    </li>
+    </li> --}}
 
 </ul>

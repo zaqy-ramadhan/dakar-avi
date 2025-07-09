@@ -330,6 +330,8 @@ class UsersController extends Controller
                     'User Account E-Slip',
                     'User Password Great Day',
                     'User Password E-Slip',
+                    'Email AVI',
+                    'Email Visteon'
                 ];
                 $itemMap = Item::whereIn('item_name', $itemNames)->pluck('id', 'item_name');
 
@@ -344,6 +346,9 @@ class UsersController extends Controller
                 $eslip = $inventoryNumbers[$itemMap['User Account E-Slip']] ?? null;
                 $pass_greatday = $inventoryNumbers[$itemMap['User Password Great Day']] ?? null;
                 $pass_eslip = $inventoryNumbers[$itemMap['User Password E-Slip']] ?? null;
+                $mail_avi = $inventoryNumbers[$itemMap['Email AVI']] ?? null;
+                $mail_visteon = $inventoryNumbers[$itemMap['Email Visteon']] ?? null;
+
 
                 // ✅ Inventory status + grouping
                 $inventories = $user->inventory->map(function ($inventory) {
@@ -453,6 +458,8 @@ class UsersController extends Controller
                     'inumber_date',
                     'previousRole',
                     'is_signed',
+                    'mail_avi',
+                    'mail_visteon',
                 ));
             }
         }
@@ -635,24 +642,9 @@ class UsersController extends Controller
         $lines             = Line::all();
         $jobStatus = JobStatus::all();
 
-        $bpjsItemId = Item::where('item_name', 'BPJS Kesehatan')->first()->id ?? null;
-        $bpjstkItemId = Item::where('item_name', 'BPJS TK')->first()->id ?? null;
-        $greatdayItemId = Item::where('item_name', 'User Account Great Day')->first()->id ?? null;
-        $eslipItemId = Item::where('item_name', 'User Account E-Slip')->first()->id ?? null;
-        $pass_greatdayItemId = Item::where('item_name', 'User Password Great Day')->first()->id ?? null;
-        $pass_eslipItemId = Item::where('item_name', 'User Password E-Slip')->first()->id ?? null;
-
-        $bpjs = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $bpjsItemId)->first() ?? null;
-        $bpjstk = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $bpjstkItemId)->first() ?? null;
-        $greatday = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $greatdayItemId)->first() ?? null;
-        $eslip = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $eslipItemId)->first() ?? null;
-        $pass_greatday = EmployeeInventoryNumber::where('user_id', $user->id)->where('item_id', $pass_greatdayItemId)->first() ?? null;
-        $pass_eslip = EmployeeInventoryNumber::where('user_id', $user->id)->where('item_id', $pass_eslipItemId)->first() ?? null;
-
-
         $positions = Position::with(['department.division'])->get();
 
-        return view('admin.users.update', compact('user', 'employeeDetail', 'employeeFamily', 'employeeEducation', 'employeeTraining', 'employeeBank', 'employeeDoc', 'departments', 'positions', 'costCenters', 'levels', 'types', 'golongans', 'sub_golongans', 'groups', 'lines', 'jobStatus', 'bpjs', 'bpjstk', 'greatday', 'eslip', 'pass_greatday', 'pass_eslip'));
+        return view('admin.users.update', compact('user', 'employeeDetail', 'employeeFamily', 'employeeEducation', 'employeeTraining', 'employeeBank', 'employeeDoc', 'departments', 'positions', 'costCenters', 'levels', 'types', 'golongans', 'sub_golongans', 'groups', 'lines', 'jobStatus'));
     }
 
     public function details()
@@ -677,20 +669,6 @@ class UsersController extends Controller
         $jobStatus         = JobStatus::all();
         $positions         = Position::with(['department.division'])->get();
         $employeeJobs      = $user->employeeJob;
-
-        $bpjsItemId = Item::where('item_name', 'BPJS Kesehatan')->first()->id ?? null;
-        $bpjstkItemId = Item::where('item_name', 'BPJS TK')->first()->id ?? null;
-        $greatdayItemId = Item::where('item_name', 'User Account Great Day')->first()->id ?? null;
-        $eslipItemId = Item::where('item_name', 'User Account E-Slip')->first()->id ?? null;
-        $pass_greatdayItemId = Item::where('item_name', 'User Password Great Day')->first()->id ?? null;
-        $pass_eslipItemId = Item::where('item_name', 'User Password E-Slip')->first()->id ?? null;
-
-        $bpjs = EmployeeInventoryNumber::where('user_id', $user->id)->where('item_id', $bpjsItemId)->first() ?? null;
-        $bpjstk = EmployeeInventoryNumber::where('user_id', $user->id)->where('item_id', $bpjstkItemId)->first() ?? null;
-        $greatday = EmployeeInventoryNumber::where('user_id', $user->id)->where('item_id', $greatdayItemId)->first() ?? null;
-        $eslip = EmployeeInventoryNumber::where('user_id', $user->id)->where('item_id', $eslipItemId)->first() ?? null;
-        $pass_greatday = EmployeeInventoryNumber::where('user_id', $user->id)->where('item_id', $pass_greatdayItemId)->first() ?? null;
-        $pass_eslip = EmployeeInventoryNumber::where('user_id', $user->id)->where('item_id', $pass_eslipItemId)->first() ?? null;
 
         if (
             ($employeeDetail && $employeeDetail->is_draft == 0) &&
@@ -718,12 +696,6 @@ class UsersController extends Controller
                 'groups',
                 'lines',
                 'jobStatus',
-                'bpjs',
-                'bpjstk',
-                'greatday',
-                'eslip',
-                'pass_greatday',
-                'pass_eslip'
             ));
         }
 
@@ -746,12 +718,6 @@ class UsersController extends Controller
             'groups',
             'lines',
             'jobStatus',
-            'bpjs',
-            'bpjstk',
-            'greatday',
-            'eslip',
-            'pass_greatday',
-            'pass_eslip'
         ));
     }
 

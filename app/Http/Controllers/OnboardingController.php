@@ -131,19 +131,31 @@ class OnboardingController extends Controller
             $acceptedItems = collect($inventories ?? [])->where('status', 'Diterima');
             $groupedItems = $acceptedItems->groupBy('item_name');
 
-            $bpjsItemId = Item::where('item_name', 'BPJS Kesehatan')->first()->id ?? null;
-            $bpjstkItemId = Item::where('item_name', 'BPJS TK')->first()->id ?? null;
-            $greatdayItemId = Item::where('item_name', 'User Account Great Day')->first()->id ?? null;
-            $eslipItemId = Item::where('item_name', 'User Account E-Slip')->first()->id ?? null;
-            $pass_greatdayItemId = Item::where('item_name', 'User Password Great Day')->first()->id ?? null;
-            $pass_eslipItemId = Item::where('item_name', 'User Password E-Slip')->first()->id ?? null;
+            $itemNames = [
+                'BPJS Kesehatan',
+                'BPJS TK',
+                'User Account Great Day',
+                'User Account E-Slip',
+                'User Password Great Day',
+                'User Password E-Slip',
+                'Email AVI',
+                'Email Visteon'
+            ];
+            $itemMap = Item::whereIn('item_name', $itemNames)->pluck('id', 'item_name');
 
-            $bpjs = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $bpjsItemId)->first() ?? null;
-            $bpjstk = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $bpjstkItemId)->first() ?? null;
-            $greatday = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $greatdayItemId)->first() ?? null;
-            $eslip = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $eslipItemId)->first() ?? null;
-            $pass_greatday = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $pass_greatdayItemId)->first() ?? null;
-            $pass_eslip = EmployeeInventoryNumber::where('user_id', $id)->where('item_id', $pass_eslipItemId)->first() ?? null;
+            $inventoryNumbers = EmployeeInventoryNumber::where('user_id', $user->id)
+                ->whereIn('item_id', $itemMap->values())
+                ->get()
+                ->keyBy('item_id');
+
+            $bpjs = $inventoryNumbers[$itemMap['BPJS Kesehatan']] ?? null;
+            $bpjstk = $inventoryNumbers[$itemMap['BPJS TK']] ?? null;
+            $greatday = $inventoryNumbers[$itemMap['User Account Great Day']] ?? null;
+            $eslip = $inventoryNumbers[$itemMap['User Account E-Slip']] ?? null;
+            $pass_greatday = $inventoryNumbers[$itemMap['User Password Great Day']] ?? null;
+            $pass_eslip = $inventoryNumbers[$itemMap['User Password E-Slip']] ?? null;
+            $mail_avi = $inventoryNumbers[$itemMap['Email AVI']] ?? null;
+            $mail_visteon = $inventoryNumbers[$itemMap['Email Visteon']] ?? null;
 
 
             return $dataTable->render('admin.onboarding.onboarding', compact(
@@ -187,6 +199,8 @@ class OnboardingController extends Controller
                 'inumber_date',
                 'previousRole',
                 'is_signed',
+                'mail_avi',
+                'mail_visteon',
             ));
         } catch (\Exception $e) {
             // Log error

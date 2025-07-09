@@ -87,11 +87,11 @@
                 </div>
             </form>
 
-            <div class="tab-pane py-4 px-2 fade" id="inventaris" role="tabpanel" aria-labelledby="inventaris-tab">
+            {{-- <div class="tab-pane py-4 px-2 fade" id="inventaris" role="tabpanel" aria-labelledby="inventaris-tab">
 
                 @include('admin.users.form.inventoryNumber')
 
-            </div>
+            </div> --}}
         </div>
     </div>
 @endsection
