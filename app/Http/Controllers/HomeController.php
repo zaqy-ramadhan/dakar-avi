@@ -124,10 +124,15 @@ class HomeController extends Controller
                     ->get();
 
                 // Onboarding yang belum selesai
-                $uncomplete = User::with(['employeeDetail', 'latestEmployeeJob'])
-                    ->whereHas('employeeDetail', fn($q) => $q->where('is_draft', 0))
-                    ->get()
-                    ->filter(fn($u) => $u->progressOnboardingAdmin()['progress'] < 100);
+                $uncomplete = User::with(['employeeDetail', 'firstEmployeeJob'])
+                    ->whereHas('employeeDetail', function ($q) {
+                        $q->where('is_draft', 0);
+                    })->whereHas('firstEmployeeJob', function ($q) {
+                        $q->where('is_onboarding_completed', false);
+                    })->get();
+                // ->whereHas('employeeDetail', fn($q) => $q->where('is_draft', 0))
+                // ->get()
+                // ->filter(fn($u) => $u->progressOnboardingAdmin()['progress'] < 100);
 
                 return view('home', compact(
                     'pemagangan',

@@ -105,18 +105,14 @@ class UserBoardingDataTables extends DataTable
             }
         }
 
-        $query->whereDoesntHave('firstEmployeeJob', function ($q) {
-            $q->where('employment_status', false);
-        });
+        // $query->whereDoesntHave('firstEmployeeJob', function ($q) {
+        //     $q->where('employment_status', false);
+        // });
 
-        // Jika progressFilter true, filter di DB level sejauh mungkin
         if (request()->input('progressFilter') === 'true') {
             $query->whereHas('employeeDetail', function ($q) {
                 $q->where('is_draft', 0);
-            });
-
-            // Contoh: hanya ambil user yang belum selesai onboarding
-            $query->whereHas('firstEmployeeJob', function ($q) {
+            })->whereHas('firstEmployeeJob', function ($q) {
                 $q->where('is_onboarding_completed', false);
             });
         }
