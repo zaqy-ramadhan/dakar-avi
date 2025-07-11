@@ -64,6 +64,15 @@ class UserBoardingDataTables extends DataTable
                     $q->where('end_date', 'like', "%$keyword%");
                 });
             })
+            ->orderColumn('end_date', function ($query, $direction) {
+                $query->orderBy(
+                    EmployeeJob::select('end_date')
+                        ->whereColumn('user_id', 'users.id')
+                        ->latest('end_date')
+                        ->limit(1),
+                    $direction
+                );
+            })
 
             ->addColumn('checklist', function ($user) {
                 return $user->progressOnboarding() . '%';
