@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Models\DakarRole;
 use App\Models\EmployeeInventoryNumber;
+use App\Models\EmployeeJob;
 use App\Models\Item;
 use App\Models\User;
 use Carbon\Carbon;
@@ -44,7 +45,15 @@ class UserBoardingDataTables extends DataTable
                     $q->where('start_date', 'like', "%$keyword%");
                 });
             })
-
+            ->orderColumn('start_date', function ($query, $direction) {
+                $query->orderBy(
+                    EmployeeJob::select('start_date')
+                        ->whereColumn('user_id', 'users.id')
+                        ->latest('start_date')
+                        ->limit(1),
+                    $direction
+                );
+            })
             ->addColumn('end_date', function ($user) {
                 return $user->latestEmployeeJob && $user->latestEmployeeJob->end_date
                     ? $user->latestEmployeeJob->end_date->isoFormat('D MMMM YYYY')

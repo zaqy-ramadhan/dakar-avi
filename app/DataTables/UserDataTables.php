@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\DakarRole;
+use App\Models\EmployeeJob;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
@@ -47,9 +48,21 @@ class UserDataTables extends DataTable
                 $firstJob = $user->firstEmployeeJob;
                 return optional($firstJob)->start_date ? $firstJob->start_date->isoFormat('D MMMM YYYY') : '';
             })
+            ->orderColumn('join_date', function ($query, $order) {
+                $query->orderBy('join_date', $order);
+            })
             ->addColumn('latest_end_date', function ($user) {
                 $latestJob = $user->latestEmployeeJob;
                 return optional($latestJob)->end_date ? $latestJob->end_date->isoFormat('D MMMM YYYY') : '';
+            })
+            ->orderColumn('latest_end_date', function ($query, $direction) {
+                $query->orderBy(
+                    EmployeeJob::select('end_date')
+                        ->whereColumn('user_id', 'users.id')
+                        ->latest('start_date')
+                        ->limit(1),
+                    $direction
+                );
             })
             ->addColumn('type', function ($user) {
                 $latestJob = $user->latestEmployeeJob;
@@ -186,8 +199,10 @@ class UserDataTables extends DataTable
                 ->title('Department')
                 ->searchable()
                 ->orderable(),
-            Column::make('join_date'),
+            Column::make('join_date')
+                ->orderable(),
             Column::make('latest_end_date')
+                ->orderable()
                 ->title('End Date'),
             Column::make('type')
                 ->title('Tipe')

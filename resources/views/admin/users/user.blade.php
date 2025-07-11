@@ -308,10 +308,12 @@
                             orderable: true
                         },
                         {
-                            data: 'join_date'
+                            data: 'join_date',
+                            orderable: true
                         },
                         {
-                            data: 'latest_end_date'
+                            data: 'latest_end_date',
+                            orderable: true
                         },
                         {
                             data: 'type'

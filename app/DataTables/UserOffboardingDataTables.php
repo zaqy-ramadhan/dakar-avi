@@ -31,6 +31,16 @@ class UserOffboardingDataTables extends DataTable
             ->addColumn('resign_date', function ($user) {
                 return optional($user->offboarding)->resign_date ?? 'No resign date';
             })
+             ->orderColumn('resign_date', function ($user, $direction) {
+                $user->orderBy(
+                    Offboarding::select('resign_date')
+                        ->whereColumn('user_id', 'users.id')
+                        ->latest('resign_date')
+                        ->limit(1),
+                    $direction
+                );
+                // optional($user->offboarding)->resign_date ?? 'No resign date';
+            })
             ->addColumn('actions', function ($row) {
                 $offboardingUrl = route('users.index.offboarding.detail', $row->id);
                 $buttons = '<a title="Detail Offboarding" href="' . $offboardingUrl . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-briefcase-off fs-6"></i></a>';
