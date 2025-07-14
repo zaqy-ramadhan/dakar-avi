@@ -25,6 +25,8 @@ class EmployeeInventoryNumberController extends Controller
             'password_eslip' => 'nullable|string',
             'username_greatday' => 'nullable|string',
             'password_greatday' => 'nullable|string',
+            'mail_avi' => 'nullable|string',
+            'mail_visteon' => 'nullable|string',
         ]);
     
         $user = User::findOrFail($validatedData['user_id']);
@@ -35,6 +37,8 @@ class EmployeeInventoryNumberController extends Controller
         $eslip = Item::where('item_name', 'User Account E-Slip')->value('id');
         $pass_greatday = Item::where('item_name', 'User Password Great Day')->value('id');
         $pass_eslip = Item::where('item_name', 'User Password E-Slip')->value('id');
+        $email_avi = Item::where('item_name', 'Email AVI')->value('id');
+        $email_visteon = Item::where('item_name', 'Email Visteon')->value('id');
     
         $items = [
             ['item_id' => $bpjs, 'number' => $validatedData['bpjs'] ?? null],
@@ -43,6 +47,8 @@ class EmployeeInventoryNumberController extends Controller
             ['item_id' => $pass_eslip, 'number' => $validatedData['password_eslip'] ?? null],
             ['item_id' => $greatday, 'number' => $validatedData['username_greatday'] ?? null],
             ['item_id' => $pass_greatday, 'number' => $validatedData['password_greatday'] ?? null],
+            ['item_id' => $email_avi, 'number' => $validatedData['mail_avi'] ?? null],
+            ['item_id' => $email_visteon, 'number' => $validatedData['mail_visteon'] ?? null],
         ];
     
         foreach ($items as $item) {
