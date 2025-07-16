@@ -87,6 +87,11 @@
                     processing: true,
                     serverSide: true,
                     destroy: true,
+                    // columnDefs: [{
+                    //         targets: 'checklist',
+                    //         orderable: true
+                    //     }
+                    // ],
                     ajax: {
                         url: "{{ route(request()->route()->getName()) }}",
                         data: function(d) {
@@ -171,8 +176,11 @@
                         {
                             data: 'checklist',
                             name: 'checklist',
-                            searchable: false,
-                            orderable: false
+                            // searchable: true,
+                            render: function(data, type, row) {
+                                return data;
+                            },
+                            orderable: true
                         },
                         // {
                         //     data: 'pre_onboarding',
@@ -278,6 +286,11 @@
                 var table = $('#datatable').DataTable({
                     processing: true,
                     serverSide: true,
+                    pageLength: 5,
+                    lengthMenu: [
+                        [5, 10, 25, 50, 100],
+                        [5, 10, 25, 50, 100]
+                    ],
                     ajax: {
                         url: "{{ route(request()->route()->getName()) }}",
                         data: function(d) {

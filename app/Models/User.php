@@ -255,6 +255,12 @@ class User extends Authenticatable
         return $this->hasOne(EmployeeJob::class)->orderBy('start_date', 'asc');
     }
 
+     public function firstEmployeeJobIncomplete()
+    {
+        return $this->hasOne(EmployeeJob::class)->orderBy('start_date', 'asc')->where('is_onboarding_completed', false);
+    }
+
+
     public function progressOnboarding()
     {
         // $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');

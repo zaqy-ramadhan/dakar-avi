@@ -26,22 +26,22 @@ class UserBoardingDataTables extends DataTable
             ->setRowId('id')
 
             ->addColumn('position_name', function ($user) {
-                return $user->latestEmployeeJob?->position?->position_name ?? 'No Position';
+                return $user->firstEmployeeJob?->position?->position_name ?? 'No Position';
             })
 
             ->filterColumn('position_name', function ($query, $keyword) {
-                $query->whereHas('latestEmployeeJob.position', function ($q) use ($keyword) {
+                $query->whereHas('firstEmployeeJob.position', function ($q) use ($keyword) {
                     $q->whereRaw("LOWER(position_name) LIKE ?", ["%" . strtolower($keyword) . "%"]);
                 });
             })
 
             ->addColumn('start_date', function ($user) {
-                return $user->latestEmployeeJob && $user->latestEmployeeJob->start_date
-                    ? $user->latestEmployeeJob->start_date->isoFormat('D MMMM YYYY')
+                return $user->firstEmployeeJob && $user->firstEmployeeJob->start_date
+                    ? $user->firstEmployeeJob->start_date->isoFormat('D MMMM YYYY')
                     : 'No Data';
             })
             ->filterColumn('start_date', function ($query, $keyword) {
-                $query->whereHas('latestEmployeeJob', function ($q) use ($keyword) {
+                $query->whereHas('firstEmployeeJob', function ($q) use ($keyword) {
                     $q->where('start_date', 'like', "%$keyword%");
                 });
             })
@@ -55,12 +55,12 @@ class UserBoardingDataTables extends DataTable
                 );
             })
             ->addColumn('end_date', function ($user) {
-                return $user->latestEmployeeJob && $user->latestEmployeeJob->end_date
-                    ? $user->latestEmployeeJob->end_date->isoFormat('D MMMM YYYY')
+                return $user->firstEmployeeJob && $user->firstEmployeeJob->end_date
+                    ? $user->firstEmployeeJob->end_date->isoFormat('D MMMM YYYY')
                     : 'No Data';
             })
             ->filterColumn('end_date', function ($query, $keyword) {
-                $query->whereHas('latestEmployeeJob', function ($q) use ($keyword) {
+                $query->whereHas('firstEmployeeJob', function ($q) use ($keyword) {
                     $q->where('end_date', 'like', "%$keyword%");
                 });
             })
@@ -76,9 +76,6 @@ class UserBoardingDataTables extends DataTable
 
             ->addColumn('checklist', function ($user) {
                 return $user->progressOnboarding() . '%';
-            })
-            ->orderColumn('checklist', function ($query, $order) {
-                $query->orderBy('created_at', $order);
             })
 
             ->addColumn('actions', function ($row) {
@@ -108,10 +105,13 @@ class UserBoardingDataTables extends DataTable
     public function query(User $model): QueryBuilder
     {
         $query = $model->newQuery()
-            ->with(['employeeJob.position', 'latestEmployeeJob'])
+            // ->with(['firstEmployeeJob'])
             ->select('users.*')
             ->whereDoesntHave('dakarRole', function ($q) {
                 $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4']);
+            })->where(function ($query) {
+                $query->doesntHave('firstEmployeeJob')
+                    ->orWhereHas('firstEmployeeJobIncomplete');
             });
 
         if ($status = request()->input('statusFilter')) {
@@ -123,7 +123,7 @@ class UserBoardingDataTables extends DataTable
             }
         }
 
-        // $query->whereDoesntHave('firstEmployeeJob', function ($q) {
+        // $query->where('firstEmployeeJob', function ($q) {
         //     $q->where('employment_status', false);
         // });
 
