@@ -175,7 +175,8 @@
                     :
                 </td>
                 <td>
-                    {{ $hr?->fullname ?? '-' }}
+                    <strong>{{ Str::upper($hr?->fullname ?? '-') }}</strong>
+                    {{-- {{ $hr?->fullname ?? '-' }} --}}
                 </td>
             </tr>
 
@@ -216,7 +217,7 @@
                     :
                 </td>
                 <td>
-                    {{ $kontrak->user->fullname }}
+                    <strong>{{ Str::upper($kontrak->user->fullname) }}</strong>
                 </td>
             </tr>
 
@@ -386,6 +387,11 @@
             <li>Perjanjian Kerja Waktu Tertentu ini berlaku mulai dari tanggal
                 {{ $kontrak->start_date?->isoFormat('D MMMM Y') }} dan berakhir tanggal
                 {{ $kontrak->end_date?->isoFormat('D MMMM Y') }}.
+            </li>
+            <li>
+                Setelah masa kerja sebagaimana tercantum dalam ayat 1 tersebut diatas berakhir, maka hubungan kerja
+                terputus dengan sendirinya demi hukum, tanpa ada pemberitahuan secara tertulis dan ganti rugi/pesangon
+                dalam bentuk apapun.
             </li>
             <li>Selama masa berlangsungnya Perjanjian Kerja ini, Pihak Pertama menerima Pihak Kedua dalam status
                 single/bujangan (tidak menikah), namun tidak terbatas pada Status Wajib Pajak Pihak Kedua.
