@@ -19,7 +19,7 @@ class ApiUsersController extends Controller
                 $q->where('employment_status', true);
             })
                 ->whereHas('dakarRole', function ($q) {
-                    $q->whereNotIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4']);
+                    $q->whereNotIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4', 'pemagangan', 'internship']);
                 })
                 ->with(['latestEmployeeJob', 'firstEmployeeJob'])
                 ->get();
