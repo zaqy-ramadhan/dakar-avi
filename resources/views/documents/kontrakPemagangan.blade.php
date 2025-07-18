@@ -450,14 +450,14 @@
         <div class="signature" style="margin-right: 240px">
             <div>Pihak Pertama,</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}"
-                alt="Tanda Tangan Pihak Pertama"style="width: auto; height: 30px; margin-bottom: 30px; margin-top: 30px;">
+                alt="Tanda Tangan Pihak Pertama"style="width: auto; height: 30px; margin-bottom: 50px; margin-top: 30px;">
             <div>{{$hr?->fullname ?? '-'}}</div>
             <div>HR Legal Sect. Head</div>
         </div>
         <div class="signature">
             <div>Pihak Kedua,</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->second_party_signature) }}"
-                alt="Tanda Tangan Pihak Kedua" style="width: auto; height: 30px; margin-bottom: 30px; margin-top: 30px;">
+                alt="Tanda Tangan Pihak Kedua" style="width: auto; height: 30px; margin-bottom: 50px; margin-top: 30px;">
             <div>{{ $kontrak->user->fullname }}</div>
         </div>
 
