@@ -269,7 +269,7 @@
                 <li>Penggantian biaya makan di luar kantor diberikan kepada Pihak Kedua apabila tidak ada catering atau
                     pada waktu istirahat siang karena tugas belajar tidak dapat kembali ke tempat Program Magang untuk
                     makan siang sesuai aturan yang berlaku di perusahaan Pihak Pertama; atau</li>
-                <li>c. BPJS Ketenagakerjaan (Jaminan Kecelakaan Kerja, Jaminan Kematian dan Jaminan Pemeliharaan
+                <li>BPJS Ketenagakerjaan (Jaminan Kecelakaan Kerja, Jaminan Kematian dan Jaminan Pemeliharaan
                     Kesehatan) diberikan kepada Pihak Kedua dan akan dibebankan kepada Perusahaan dan penyetoran kepada
                     BPJS Ketenagakerjaan akan dilakukan oleh Pihak Pertama.</li>
             </ol>
