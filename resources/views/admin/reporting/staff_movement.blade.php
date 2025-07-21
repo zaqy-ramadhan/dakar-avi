@@ -18,7 +18,6 @@
                         'Termination',
                         'Extension Contract',
                         'Employee Transfer',
-                        // 'Employee Department Mutation',
                         'One Year Service',
                         'Onboarding Report',
                     ];
@@ -191,6 +190,7 @@
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Status</th>`;
+                    break;
                 case 'Onboarding Report':
                     extra = `<th>Department</th>
                         <th>Position</th>
@@ -201,8 +201,8 @@
                         <th>Employment Data</th>
                         <th>Starter Kit</th>
                         <th>Deadline On</th>
-                         <th>Starter Kit Accepted</th>
-                          <th>Contract Signature</th>
+                        <th>Starter Kit Accepted</th>
+                        <th>Contract Signature</th>
                         <th>Deadline Post</th>
                         <th>BPJS Kes</th>
                         <th>BPJS TK</th>
@@ -416,18 +416,14 @@
 
                 currentNote = selectedNote;
 
-                // Update active class
                 $('#noteTabs .nav-link').removeClass('active');
                 $(this).addClass('active');
 
-                // Update hidden input for export
                 $('input[name="note"]').val(selectedNote);
 
-                // Load DataTable
                 loadDataTable(selectedNote, defaultDate);
             });
 
-            // Export
             $('#exportExcel').on('click', function() {
                 var date = $('input[name="date"]').val();
                 var note = $('input[name="note"]').val();
@@ -436,137 +432,4 @@
             });
         });
     </script>
-
-    {{-- <script>
-        $(function() {
-            $('#exportExcel').on('click', function() {
-                // Collect filter params
-                var date = $('input[name="date"]').val();
-                var note = $('input[name="note"]').val();
-                var params = [];
-                if (note) params.push('note=' + encodeURIComponent(note));
-                if (date) params.push('date=' + encodeURIComponent(date));
-                params.push('export=excel');
-                window.location.href = "{{ route('staff-movement.data') }}" + "?" + params.join('&');
-            });
-            $('#datatable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ route('staff-movement.data', ['note' => $note]) }}",
-                    data: function(d) {
-                        d.date = "{{ request('date') }}";
-                    }
-                },
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'fullname',
-                        name: 'fullname'
-                    },
-                    {
-                        data: 'npk',
-                        name: 'npk'
-                    },
-
-                    @if (in_array($note, ['New Employee Kontrak', 'New Employee Pemagangan', 'New Employee Tetap']))
-                        {
-                            data: 'department',
-                            name: 'department'
-                        }, {
-                            data: 'section',
-                            name: 'section'
-                        }, {
-                            data: 'position',
-                            name: 'position'
-                        }, {
-                            data: 'start_date',
-                            name: 'start_date'
-                        },
-                    @elseif ($note == 'New Employee Internship') {
-                            data: 'department',
-                            name: 'department'
-                        }, {
-                            data: 'start_date',
-                            name: 'start_date'
-                        }, {
-                            data: 'duration',
-                            name: 'duration'
-                        },
-                    @elseif ($note == 'Extension Contract') {
-                            data: 'department',
-                            name: 'department'
-                        }, {
-                            data: 'section',
-                            name: 'section'
-                        }, {
-                            data: 'position',
-                            name: 'position'
-                        }, {
-                            data: 'start_date',
-                            name: 'start_date'
-                        }, {
-                            data: 'end_date',
-                            name: 'end_date'
-                        }, {
-                            data: 'duration',
-                            name: 'duration'
-                        }, {
-                            data: 'contract',
-                            name: 'contract'
-                        },
-                    @elseif ($note == 'Employee Transfer') {
-                            data: 'department',
-                            name: 'department'
-                        }, {
-                            data: 'section',
-                            name: 'section'
-                        }, {
-                            data: 'old_position',
-                            name: 'old_position'
-                        }, {
-                            data: 'position',
-                            name: 'position'
-                        }, {
-                            data: 'start_date',
-                            name: 'start_date'
-                        },
-                    @elseif ($note == 'Employee Department Mutation') {
-                            data: 'old_department',
-                            name: 'old_department'
-                        }, {
-                            data: 'department',
-                            name: 'department'
-                        }, {
-                            data: 'section',
-                            name: 'section'
-                        }, {
-                            data: 'position',
-                            name: 'position'
-                        }, {
-                            data: 'start_date',
-                            name: 'start_date'
-                        },
-                    @elseif ($note == 'One Year Service') {
-                            data: 'department',
-                            name: 'department'
-                        }, {
-                            data: 'section',
-                            name: 'section'
-                        }, {
-                            data: 'position',
-                            name: 'position'
-                        }, {
-                            data: 'start_date',
-                            name: 'start_date'
-                        },
-                    @endif
-                ],
-            });
-        });
-    </script> --}}
 @endpush
