@@ -1448,6 +1448,7 @@ class UsersController extends Controller
 
     private function determineJobNotes(EmployeeJob|null $lastJob, string $user_role, Request $request, bool $isFirstJob): string
     {
+        // dd($lastJob, $user_role, $request, $isFirstJob);
         if ($isFirstJob || $lastJob === null) {
             if ($user_role === 'karyawan') {
                 return match ($request->job_status) {
@@ -1515,7 +1516,7 @@ class UsersController extends Controller
                 ->latest()
                 ->first();
 
-            $notes = $this->determineJobNotes($lastJob, $user_role, $request, $lastJob === null);
+            $notes = $this->determineJobNotes($lastJob, $user_role, $request, (!$lastJob));
 
             EmployeeJob::create([
                 'user_id' => $id,
@@ -1544,6 +1545,12 @@ class UsersController extends Controller
                 $user->dakarRole()->sync($request->employment_status);
                 $user->npk = $request->npk;
                 $user->save();
+            }
+
+            if($lastJob){
+                $lastJob->update([
+                    'employment_status' => false,
+                ]);
             }
 
             return redirect()->back()
