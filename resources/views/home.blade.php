@@ -64,6 +64,7 @@
 @endpush
 
 @section('content')
+{{-- @dd(Auth::user()->getRole()) --}}
     <div class="row">
         @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
             <div class="col-lg-12 col-md-12 col-sm-12">

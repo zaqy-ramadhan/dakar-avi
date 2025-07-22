@@ -48,7 +48,7 @@ class UserBoardingDataTables extends DataTable
             ->orderColumn('start_date', function ($query, $direction) {
                 $query->orderBy(
                     EmployeeJob::select('start_date')
-                        ->whereColumn('user_id', 'users.id')
+                        ->whereColumn('user_id', 'dakar_users.id')
                         ->latest('start_date')
                         ->limit(1),
                     $direction
@@ -67,7 +67,7 @@ class UserBoardingDataTables extends DataTable
             ->orderColumn('end_date', function ($query, $direction) {
                 $query->orderBy(
                     EmployeeJob::select('end_date')
-                        ->whereColumn('user_id', 'users.id')
+                        ->whereColumn('user_id', 'dakar_users.id')
                         ->latest('end_date')
                         ->limit(1),
                     $direction

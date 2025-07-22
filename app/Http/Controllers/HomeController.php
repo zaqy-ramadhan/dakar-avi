@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
 {
@@ -35,7 +36,10 @@ class HomeController extends Controller
         try {
             $adminRoles = ['admin', 'admin 2', 'admin 3', 'admin 4'];
             $authRole = Auth::user()->getRole();
-
+            $user = Auth::user();
+            if ($user && Hash::check('Avi123!', $user->password)) {
+                return redirect()->route('password');
+            }
             if (in_array($authRole, $adminRoles)) {
                 $baseUser = User::query()
                     ->with([

@@ -34,7 +34,7 @@ class UserOffboardingDataTables extends DataTable
              ->orderColumn('resign_date', function ($user, $direction) {
                 $user->orderBy(
                     Offboarding::select('resign_date')
-                        ->whereColumn('user_id', 'users.id')
+                        ->whereColumn('user_id', 'dakar_users.id')
                         ->latest('resign_date')
                         ->limit(1),
                     $direction

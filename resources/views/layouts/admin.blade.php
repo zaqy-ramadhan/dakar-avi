@@ -451,7 +451,7 @@
                                                         data-bs-parent="#notificationAccordion">
                                                         <div class="accordion-body p-0">
                                                             @if (count($notifications[$key]) > 0)
-                                                                <ul class="list-group">
+                                                                <ul class="list-group" style="max-height: 200px; overflow-y: auto;">
                                                                     @foreach ($notifications[$key] as $personal)
                                                                         <li
                                                                             class="list-group-item d-flex justify-content-between align-items-center">

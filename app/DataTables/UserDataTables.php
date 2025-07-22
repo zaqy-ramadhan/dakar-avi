@@ -32,7 +32,7 @@ class UserDataTables extends DataTable
                 });
             })
             ->orderColumn('department_name', function ($query, $order) {
-                $query->leftJoin('dakar_employee_job as ej', 'users.id', '=', 'ej.user_id')
+                $query->leftJoin('dakar_employee_job as ej', 'dakar_users.id', '=', 'ej.user_id')
                     ->leftJoin('dakar_departments as d', 'ej.department_id', '=', 'd.id')
                     ->orderBy('d.department_name', $order);
             })
@@ -58,7 +58,7 @@ class UserDataTables extends DataTable
             ->orderColumn('latest_end_date', function ($query, $direction) {
                 $query->orderBy(
                     EmployeeJob::select('end_date')
-                        ->whereColumn('user_id', 'users.id')
+                        ->whereColumn('user_id', 'dakar_users.id')
                         ->latest('start_date')
                         ->limit(1),
                     $direction
