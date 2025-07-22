@@ -105,8 +105,7 @@ class UserBoardingDataTables extends DataTable
     public function query(User $model): QueryBuilder
     {
         $query = $model->newQuery()
-            // ->with(['firstEmployeeJob'])
-            ->select('users.*')
+            ->select('dakar_users.*')
             ->whereDoesntHave('dakarRole', function ($q) {
                 $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4']);
             })->where(function ($query) {

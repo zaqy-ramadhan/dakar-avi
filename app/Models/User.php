@@ -555,8 +555,12 @@ class User extends Authenticatable
     public function adminNotif()
     {
         $users = User::whereHas('employeeDetail', function ($q) {
-            $q->where('is_draft', 0);
-        })->get(['id', 'fullname', 'npk']);
+            $q->where('is_draft', false);
+        })->where(function ($query) {
+                $query->doesntHave('firstEmployeeJob')
+                    ->orWhereHas('firstEmployeeJobIncomplete');
+            })
+        ->get(['id', 'fullname', 'npk']);
 
         // Cache progress hanya sekali!
         $usersWithProgress = $users->map(function ($user) {

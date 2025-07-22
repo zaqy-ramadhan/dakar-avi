@@ -60,7 +60,7 @@ class UserOffboardingDataTables extends DataTable
             ->whereHas('latestEmployeeJob', function ($query) {
                 $query->where('employment_status', false);
             })
-            ->select('users.*');
+            ->select('dakar_users.*');
 
         if ($status = request()->input('statusFilter')) {
             $karyawanRole = DakarRole::where('role_name', $status)->first();

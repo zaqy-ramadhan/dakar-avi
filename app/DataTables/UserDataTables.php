@@ -129,7 +129,7 @@ class UserDataTables extends DataTable
     {
         $query = $model->newQuery()
             ->with(['department', 'employeeJob.position', 'latestEmployeeJob'])
-            ->select('users.*')
+            ->select('dakar_users.*')
             ->whereDoesntHave('dakarRole', function ($q) {
                 $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3']);
             })
