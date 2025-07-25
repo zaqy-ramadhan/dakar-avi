@@ -68,17 +68,17 @@ class HomeController extends Controller
                 $pemagangan = (clone $baseUser)
                     ->whereHas('dakarRole', fn($q) => $q->where('dakar_role_user.dakar_role_id', $pemaganganRoleId))
                     ->whereHas('latestEmployeeJob', fn($q) => $q->where('employment_status', true))
-                    ->get();
+                    ->count();
 
                 $internship = (clone $baseUser)
                     ->whereHas('dakarRole', fn($q) => $q->where('dakar_role_user.dakar_role_id', $internshipRoleId))
                     ->whereHas('latestEmployeeJob', fn($q) => $q->where('employment_status', true))
-                    ->get();
+                    ->count();
 
                 $karyawan = (clone $baseUser)
                     ->whereHas('dakarRole', fn($q) => $q->where('dakar_role_user.dakar_role_id', $karyawanRoleId))
                     ->whereHas('latestEmployeeJob', fn($q) => $q->where('employment_status', true))
-                    ->get();
+                    ->count();
 
                 $jobType = DB::table('dakar_employee_job as ej')
                     ->join('dakar_job_type as jt', 'ej.job_type_id', '=', 'jt.id')
@@ -133,7 +133,9 @@ class HomeController extends Controller
                         $q->where('is_draft', 0);
                     })->whereHas('firstEmployeeJob', function ($q) {
                         $q->where('is_onboarding_completed', false);
-                    })->get();
+                        $q->where('employment_status', true);
+                    })->count();
+                // dd($uncomplete);
                 // ->whereHas('employeeDetail', fn($q) => $q->where('is_draft', 0))
                 // ->get()
                 // ->filter(fn($u) => $u->progressOnboardingAdmin()['progress'] < 100);

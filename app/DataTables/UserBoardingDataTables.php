@@ -48,7 +48,7 @@ class UserBoardingDataTables extends DataTable
             ->orderColumn('start_date', function ($query, $direction) {
                 $query->orderBy(
                     EmployeeJob::select('start_date')
-                        ->whereColumn('user_id', 'dakar_users.id')
+                        ->whereColumn('user_id', 'users.id')
                         ->latest('start_date')
                         ->limit(1),
                     $direction
@@ -67,7 +67,7 @@ class UserBoardingDataTables extends DataTable
             ->orderColumn('end_date', function ($query, $direction) {
                 $query->orderBy(
                     EmployeeJob::select('end_date')
-                        ->whereColumn('user_id', 'dakar_users.id')
+                        ->whereColumn('user_id', 'users.id')
                         ->latest('end_date')
                         ->limit(1),
                     $direction
@@ -75,7 +75,12 @@ class UserBoardingDataTables extends DataTable
             })
 
             ->addColumn('checklist', function ($user) {
-                return $user->progressOnboarding() . '%';
+                return $user->firstEmployeeJob ? $user->firstEmployeeJob->onboarding_progress . '%' : 'N/A';
+            })
+
+            ->orderColumn('checklist', function ($query, $order) {
+                $query->leftJoin('dakar_employee_job', 'users.id', '=', 'dakar_employee_job.user_id')
+                    ->orderBy('dakar_employee_job.onboarding_progress', $order);
             })
 
             ->addColumn('actions', function ($row) {
@@ -105,12 +110,14 @@ class UserBoardingDataTables extends DataTable
     public function query(User $model): QueryBuilder
     {
         $query = $model->newQuery()
-            ->select('dakar_users.*')
+            ->select('users.*')
             ->whereDoesntHave('dakarRole', function ($q) {
                 $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4']);
             })->where(function ($query) {
                 $query->doesntHave('firstEmployeeJob')
-                    ->orWhereHas('firstEmployeeJobIncomplete');
+                    ->orWhereHas('firstEmployeeJobIncomplete', function($q){
+                        $q->where('employment_status', true);
+                    });
             });
 
         if ($status = request()->input('statusFilter')) {

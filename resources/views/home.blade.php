@@ -292,15 +292,15 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between my-1">
                             <div class="text-muted">{{ __('Karyawan AVI') }}</div>
-                            <div class="fw-bold">{{ $karyawan->count() }}</div>
+                            <div class="fw-bold">{{ $karyawan}}</div>
                         </div>
                         <div class="d-flex justify-content-between my-1">
                             <div class="text-muted">{{ __('Pemagangan') }}</div>
-                            <div class="fw-bold">{{ $pemagangan->count() }}</div>
+                            <div class="fw-bold">{{ $pemagangan}}</div>
                         </div>
                         <div class="d-flex justify-content-between my-1">
                             <div class="text-muted">{{ __('Internship') }}</div>
-                            <div class="fw-bold">{{ $internship->count() }}</div>
+                            <div class="fw-bold">{{ $internship}}</div>
                         </div>
                     </div>
                 </div>
@@ -314,7 +314,7 @@
                     <a href="{{ route('users.index.onboarding', ['progressFilter' => true]) }}" class="card-body">
                         <div class="d-flex justify-content-between">
                             <div class="text-muted">{{ __('Incomplete Onboarding') }}</div>
-                            <div class="fw-bold">{{ $uncomplete->count() }}</div>
+                            <div class="fw-bold">{{ $uncomplete }}</div>
                         </div>
                     </a>
                 </div>

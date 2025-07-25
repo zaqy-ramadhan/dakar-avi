@@ -1771,6 +1771,7 @@ class UsersController extends Controller
 
             $user->update([
                 'password_hash' => bcrypt($request->new_password),
+                'password' => bcrypt($request->new_password),
             ]);
 
             return back()->with('success', 'Password changed successfully.');

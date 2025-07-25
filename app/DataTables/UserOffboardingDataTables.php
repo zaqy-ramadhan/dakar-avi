@@ -34,7 +34,7 @@ class UserOffboardingDataTables extends DataTable
              ->orderColumn('resign_date', function ($user, $direction) {
                 $user->orderBy(
                     Offboarding::select('resign_date')
-                        ->whereColumn('user_id', 'dakar_users.id')
+                        ->whereColumn('user_id', 'users.id')
                         ->latest('resign_date')
                         ->limit(1),
                     $direction
@@ -60,7 +60,7 @@ class UserOffboardingDataTables extends DataTable
             ->whereHas('latestEmployeeJob', function ($query) {
                 $query->where('employment_status', false);
             })
-            ->select('dakar_users.*');
+            ->select('users.*');
 
         if ($status = request()->input('statusFilter')) {
             $karyawanRole = DakarRole::where('role_name', $status)->first();

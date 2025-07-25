@@ -17,7 +17,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $table = 'dakar_users';
+    protected $table = 'users';
 
     protected $fillable = [
         'npk',
@@ -255,7 +255,7 @@ class User extends Authenticatable
         return $this->hasOne(EmployeeJob::class)->orderBy('start_date', 'asc');
     }
 
-     public function firstEmployeeJobIncomplete()
+    public function firstEmployeeJobIncomplete()
     {
         return $this->hasOne(EmployeeJob::class)->orderBy('start_date', 'asc')->where('is_onboarding_completed', false)->where('employment_status', true);
     }
@@ -406,109 +406,221 @@ class User extends Authenticatable
         ];
     }
 
+    // public function progressOnboardingAdmin()
+    // {
+    //     // $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
+    //     $user = $this;
+
+    //     $progress = 0;
+    //     $message = '🚀 Complete the employment data to start the onboarding process.';
+
+    //     $personal_status = $user->personal_status()['status'];
+    //     if ($personal_status) {
+    //         $progress = 10;
+    //         $message = '🚀 Prepare or fill the employment data to continue the onboarding process.';
+    //     }
+
+    //     $hasEmployeeJob = $user->firstEmployeeJob;
+
+    //     if ($personal_status && $hasEmployeeJob) {
+    //         $progress = 17;
+    //         $message = '🚀 Prepare or fill in the wage allowance to continue the onboarding process.';
+    //         $user->firstEmployeeJob->update([
+    //             "onboarding_progress" => $progress
+    //         ]);
+    //     } else {
+    //         return [
+    //             'progress' => $progress,
+    //             'message' => $message,
+    //         ];
+    //     }
+
+    //     $wage = $user->firstEmployeeJob && $user->firstEmployeeJob->jobWageAllowance->isNotEmpty();
+    //     if ($wage) {
+    //         $progress = 34;
+    //         $message = '🚀 Set Starter Kit to continue the onboarding process.';
+    //         $user->firstEmployeeJob->update([
+    //             "onboarding_progress" => $progress
+    //         ]);
+    //     } else {
+    //         return [
+    //             'progress' => $progress,
+    //             'message' => $message,
+    //         ];
+    //     }
+
+
+    //     $totalInventory = $user->inventory_set_status()['status'];
+    //     if ($totalInventory) {
+    //         $message = '🚀 Sign the contract to continue the onboarding process.';
+    //         $progress = 51;
+    //         $user->firstEmployeeJob->update([
+    //             "onboarding_progress" => $progress
+    //         ]);
+    //     } else {
+    //         return [
+    //             'progress' => $progress,
+    //             'message' => $message,
+    //         ];
+    //     }
+
+    //     $totalInventory = $user->inventory_acc_status()['status'];
+    //     if ($totalInventory) {
+    //         $progress = 52;
+    //         $user->firstEmployeeJob->update([
+    //             "onboarding_progress" => $progress
+    //         ]);
+    //     } else {
+    //         return [
+    //             'progress' => $progress,
+    //         ];
+    //     }
+
+    //     $job = $user->firstEmployeeJob;
+
+    //     if ($job && $job->jobDoc->isNotEmpty()) {
+    //         $contractDoc = $job->jobDoc->firstWhere('type', 'contract');
+    //         if ($contractDoc && $contractDoc->first_party_signature) {
+    //             $progress = 68;
+    //             $message = '🚀 Sign the compensation data to continue the onboarding process.';
+    //             $user->firstEmployeeJob->update([
+    //             "onboarding_progress" => $progress
+    //         ]);
+    //         } else {
+    //             return [
+    //                 'progress' => $progress,
+    //                 'message' => $message,
+    //             ];
+    //         }
+    //     } else {
+    //         return [
+    //             'progress' => $progress,
+    //             'message' => $message,
+    //         ];
+    //     }
+
+    //     $spkDoc = $job->jobDoc->firstWhere('type', 'kompensasi');
+    //     if ($spkDoc && $spkDoc->first_party_signature) {
+    //         $progress = 85;
+    //         $message = '🎉 Set the Digital Account to continue the onboarding process.';
+    //         $user->firstEmployeeJob->update([
+    //             "onboarding_progress" => $progress
+    //         ]);
+    //     } else {
+    //         return [
+    //             'progress' => $progress,
+    //             'message' => $message,
+    //         ];
+    //     }
+
+    //     $inumber_status = $this->inumber_status()['status'];
+    //     if ($inumber_status) {
+    //         $progress = 100;
+    //         $message = '🎉 Onboarding completed!';
+    //         if ($user->firstEmployeeJob && optional($user->firstEmployeeJob)->is_onboarding_completed == false) {
+    //             $user->firstEmployeeJob->is_onboarding_completed = true;
+    //             $user->firstEmployeeJob->onboarding_progress = $progress;
+    //             $user->firstEmployeeJob->save();
+    //         }
+    //     } else {
+    //         return [
+    //             'progress' => $progress,
+    //             'message' => $message,
+    //         ];
+    //     }
+
+    //     return [
+    //         'progress' => $progress,
+    //         'message' => $message,
+    //     ];
+    // }
+
+
     public function progressOnboardingAdmin()
     {
-        // $user = $this->load('employeeJob.jobDoc', 'inventory.employeeJob', 'dakarRole', 'employeeDetail', 'firstEmployeeJob', 'employeeJob.inventory.item');
         $user = $this;
+        $job = $user->firstEmployeeJob;
 
         $progress = 0;
         $message = '🚀 Complete the employment data to start the onboarding process.';
 
-        $personal_status = $user->personal_status()['status'];
-        if ($personal_status) {
-            $progress = 10;
-            $message = '🚀 Prepare or fill the employment data to continue the onboarding process.';
-        }
-
-        $hasEmployeeJob = $user->firstEmployeeJob;
-
-        if ($personal_status && $hasEmployeeJob) {
-            $progress = 17;
-            $message = '🚀 Prepare or fill in the wage allowance to continue the onboarding process.';
-        } else {
+        if (!$job) {
             return [
                 'progress' => $progress,
                 'message' => $message,
             ];
         }
 
-        $wage = $user->firstEmployeeJob && $user->firstEmployeeJob->jobWageAllowance->isNotEmpty();
-        if ($wage) {
-            $progress = 34;
-            $message = '🚀 Set Starter Kit to continue the onboarding process.';
-        } else {
-            return [
-                'progress' => $progress,
-                'message' => $message,
-            ];
-        }
+        $steps = [
+            [
+                'check' => fn() => $user->personal_status()['status'],
+                'progress' => 10,
+                'message' => '🚀 Prepare or fill the employment data to continue the onboarding process.',
+            ],
+            [
+                'check' => fn() => $job,
+                'progress' => 17,
+                'message' => '🚀 Prepare or fill in the wage allowance to continue the onboarding process.',
+            ],
+            [
+                'check' => fn() => $job->jobWageAllowance->isNotEmpty(),
+                'progress' => 34,
+                'message' => '🚀 Set Starter Kit to continue the onboarding process.',
+            ],
+            [
+                'check' => fn() => $user->inventory_set_status()['status'],
+                'progress' => 51,
+                'message' => '🚀 Sign the contract to continue the onboarding process.',
+            ],
+            [
+                'check' => fn() => $user->inventory_acc_status()['status'],
+                'progress' => 52,
+                'message' => null,
+            ],
+            [
+                'check' => function () use ($job) {
+                    $contractDoc = $job->jobDoc->firstWhere('type', 'contract');
+                    return $contractDoc && $contractDoc->first_party_signature;
+                },
+                'progress' => 68,
+                'message' => '🚀 Sign the compensation data to continue the onboarding process.',
+            ],
+            [
+                'check' => function () use ($job) {
+                    $spkDoc = $job->jobDoc->firstWhere('type', 'kompensasi');
+                    return $spkDoc && $spkDoc->first_party_signature;
+                },
+                'progress' => 85,
+                'message' => '🎉 Set the Digital Account to continue the onboarding process.',
+            ],
+            [
+                'check' => fn() => $this->inumber_status()['status'],
+                'progress' => 100,
+                'message' => '🎉 Onboarding completed!',
+            ],
+        ];
 
+        foreach ($steps as $step) {
+            if ($step['check']()) {
+                $progress = $step['progress'];
+                $message = $step['message'] ?? $message;
 
-        $totalInventory = $user->inventory_set_status()['status'];
-        if ($totalInventory) {
-            $message = '🚀 Sign the contract to continue the onboarding process.';
-            $progress = 51;
-        } else {
-            return [
-                'progress' => $progress,
-                'message' => $message,
-            ];
-        }
+                // Update progress di setiap step valid
+                $job->onboarding_progress = $progress;
 
-        $totalInventory = $user->inventory_acc_status()['status'];
-        if ($totalInventory) {
-            $progress = 52;
-        } else {
-            return [
-                'progress' => $progress,
-            ];
-        }
-
-        $job = $user->firstEmployeeJob;
-
-        if ($job && $job->jobDoc->isNotEmpty()) {
-            $contractDoc = $job->jobDoc->firstWhere('type', 'contract');
-            if ($contractDoc && $contractDoc->first_party_signature) {
-                $progress = 68;
-                $message = '🚀 Sign the compensation data to continue the onboarding process.';
+                if ($progress === 100 && !$job->is_onboarding_completed) {
+                    $job->is_onboarding_completed = true;
+                }
             } else {
+                $job->save();
                 return [
                     'progress' => $progress,
                     'message' => $message,
                 ];
             }
-        } else {
-            return [
-                'progress' => $progress,
-                'message' => $message,
-            ];
         }
 
-        $spkDoc = $job->jobDoc->firstWhere('type', 'kompensasi');
-        if ($spkDoc && $spkDoc->first_party_signature) {
-            $progress = 85;
-            $message = '🎉 Set the Digital Account to continue the onboarding process.';
-        } else {
-            return [
-                'progress' => $progress,
-                'message' => $message,
-            ];
-        }
-
-        $inumber_status = $this->inumber_status()['status'];
-        if ($inumber_status) {
-            $progress = 100;
-            $message = '🎉 Onboarding completed!';
-            if ($user->firstEmployeeJob && optional($user->firstEmployeeJob)->is_onboarding_completed == false) {
-                $user->firstEmployeeJob->is_onboarding_completed = true;
-                $user->firstEmployeeJob->save();
-            }
-        } else {
-            return [
-                'progress' => $progress,
-                'message' => $message,
-            ];
-        }
+        $job->save();
 
         return [
             'progress' => $progress,
@@ -516,51 +628,15 @@ class User extends Authenticatable
         ];
     }
 
-    // public function adminNotif()
-    // {
-    //     $users = User::whereHas('employeeDetail', function ($q) {
-    //         $q->where('is_draft', 0);
-    //     })->get(['id', 'fullname', 'npk']);
-
-    //     $notif = [
-    //         'personal_completed' => $users->filter(function ($user) {
-    //             return $user->progressOnboardingAdmin()['progress'] === 0;
-    //         }),
-    //         'employment_completed' => $users->filter(function ($user) {
-    //             return $user->progressOnboardingAdmin()['progress'] === 17;
-    //         }),
-    //         'wage_filled' => $users->filter(function ($user) {
-    //             return $user->progressOnboardingAdmin()['progress'] === 34;
-    //         }),
-    //         'starterkit_given' => $users->filter(function ($user) {
-    //             return $user->progressOnboardingAdmin()['progress'] === 51;
-    //         }),
-    //         'starterkit_accepted' => $users->filter(function ($user) {
-    //             return $user->progressOnboardingAdmin()['progress'] === 52;
-    //         }),
-    //         'contract_signed' => $users->filter(function ($user) {
-    //             return $user->progressOnboardingAdmin()['progress'] === 68;
-    //         }),
-    //         'compensation_signed' => $users->filter(function ($user) {
-    //             return $user->progressOnboardingAdmin()['progress'] === 85;
-    //         }),
-    //         'digital_account_given' => $users->filter(function ($user) {
-    //             return $user->progressOnboardingAdmin()['progress'] === 100;
-    //         }),
-    //     ];
-
-    //     return $notif;
-    // }
-
     public function adminNotif()
     {
         $users = User::whereHas('employeeDetail', function ($q) {
             $q->where('is_draft', false);
         })->where(function ($query) {
-                $query->doesntHave('firstEmployeeJob')
-                    ->orWhereHas('firstEmployeeJobIncomplete');
-            })
-        ->get(['id', 'fullname', 'npk']);
+            $query->doesntHave('firstEmployeeJob')
+                ->orWhereHas('firstEmployeeJobIncomplete');
+        })
+            ->get(['id', 'fullname', 'npk']);
 
         // Cache progress hanya sekali!
         $usersWithProgress = $users->map(function ($user) {

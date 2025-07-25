@@ -35,7 +35,8 @@ class EmployeeJob extends Model
         'is_onboarding_completed',
         'employment_status',
         'work_hour_code_id',
-        'notes'
+        'notes',
+        'onboarding_progress'
     ];
 
     protected $casts = [
