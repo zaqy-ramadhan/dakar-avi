@@ -605,6 +605,13 @@ class User extends Authenticatable
                 $progress = $step['progress'];
                 $message = $step['message'] ?? $message;
 
+                if($job->user_dakar_role != 'karyawan'){
+                    if($progress === 85){
+                        $progress = 100;
+                        $message = '🎉 Onboarding completed!';
+                    }
+                }
+
                 // Update progress di setiap step valid
                 $job->onboarding_progress = $progress;
 
