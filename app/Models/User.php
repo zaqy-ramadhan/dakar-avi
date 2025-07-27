@@ -702,7 +702,7 @@ class User extends Authenticatable
     {
         $nonSpecific = $this->nonSpecificInventories();
         $job = $this->firstEmployeeJob;
-        dd($nonSpecific);
+        // dd($nonSpecific);
         if ($nonSpecific->isNotEmpty() && $job) {
             $active = $nonSpecific->reject(function ($item) {
                 return in_array($item->status, ['Dikembalikan', 'Dinonaktifkan']);
