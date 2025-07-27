@@ -681,7 +681,7 @@ class User extends Authenticatable
     {
         $nonSpecific = $this->nonSpecificInventories();
         $job = $this->firstEmployeeJob;
-        dd($nonSpecific);
+        // dd($nonSpecific);
         if ($nonSpecific->isNotEmpty() && $job) {
             $date = $nonSpecific
                 ->where('employee_job_id', $job->id)
