@@ -15,9 +15,25 @@ class ApiDepartmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
+
+             $authHeader = $request->header('Authorization');
+
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return response()->json(['error' => 'Unauthorized. API key missing or invalid.'], 401);
+            }
+
+            $apiKey = str_replace('Bearer ', '', $authHeader);
+
+             $isValid = env('API_KEY') === $apiKey;
+
+            if (!$isValid) {
+                return response()->json(['error' => 'Unauthorized. Invalid API key.'], 401);
+            }
+
+
             $departments = Department::with('division')->get();
 
             $data = $departments->map(function ($department) {
@@ -50,9 +66,25 @@ class ApiDepartmentController extends Controller
         }
     }
 
-    public function show($id)
+    public function show($id, Request $request)
     {
         try {
+
+            $authHeader = $request->header('Authorization');
+
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return response()->json(['error' => 'Unauthorized. API key missing or invalid.'], 401);
+            }
+
+            $apiKey = str_replace('Bearer ', '', $authHeader);
+
+             $isValid = env('API_KEY') === $apiKey;
+
+            if (!$isValid) {
+                return response()->json(['error' => 'Unauthorized. Invalid API key.'], 401);
+            }
+
+
             $department = Department::findOrFail($id);
 
             $manager = User::whereHas('latestEmployeeJob', function ($query) use ($department) {

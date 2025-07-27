@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class ApiUsersController extends Controller
 {
@@ -12,9 +13,24 @@ class ApiUsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
+
+            $authHeader = $request->header('Authorization');
+
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return response()->json(['error' => 'Unauthorized. API key missing or invalid.'], 401);
+            }
+
+            $apiKey = str_replace('Bearer ', '', $authHeader);
+
+             $isValid = env('API_KEY') === $apiKey;
+
+            if (!$isValid) {
+                return response()->json(['error' => 'Unauthorized. Invalid API key.'], 401);
+            }
+
             $users = User::whereHas('employeeJob', function ($q) {
                 $q->where('employment_status', true);
             })
@@ -64,10 +80,25 @@ class ApiUsersController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         #$id = NPK
         try {
+
+            $authHeader = $request->header('Authorization');
+
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return response()->json(['error' => 'Unauthorized. API key missing or invalid.'], 401);
+            }
+
+            $apiKey = str_replace('Bearer ', '', $authHeader);
+
+             $isValid = env('API_KEY') === $apiKey;
+
+            if (!$isValid) {
+                return response()->json(['error' => 'Unauthorized. Invalid API key.'], 401);
+            }
+
             $user = User::with([
                 'latestEmployeeJob',
                 'firstEmployeeJob'
