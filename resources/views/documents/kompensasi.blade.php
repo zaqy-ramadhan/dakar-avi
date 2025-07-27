@@ -263,7 +263,7 @@
 
     <div style="margin-left: 400px;">
         <div>Citeureup, {{ $kontrak->start_date->isoFormat('D MMMM Y') }}</div>
-        <img src="{{ public_path('storage/'.optional($jobDoc)->first_party_signature) }}" alt=" " style="width: auto; height: 60px;">
+        <img src="{{ public_path('storage/'.optional($jobDoc)->first_party_signature) }}" alt=" " style="width: auto; height: 30px; margin-bottom: 50px; margin-top: 30px;">
         <div>{{ $hr?->fullname ?? '-' }}</div>
         <div>HR Bisnis Unit</div>
     </div>
