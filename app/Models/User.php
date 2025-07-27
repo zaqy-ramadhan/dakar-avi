@@ -678,24 +678,26 @@ class User extends Authenticatable
     }
 
     public function inventory_set_status()
-    {
-        $nonSpecific = $this->nonSpecificInventories();
-        $job = $this->firstEmployeeJob;
+{
+    $nonSpecific = $this->nonSpecificInventories();
+    $job = $this->firstEmployeeJob;
 
-        if ($nonSpecific->isNotEmpty() && $job) {
-            $date = $nonSpecific
-                ->where('employee_job_id', $job->id)
-                ->where('status', '-')
-                ->last()?->updated_at;
+    if ($nonSpecific->isNotEmpty() && $job) {
+        $date = $nonSpecific
+            ->where('employee_job_id', $job->id)
+            ->where('status', '-')
+            ->reverse()
+            ->first()?->updated_at;
 
-            return [
-                'status' => $date != null,
-                'date' => $date,
-            ];
-        }
-
-        return ['status' => false, 'date' => null];
+        return [
+            'status' => $date !== null,
+            'date' => $date,
+        ];
     }
+
+    return ['status' => false, 'date' => null];
+}
+
 
     public function inventory_acc_status()
     {
