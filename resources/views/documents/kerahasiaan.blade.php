@@ -273,7 +273,7 @@
             <div class="signature">
                 <p>Cibinong, {{ ($jobDoc->created_at ?? \Carbon\Carbon::now())->isoFormat('D MMMM Y') }}</p>
                 <img src="{{ public_path('storage/' . optional($jobDoc)->second_party_signature) }}" alt=" "
-                    style="width: auto; height: 60px;">
+                    style="width: auto; height: 30px; margin-bottom: 50px; margin-top: 30px;">
                 <div>{{ $kontrak->user->fullname }}</div>
             </div>
         </div>
