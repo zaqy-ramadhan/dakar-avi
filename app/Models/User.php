@@ -689,7 +689,7 @@ class User extends Authenticatable
                 ->last()?->updated_at;
 
             return [
-                'status' => $date !== null,
+                'status' => $date != null,
                 'date' => $date,
             ];
         }
