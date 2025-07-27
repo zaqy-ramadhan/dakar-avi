@@ -470,7 +470,7 @@
             <div>NIP. {{ $disnaker?->nip ?? '-' }}</div>
         </div>
 
-        <div style="text-align: right; margin-top: 240px;"><span>4</span></div>
+        <div style="text-align: right; margin-top: 190px;"><span>4</span></div>
         <table>
             <tr>
                 <td>
