@@ -175,7 +175,7 @@
             <tr>
                 <td>Jabatan</td>
                 <td class="space">:</td>
-                <td>{{ $kontrak->position->position_name }}</td>
+                <td>{{ $kontrak->position?->position_name }}</td>
             </tr>
             <tr>
                 <td class="italic">Position</td>

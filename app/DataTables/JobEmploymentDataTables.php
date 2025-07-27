@@ -302,8 +302,9 @@ class JobEmploymentDataTables extends DataTable
                     } elseif ($currentRoute === 'users.index.offboarding.detail') {
                         return '
                             <div class="d-flex">
-                                <a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-6"></i> Paklaring</a>
-                                <a title="SKSMK" href="' . route("user.skhk-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-hourglass-off fs-6"></i> SKSMK</a>
+                            <a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-6"></i> Paklaring</a>
+                            <a title="SKSMK" href="' . route("user.skhk-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-hourglass-off fs-6"></i> SKSMK</a>
+                            ' . $sertifButton . '
                             </div>
                         ';
                     } elseif ($currentRoute === 'users.index.employment.detail') {
@@ -341,6 +342,7 @@ class JobEmploymentDataTables extends DataTable
                         <div class="d-flex">
                             <a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-6"></i>Paklaring</a>
                             ' . $skhkButton . '
+                            '. $sertifButton . '
                         </div>';
                     }
 
