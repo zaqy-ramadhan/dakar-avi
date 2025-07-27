@@ -171,7 +171,9 @@
             Belah Pihak” dan masing-masing sebagai “Pihak”), terlebih dahulu menerangkan hal-hal sebagai berikut :</p>
         <ol>
             <li>Bahwa Pihak Pertama telah setuju untuk menerima Pihak Kedua untuk turut serta dalam Program Pemagangan
-                di bidang Operator (selanjutnya disebut “Program Magang”) yang diselenggarakan oleh Pihak Pertama.</li>
+                di bidang @if ($kontrak->user_dakar_role === 'internship')
+                    {{ $kontrak->position?->position_name ?? $kontrak->department->department_name }}
+                @else Operator @endif (selanjutnya disebut “Program Magang”) yang diselenggarakan oleh Pihak Pertama.</li>
             <li>Bahwa Pihak Kedua menyetujui untuk bergabung sebagai Peserta Program Magang dalam program yang
                 diselenggarakan oleh Pihak Pertama.</li>
         </ol>
