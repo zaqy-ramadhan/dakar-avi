@@ -128,9 +128,17 @@ class EmployeeJob extends Model
 
     public function getContractAttribute()
     {
+        if ($this->notes === 'Employee Transfer') {
+            return 'Mutasi';
+        }
+
         $jobs = $this->relationLoaded('siblingContractJobs')
             ? $this->siblingContractJobs
             : $this->siblingContractJobs()->get();
+
+        $jobs = $jobs->filter(function($j){
+             return $j->notes !== 'Employee Transfer';
+        });
 
         $index = $jobs->search(fn($job) => $job->id === $this->id);
 
@@ -346,7 +354,7 @@ class EmployeeJob extends Model
         return $this->belongsTo(WorkHour::class, 'work_hour_code_id', 'id');
     }
 
-     protected static function booted()
+    protected static function booted()
     {
         static::saving(function ($employeeJob) {
             $employeeJob->npk = $employeeJob->user->npk ?? null;

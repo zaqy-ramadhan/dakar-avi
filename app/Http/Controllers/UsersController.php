@@ -1463,16 +1463,34 @@ class UsersController extends Controller
             }
         } else {
             if ($user_role === 'karyawan') {
-                if (
+                $isTransfer = (
                     $lastJob->position_id !== $request->position_id ||
                     $lastJob->role_level_id !== $request->level_id ||
                     $lastJob->department_id !== $request->department_id ||
                     $lastJob->division_id !== $request->division_id
-                ) {
+                ) && (
+                    $lastJob->end_date->format('Y-m-d') === $request->end_date
+                );
+                
+                // dd( $lastJob->end_date->format('Y-m-d') === $request->end_date &&
+                //     $lastJob->start_date->format('Y-m-d') === $request->start_date, $request, $lastJob->end_date, $lastJob->start_date);
+                // dd($isTransfer);
+                
+                if($isTransfer){
                     return 'Employee Transfer';
-                } else {
+                }else{
                     return 'Extension Contract';
                 }
+                // if (
+                //     $lastJob->position_id !== $request->position_id ||
+                //     $lastJob->role_level_id !== $request->level_id ||
+                //     $lastJob->department_id !== $request->department_id ||
+                //     $lastJob->division_id !== $request->division_id
+                // ) {
+                //     return 'Employee Transfer';
+                // } else {
+                //     return 'Extension Contract';
+                // }
             } elseif ($user_role === 'pemagangan') {
                 return 'Employee Pemagangan Extension';
             } elseif ($user_role === 'internship') {
@@ -1547,7 +1565,7 @@ class UsersController extends Controller
                 $user->save();
             }
 
-            if($lastJob){
+            if ($lastJob) {
                 $lastJob->update([
                     'employment_status' => false,
                 ]);

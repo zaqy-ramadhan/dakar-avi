@@ -267,9 +267,9 @@ class ImportController extends Controller
                 $subgol = SubGolongan::whereRaw('LOWER(sub_golongan_name) = ?', [$subgolInput])->first();
                 $role = DakarRole::whereRaw('LOWER(role_name) = ?', [strtolower($row[30])])->first();
 
-                if ($row[97+8] == 'Aktif') {
+                if ($row[97 + 8] == 'Aktif') {
                     $jobStatus = true;
-                } elseif ($row[97+8] == 'Inactive') {
+                } elseif ($row[97 + 8] == 'Inactive') {
                     $jobStatus = false;
                 } else {
                     $jobStatus = null;
@@ -300,7 +300,7 @@ class ImportController extends Controller
                             }
                         }
 
-                        if($lastJob === null){
+                        if ($lastJob === null) {
                             $lastJob = EmployeeJob::where('user_id', $user->id)
                                 ->where('start_date', '<', $startDate)
                                 ->latest('start_date')
@@ -323,30 +323,30 @@ class ImportController extends Controller
                         );
 
                         // if ($startDate && $endDate) {
-                            $create = EmployeeJob::updateOrCreate([
-                                'user_id' => $user->id,
-                                'start_date' => $startDate,
-                                'end_date' => $endDate,
-                            ], [
-                                'group_id' => $group ? $group->id : null,
-                                'division_id' => $div ? $div->id : null,
-                                'department_id' => $dept ? $dept->id : null,
-                                'section_id' => $sec ? $sec->id : null,
-                                'position_id' => $pos ? $pos->id : null,
-                                'role_level_id' => $lvl ? $lvl->id : null,
-                                'job_type_id' => $jtype ? $jtype->id : null,
-                                'line_id' => $line ? $line->id : null,
-                                'golongan_id' => $gol ? $gol->id : null,
-                                'sub_golongan_id' => $subgol ? $subgol->id : null,
-                                'job_status' => strtolower($row[19]),
-                                'user_dakar_role' => strtolower($row[30]),
-                                'is_onboarding_completed' => true,
-                                'employment_status' => ($jobStatus !== true) ? $jobStatus : $employmentStatus,
-                                'work_hour_code_id' => $work ? $work->id : null,
-                                'notes' => $notes
-                            ]);
+                        $create = EmployeeJob::updateOrCreate([
+                            'user_id' => $user->id,
+                            'start_date' => $startDate,
+                            'end_date' => $endDate,
+                        ], [
+                            'group_id' => $group ? $group->id : null,
+                            'division_id' => $div ? $div->id : null,
+                            'department_id' => $dept ? $dept->id : null,
+                            'section_id' => $sec ? $sec->id : null,
+                            'position_id' => $pos ? $pos->id : null,
+                            'role_level_id' => $lvl ? $lvl->id : null,
+                            'job_type_id' => $jtype ? $jtype->id : null,
+                            'line_id' => $line ? $line->id : null,
+                            'golongan_id' => $gol ? $gol->id : null,
+                            'sub_golongan_id' => $subgol ? $subgol->id : null,
+                            'job_status' => strtolower($row[19]),
+                            'user_dakar_role' => strtolower($row[30]),
+                            'is_onboarding_completed' => true,
+                            'employment_status' => ($jobStatus !== true) ? $jobStatus : $employmentStatus,
+                            'work_hour_code_id' => $work ? $work->id : null,
+                            'notes' => $notes
+                        ]);
 
-                            $lastJob = $create;
+                        $lastJob = $create;
                         // }
                     }
 
@@ -395,12 +395,27 @@ class ImportController extends Controller
             }
         } else {
             if ($user_role === 'karyawan') {
-                if (
+                // if (
+                //     $lastJob->position_id !== $request->position_id ||
+                //     $lastJob->role_level_id !== $request->level_id ||
+                //     $lastJob->department_id !== $request->department_id ||
+                //     $lastJob->division_id !== $request->division_id
+                // ) {
+                //     return 'Employee Transfer';
+                // } else {
+                //     return 'Extension Contract';
+                // }
+
+                $isTransfer = (
                     $lastJob->position_id !== $request->position_id ||
                     $lastJob->role_level_id !== $request->level_id ||
                     $lastJob->department_id !== $request->department_id ||
                     $lastJob->division_id !== $request->division_id
-                ) {
+                ) && (
+                    $lastJob->end_date->format('Y-m-d') === $request->end_date
+                );
+
+                if ($isTransfer) {
                     return 'Employee Transfer';
                 } else {
                     return 'Extension Contract';
@@ -414,5 +429,4 @@ class ImportController extends Controller
 
         return '';
     }
-
 }
