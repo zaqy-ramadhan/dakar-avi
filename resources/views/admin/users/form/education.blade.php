@@ -57,7 +57,7 @@
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
                         <label class="form-label">IPK</label>
-                        <input type="number" step="0.01" class="form-control" name="education_gpa[]"
+                        <input type="number" class="form-control" name="education_gpa[]"
                             value="{{ old("education_gpa.$index", $education->education_gpa) }}">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-3">

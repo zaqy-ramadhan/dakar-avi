@@ -181,7 +181,8 @@ class ImportController extends Controller
                         'occupation' => $row[67 + 8],
                     ]);
                 }
-
+                
+                $row[72 + 8] = round(($row[72 + 8]), 2);
                 if ($row[68 + 8]) {
                     EmployeeEducation::updateOrCreate([
                         'user_id' => $user->id,
@@ -195,7 +196,8 @@ class ImportController extends Controller
                         'education_end_year' => $row[74 + 8],
                     ]);
                 }
-
+                
+                $row[79 + 8] = round(($row[79 + 8]), 2);
                 if ($row[75 + 8]) {
                     EmployeeEducation::updateOrCreate([
                         'user_id' => $user->id,
