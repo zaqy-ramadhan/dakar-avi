@@ -75,7 +75,7 @@ class User extends Authenticatable
 
     public function getRole()
     {
-        return $this->dakarRole()->pluck('role_name')->first();
+        return $this->dakarRole()->pluck('role_name')->first() ?? 'karyawan';
     }
 
     public function getRoleId()

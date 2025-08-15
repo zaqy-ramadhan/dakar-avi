@@ -37,9 +37,14 @@ class HomeController extends Controller
             $adminRoles = ['admin', 'admin 2', 'admin 3', 'admin 4'];
             $authRole = Auth::user()->getRole();
             $user = Auth::user();
-            if ($user && Hash::check('Avi123!', $user->password)) {
+            // dd($authRole);
+            // dd(in_array($authRole, $adminRoles));
+            // dd($user->password);
+            if ($user && Hash::check('Avi123!', $user->password_hash ?? $user->password)) {
+                // dd('true');
                 return redirect()->route('password');
             }
+
             if (in_array($authRole, $adminRoles)) {
                 $baseUser = User::query()
                     ->with([
@@ -159,7 +164,7 @@ class HomeController extends Controller
                 'employeeJob.jobDoc',
                 'employeeJob.department',
             ])->findOrFail(Auth::id());
-
+            // dd($user);
             $personal_status = $user->personal_status()['status'];
             $personal_date = $user->personal_status()['date'];
             $job = $user->employeeJob->first();

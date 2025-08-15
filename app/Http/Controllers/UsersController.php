@@ -370,7 +370,7 @@ class UsersController extends Controller
                 $acceptedItems = $inventories->where('status', 'Diterima');
                 $groupedItems = $acceptedItems->groupBy('item_name');
 
-                $lastContractInventory = optional($user->employeeJob->last()->inventory)->isEmpty() ?? true;
+                $lastContractInventory = optional($user->employeeJob->last()?->inventory)->isEmpty() ?? true;
 
                 $inventories_status = $user->inventory_acc_status()['status'];
                 $inventories_date = $user->inventory_acc_status()['date'];

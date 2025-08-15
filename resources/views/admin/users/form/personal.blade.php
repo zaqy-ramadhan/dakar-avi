@@ -71,21 +71,21 @@
         <label for="religion" class="form-label">Agama<span class="text-danger">*</span></label>
         <select name="religion" class="form-control" id="religion">
             <option value="">-- Pilih Agama --</option>
-            <option value="Islam" {{ old('religion', $employeeDetail->religion ?? '') == 'Islam' ? 'selected' : '' }}>
+            <option value="Islam" {{ old('religion', strtolower($employeeDetail?->religion) ?? '') == 'islam' ? 'selected' : '' }}>
                 Islam</option>
             <option value="Kristen"
-                {{ old('religion', $employeeDetail->religion ?? '') == 'Kristen' ? 'selected' : '' }}>Kristen</option>
+                {{ old('religion', strtolower($employeeDetail?->religion) ?? '') == 'kristen' ? 'selected' : '' }}>Kristen</option>
             <option value="Katolik"
-                {{ old('religion', $employeeDetail->religion ?? '') == 'Katolik' ? 'selected' : '' }}>Katolik</option>
-            <option value="Hindu" {{ old('religion', $employeeDetail->religion ?? '') == 'Hindu' ? 'selected' : '' }}>
+                {{ old('religion', strtolower($employeeDetail?->religion) ?? '') == 'katolik' ? 'selected' : '' }}>Katolik</option>
+            <option value="Hindu" {{ old('religion', strtolower($employeeDetail?->religion) ?? '') == 'Hindu' ? 'selected' : '' }}>
                 Hindu</option>
             <option value="Buddha"
-                {{ old('religion', $employeeDetail->religion ?? '') == 'Buddha' ? 'selected' : '' }}>Buddha</option>
+                {{ old('religion', strtolower($employeeDetail?->religion) ?? '') == 'buddha' ? 'selected' : '' }}>Buddha</option>
             <option value="Konghucu"
-                {{ old('religion', $employeeDetail->religion ?? '') == 'Konghucu' ? 'selected' : '' }}>Konghucu
+                {{ old('religion', strtolower($employeeDetail?->religion) ?? '') == 'konghucu' ? 'selected' : '' }}>Konghucu
             </option>
             <option value="Lainnya"
-                {{ old('religion', $employeeDetail->religion ?? '') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                {{ old('religion', strtolower($employeeDetail?->religion) ?? '') == 'lainnya' ? 'selected' : '' }}>Lainnya</option>
         </select>
         @error('religion')
             <div class="text-danger">{{ $message }}</div>

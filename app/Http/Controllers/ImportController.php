@@ -275,6 +275,10 @@ class ImportController extends Controller
                     $jobStatus = null;
                 }
                 // dd(strtolower($row[19]));
+                // dd($role->role_name);
+                // $user_role = $role->role_name;
+                
+
                 $lastJob = null;
                 for ($i = 0; $i < 5; $i++) {
                     // $startDate = $row[20 + ($i * 2)];
@@ -285,8 +289,10 @@ class ImportController extends Controller
 
                     $startDate = $this->parseExcelDate($startDateRaw);
                     $endDate   = $this->parseExcelDate($endDateRaw);
-
-                    $user_role = DakarRole::findOrFail($role->id)->role_name;
+                    // dd($role);
+                    
+                    // $user_role = DakarRole::findOrFail($role->id)->role_name;
+                    // dd($role->role_name, $role->id);
 
                     if ($startDate && $endDate) {
 
@@ -317,7 +323,7 @@ class ImportController extends Controller
 
                         $notes = $this->determineJobNotes(
                             $lastJob,
-                            strtolower($user_role),
+                            strtolower($role->role_name),
                             $requestDummy,
                             $lastJob === null
                         );
@@ -350,8 +356,8 @@ class ImportController extends Controller
                         // }
                     }
 
-                    $user->dakarRole()->sync($role->id);
                 }
+                $user->dakarRole()->sync($role->id ?? null);
             }
 
 
