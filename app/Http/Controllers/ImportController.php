@@ -357,7 +357,7 @@ class ImportController extends Controller
                     }
 
                 }
-                $user->dakarRole()->sync($role->id ?? null);
+                $user->dakarRole()->sync($role?->id ?? null);
             }
 
 
