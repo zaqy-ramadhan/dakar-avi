@@ -1535,6 +1535,7 @@ class UsersController extends Controller
                 ->first();
 
             $notes = $this->determineJobNotes($lastJob, $user_role, $request, (!$lastJob));
+            $user = User::findOrFail($id);
 
             EmployeeJob::create([
                 'user_id' => $id,
@@ -1556,9 +1557,9 @@ class UsersController extends Controller
                 'employment_status' => true,
                 'work_hour_code_id' => $request->work_hour,
                 'notes' => $notes ?? null,
+                'npk' => $request->npk ?? $user->npk,
             ]);
 
-            $user = User::findOrFail($id);
             if (isset($request->employment_status)) {
                 $user->dakarRole()->sync($request->employment_status);
                 $user->npk = $request->npk;
