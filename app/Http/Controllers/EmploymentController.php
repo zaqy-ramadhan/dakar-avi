@@ -57,6 +57,7 @@ class EmploymentController extends Controller
                     'contract' => optional($inventory->employeeJob)->contract
                 ];
             })->sortBy('item_id')->values();
+            // dd($inventories);
 
             $masters = [
                 'costCenters'    => CostCenter::all(),

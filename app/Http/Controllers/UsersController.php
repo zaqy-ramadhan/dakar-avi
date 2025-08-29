@@ -1569,6 +1569,7 @@ class UsersController extends Controller
             if ($lastJob) {
                 $lastJob->update([
                     'employment_status' => false,
+                    'resign_date' => $request->start_date
                 ]);
             }
 
