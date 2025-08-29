@@ -305,20 +305,24 @@
                 //         @endforeach
                 //     @endif
                 // }
-
-                if (prevRole) {
-                    @if ($rule && $rule->items)
-                        @foreach ($rule->items as $item)
-                            addItem("{{ $item['id'] }}", "{{ $item['size'] }}");
-                        @endforeach
-                    @endif
-                }else{
-                    userInventory.forEach(item => {
+                userInventory.forEach(item => {
                         addItem(item.item_id, item.size, item.status, item.due_date, item.acc_date, item
                             .return_date, item.employee_job_id, item.contract, item.item_name, item
                             .return_notes);
                     });
-                }
+                // if (prevRole) {
+                //     @if ($rule && $rule->items)
+                //         @foreach ($rule->items as $item)
+                //             addItem("{{ $item['id'] }}", "{{ $item['size'] }}");
+                //         @endforeach
+                //     @endif
+                // }else{
+                //     userInventory.forEach(item => {
+                //         addItem(item.item_id, item.size, item.status, item.due_date, item.acc_date, item
+                //             .return_date, item.employee_job_id, item.contract, item.item_name, item
+                //             .return_notes);
+                //     });
+                // }
             } else {
                 @if ($rule && $rule->items)
                     @foreach ($items as $item)
