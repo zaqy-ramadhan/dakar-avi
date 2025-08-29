@@ -207,7 +207,7 @@ class DocumentController extends Controller
             $month = date('n', strtotime($kontrak->start_date));
             $romanMonth = $romanMonths[$month - 1];
             $year = date('y', strtotime($kontrak->start_date));
-            $kontrak->nomor = ($kontrak->npk ?? $kontrak->user->npk) . '/HRD/AVI/' . $romanMonth . '/' . $year;
+            $kontrak->nomor = ($kontrak->npk ?? $kontrak->npk) . '/HRD/AVI/' . $romanMonth . '/' . $year;
 
             if ($is_admin && !$jobDoc?->first_party_signature && Auth::user()->getRole() === 'admin') {
                 return view('admin.users.signature', compact('id', 'employeeJob', 'type'))->with('warning', 'Please complete the signature process before generating.');
@@ -260,7 +260,7 @@ class DocumentController extends Controller
             $month = date('n', strtotime($kontrak->start_date));
             $romanMonth = $romanMonths[$month - 1];
             $year = date('y', strtotime($kontrak->start_date));
-            $kontrak->nomor = ($kontrak->npk ?? $kontrak->user->npk) . '/HRD/AVI/' . $romanMonth . '/' . $year;
+            $kontrak->nomor = ($kontrak->npk ?? $kontrak->npk) . '/HRD/AVI/' . $romanMonth . '/' . $year;
 
             $pdf = PDF::loadView('documents.paklaring', compact('kontrak', 'hr', 'jobDoc', 'offboarding', 'bpjstk'))
                 ->setPaper('a4', 'portrait');
@@ -356,7 +356,7 @@ class DocumentController extends Controller
                 $hr = User::whereHas('employeeJob.position', function ($query) {
                     $query->where('position_name', 'HR & Legal Section Head');
                 })->first();
-                $kontrak->nomor = ($kontrak->npk ?? $kontrak->user->npk) . '/HRD/AVI/' . $romanMonth . '/' . $year;
+                $kontrak->nomor = ($kontrak->npk ?? $kontrak->npk) . '/HRD/AVI/' . $romanMonth . '/' . $year;
                 $wage = $wages->where('type', 'Uang Saku')->first();
                 $pdf = PDF::loadView('documents.kontrakPemagangan', compact('kontrak', 'hr', 'disnaker', 'jobDoc', 'wage'))
                     ->setPaper('a4', 'portrait');
@@ -366,7 +366,7 @@ class DocumentController extends Controller
                     $query->where('position_name', 'HRGA & EHS Department Head');
                 })->first();
                 $first_signature = public_path('storage/' . $jobDoc?->first_party_signature);
-                $kontrak->nomor = 'NPK. ' . ($kontrak->npk ?? $kontrak->user->npk) . '/' . $kontrak->contract . '/AVI/' . $romanMonth . '/' . $fullyear;
+                $kontrak->nomor = 'NPK. ' . ($kontrak->npk ?? $kontrak->npk) . '/' . $kontrak->contract . '/AVI/' . $romanMonth . '/' . $fullyear;
                 $pdf = PDF::loadView('documents.pkwt', compact('kontrak', 'hr', 'jobDoc', 'wages', 'first_signature'))
                     ->setPaper('a4', 'portrait');
                 $filename = 'kontrak_pkwt_' . str_replace(' ', '_', $kontrak->user->fullname) . '.pdf';
@@ -430,7 +430,7 @@ class DocumentController extends Controller
                 $hr = User::whereHas('employeeJob.position', function ($query) {
                     $query->where('position_name', 'HR & Legal Section Head');
                 })->first();
-                $kontrak->nomor = ($kontrak->npk ?? $kontrak->user->npk) . '/HRD/AVI/' . $romanMonth . '/' . date('y');
+                $kontrak->nomor = ($kontrak->npk ?? $kontrak->npk) . '/HRD/AVI/' . $romanMonth . '/' . date('y');
                 $wage = $wages->where('type', 'Uang Saku')->first();
                 $pdf = PDF::loadView('documents.kontrakPemagangan', compact('kontrak', 'hr', 'disnaker', 'jobDoc', 'wage'))
                     ->setPaper('a4', 'portrait');
@@ -438,7 +438,7 @@ class DocumentController extends Controller
                 $hr = User::whereHas('employeeJob.position', function ($query) {
                     $query->where('position_name', 'HRGA & EHS Department Head');
                 })->first();
-                $kontrak->nomor = 'NPK. ' . ($kontrak->npk ?? $kontrak->user->npk) . '/' . $kontrak->contract . '/AVI/' . $romanMonth . '/' . $fullyear;
+                $kontrak->nomor = 'NPK. ' . ($kontrak->npk ?? $kontrak->npk) . '/' . $kontrak->contract . '/AVI/' . $romanMonth . '/' . $fullyear;
                 $first_signature = public_path('storage/' . optional($jobDoc)->first_party_signature);
                 $pdf = PDF::loadView('documents.pkwt', compact('kontrak', 'hr', 'jobDoc', 'wages', 'first_signature'));
             }
