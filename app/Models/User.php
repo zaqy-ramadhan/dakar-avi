@@ -614,6 +614,7 @@ class User extends Authenticatable
 
                 // Update progress di setiap step valid
                 $job->onboarding_progress = $progress;
+                $job->save();
 
                 if ($progress === 100 && !$job->is_onboarding_completed) {
                     $job->is_onboarding_completed = true;
@@ -670,7 +671,7 @@ class User extends Authenticatable
     public function inumber_status()
     {
         $count = $this->employeeInventoryNumber->count();
-        if ($count == 6) {
+        if ($count >= 6) {
             $complete_date = $this->employeeInventoryNumber->last()?->created_at;
             return [
                 'status' => true,
