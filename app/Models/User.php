@@ -257,7 +257,7 @@ class User extends Authenticatable
 
     public function firstEmployeeJobIncomplete()
     {
-        return $this->hasOne(EmployeeJob::class)->orderBy('start_date', 'asc')->where('is_onboarding_completed', false)->where('employment_status', true);
+        return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->orderBy('start_date', 'asc');
     }
 
 
