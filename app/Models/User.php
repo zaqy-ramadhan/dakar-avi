@@ -260,7 +260,7 @@ class User extends Authenticatable
         // return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->orderBy('start_date', 'asc');
         return $this->hasOne(EmployeeJob::class)
         ->ofMany(
-            ['start_date' => 'min'], // ambil paling awal
+            ['start_date' => 'min'],
             function ($query) {
                 $query->where('employment_status', true)
                     ->where('is_onboarding_completed', false);

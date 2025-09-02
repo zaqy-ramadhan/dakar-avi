@@ -133,7 +133,7 @@
       >
       </div>
       <div class="footer-container">
-          <div>Citeureup, {{$kontrak->resign_date ? $kontrak->resign_date->isoFormat('D MMMM Y') : $kontrak->end_date->isoFormat('D MMMM Y') }}</div>
+          <div>Citeureup, {{$kontrak->resign_date ? Carbon\Carbon::parse($kontrak->resign_date)->isoFormat('D MMMM Y') : $kontrak->end_date->isoFormat('D MMMM Y') }}</div>
           <div style="margin-top: 40px;">
             <strong>SAFITRI</strong><br>
             HR,GA&amp;EHS Dept Head
