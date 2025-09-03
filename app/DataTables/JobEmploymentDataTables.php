@@ -309,6 +309,17 @@ class JobEmploymentDataTables extends DataTable
                         ';
                     } elseif ($currentRoute === 'users.index.employment.detail') {
                         if ($job->user_dakar_role === 'karyawan') {
+                            if($job->job_status === 'tetap'){
+                                return '
+                                    <div class="d-flex">
+                                    ' . $wageButton . '
+                                    ' . $kerahasiaanButton . '
+                                    ' . $kompensasiButton . '                                    
+                                    ' . $offboardButton . '
+                                    ' . $deleteButton . '
+                                </div>
+                                ';
+                            }
                             return '
                                 <div class="d-flex">
                                     ' . $wageButton . '

@@ -1471,6 +1471,10 @@ class UsersController extends Controller
                 ) && (
                     $lastJob->end_date->format('Y-m-d') === $request->end_date
                 );
+
+                $isPromotion = ($lastJob->user_dakar_role === 'pemagangan' && $request->user_dakar_role === 'karyawan');
+
+                $isPermanent = ($request->job_status === 'tetap' && $lastJob->user_dakar_role === 'karyawan');
                 
                 // dd( $lastJob->end_date->format('Y-m-d') === $request->end_date &&
                 //     $lastJob->start_date->format('Y-m-d') === $request->start_date, $request, $lastJob->end_date, $lastJob->start_date);
@@ -1478,6 +1482,10 @@ class UsersController extends Controller
                 
                 if($isTransfer){
                     return 'Employee Transfer';
+                }elseif($isPromotion){
+                    return 'New Empployee Kontrak';
+                }elseif($isPermanent){
+                    return 'New Employee Tetap';
                 }else{
                     return 'Extension Contract';
                 }
@@ -1592,6 +1600,7 @@ class UsersController extends Controller
         $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'nullable|date',
+            'resign_date' => 'nullable|date',
             'position_id' => 'nullable|exists:dakar_positions,id',
             'section_id' => 'nullable|exists:dakar_sections,id',
             'department_id' => 'nullable|exists:dakar_departments,id',
@@ -1624,6 +1633,7 @@ class UsersController extends Controller
             $job->update([
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date ?? null,
+                'resign_date' => $request->resign_date ?? null,
                 'position_id' => $request->position_id ?? null,
                 'section_id' => $request->section_id ?? null,
                 'department_id' => $request->department_id ?? null,
@@ -1822,6 +1832,7 @@ class UsersController extends Controller
             $lastJob = EmployeeJob::where('user_id', $user->id)->latest()->first();
             if ($lastJob) {
                 $lastJob->employment_status = true;
+                $lastJob->resign_date = null;
                 $lastJob->save();
             }
 

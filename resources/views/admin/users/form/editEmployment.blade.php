@@ -202,6 +202,16 @@
                         @enderror
                     </div>
 
+                     <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                        <label for="resign_date" class="form-label">Out date</label>
+                        <input type="date" class="form-control" id="resign_date" name="resign_date"
+                            value="{{ \Carbon\Carbon::parse($job->resign_date ?? null)->format('Y-m-d') }}"
+                            @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
+                        @error('resign_date')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
                         <label for="job_status" class="form-label">Job status</label>
                         <select name="job_status" id="" class="form-select"
@@ -255,6 +265,17 @@
                         <input type="text" class="form-control" id="npk" name="npk"
                             value="{{ $user->npk }}">
                         @error('npk')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="1" @if ($job->employment_status == 1) selected @endif >Active</option>
+                            <option value="0" @if ($job->employment_status == 0) selected @endif>Inactive</option>
+                        </select>
+                        @error('status')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
