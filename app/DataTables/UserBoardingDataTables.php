@@ -120,12 +120,16 @@ class UserBoardingDataTables extends DataTable
             ->whereDoesntHave('dakarRole', function ($q) {
                 $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4']);
             })
-            ->where(function ($query) {
-                $query->doesntHave('firstEmployeeJob')
-                    ->orWhereHas('firstEmployeeJob', function($q2){
-                        $q2->where('employment_status', true)
-                        ->where('is_onboarding_completed', false);
-                    });
+            // ->where(function ($query) {
+            //     $query->doesntHave('firstEmployeeJob')
+            //         ->orWhereHas('firstEmployeeJob', function($q2){
+            //             $q2->where('employment_status', true)
+            //             ->where('is_onboarding_completed', false);
+            //         });
+            // })
+             ->where(function ($q) {
+                $q->doesntHave('employeeJobs')
+                ->orWhereHas('activeOnboardingJob');
             })
             ;
 
