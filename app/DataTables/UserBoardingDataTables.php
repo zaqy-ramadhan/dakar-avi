@@ -127,9 +127,9 @@ class UserBoardingDataTables extends DataTable
             //             ->where('is_onboarding_completed', false);
             //         });
             // })
-             ->where(function ($q) {
-                $q->doesntHave('employeeJobs')
-                ->orWhereHas('activeOnboardingJob');
+            ->where(function ($q) {
+                $q->doesntHave('employeeJob')
+                ->orWhereHas('firstEmployeeJobIncomplete');
             })
             ;
 

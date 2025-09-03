@@ -252,20 +252,13 @@ class User extends Authenticatable
 
     public function firstEmployeeJob()
     {
-        return $this->hasOne(EmployeeJob::class)->orderBy('start_date', 'asc');
+        return $this->hasOne(EmployeeJob::class)->where('job_sequence', 1);
+
     }
 
     public function firstEmployeeJobIncomplete()
     {
-        return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->orderBy('start_date', 'asc');
-        // return $this->hasOne(EmployeeJob::class)
-        // ->ofMany(
-        //     ['start_date' => 'min'],
-        //     function ($query) {
-        //         $query->where('employment_status', true)
-        //             ->where('is_onboarding_completed', false);
-        //     }
-        // );
+        return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->where('job_sequence', 1);
     }
 
 
