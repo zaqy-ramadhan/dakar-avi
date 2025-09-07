@@ -146,6 +146,10 @@ class EmployeeJob extends Model
             return 'PKWT-' . ($index + 1);
         }
 
+        if($this->job_status === 'Probation'){
+            return 'Probation';
+        }
+
         return match ($this->user_dakar_role) {
             'pemagangan' => 'Pemagangan',
             'internship' => 'Internship',
