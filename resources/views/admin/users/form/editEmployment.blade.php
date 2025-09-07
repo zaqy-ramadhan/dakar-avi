@@ -214,10 +214,10 @@
 
                     <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
                         <label for="job_status" class="form-label">Job status</label>
-                        <select name="job_status" id="" class="form-select"
+                        <select name="job_status" id="job_status" class="form-select"
                             @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
                             @foreach ($jobStatus as $status)
-                                <option value="{{ $status->job_status_name }}"
+                                <option data-select="{{ $status->job_status_name }}" value="{{ $status->job_status_name }}"
                                     @if (optional($job)->job_status == $status->job_status_name) selected @endif>
                                     {{ Str::ucfirst($status->job_status_name) }}</option>
                             @endforeach
@@ -279,7 +279,23 @@
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div id="permanent_fields" style="display: block;" class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                            <label for="permanent_docs" class="form-label">Dokumen / SK </label>
+                            <input type="file" class="form-control" id="permanent_docs" name="permanent_docs">
+                            {{-- @dd($user->employeeJob->last()->jobDoc?->where('type', 'permanent_docs')->first()) --}}
+                            @if($user->employeeJob->last()->jobDoc?->where('type', 'permanent_docs')->first())
+                                <p>File yang ada: <a href="{{ asset('storage/' . $job->jobDoc?->where('type', 'permanent_docs')?->first()?->path) }}" target="_blank">Lihat
+                                        File</a></p>
+                            
+                            @endif
+                            @error('permanent_docs')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                    </div>
+
                 </div>
+
                 @if ($user->firstEmployeeJob === null && Request::is('*onboarding*'))
                     <button type="submit" class="btn btn-primary">Submit</button>
                 @endif
@@ -296,7 +312,9 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const employeeStatus = document.getElementById("employment_status");
+            const jobStatus = document.getElementById("job_status");
             const internshipFields = document.getElementById("internship_fields");
+            const permanentFields = document.getElementById("permanent_fields");
 
             function toggleInternFields() {
                 const selectedOption = employeeStatus.options[employeeStatus.selectedIndex];
@@ -310,8 +328,25 @@
                 }
             }
 
+            function toggleTetapFields() {
+                const selectedJobStatus = jobStatus.options[jobStatus.selectedIndex];
+                const selectedJobStatusValue = selectedJobStatus.getAttribute("data-select");
+
+                if (selectedJobStatusValue === "tetap") {
+                    console.log(selectedJobStatusValue);
+                    permanentFields.style.display = "block";
+                } else {
+                    console.log(selectedJobStatusValue);
+                    permanentFields.style.display = "none";
+                }
+            }
+
+
             employeeStatus.addEventListener("change", toggleInternFields);
             toggleInternFields();
+
+            jobStatus.addEventListener("change", toggleTetapFields);
+            toggleTetapFields();
         });
     </script>
     <script>

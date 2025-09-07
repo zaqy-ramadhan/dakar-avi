@@ -12,7 +12,8 @@ class JobDoc extends Model
         'employee_job_id',
         'type',
         'first_party_signature',
-        'second_party_signature'
+        'second_party_signature',
+        'path'
     ];
 
     public function employeeJob(){

@@ -310,11 +310,17 @@ class JobEmploymentDataTables extends DataTable
                     } elseif ($currentRoute === 'users.index.employment.detail') {
                         if ($job->user_dakar_role === 'karyawan') {
                             if($job->job_status === 'tetap'){
+                                if($job->jobDoc?->where('type', 'permanent_docs')?->first()){
+                                    $skButton = '<a title="Dokumen / SK" href="' . asset('storage/' . $job->jobDoc?->where('type', 'permanent_docs')?->first()?->path) . '" target="_blank" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-6"></i> Dokumen / SK</a>';
+                                }else{
+                                    $skButton = '';
+                                }
                                 return '
                                     <div class="d-flex">
                                     ' . $wageButton . '
+                                    ' . $skButton . '
                                     ' . $kerahasiaanButton . '
-                                    ' . $kompensasiButton . '                                    
+                                    ' . $kompensasiButton . '
                                     ' . $offboardButton . '
                                     ' . $deleteButton . '
                                 </div>

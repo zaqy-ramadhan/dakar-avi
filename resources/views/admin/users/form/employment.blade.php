@@ -185,10 +185,10 @@
 
         <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
             <label for="job_status" class="form-label">Job status</label>
-            <select name="job_status" id="" class="form-select"
+            <select name="job_status" id="job_status" class="form-select"
                 @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
                 @foreach ($jobStatus as $status)
-                    <option value="{{ $status->job_status_name }}"
+                    <option data-select = "{{ $status->job_status_name }}" value="{{ $status->job_status_name }}"
                         @if (optional($user->employeeJob?->last())->job_status == $status->job_status_name) selected @endif>
                         {{ Str::ucfirst($status->job_status_name) }}</option>
                 @endforeach
@@ -214,7 +214,7 @@
             @enderror
         </div>
 
-         <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+        <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
             <label for="work_hour" class="form-label">Work Hour Code</label>
             <select name="work_hour" id="work_hour" class="form-select"
                 @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
@@ -233,13 +233,25 @@
 
         <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
             <label for="npk" class="form-label">Update NPK</label>
-            <input type="text" class="form-control" id="npk" name="npk" value="{{ $user->npk }}" @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
+            <input type="text" class="form-control" id="npk" name="npk" value="{{ $user->npk }}"
+                @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
             @error('npk')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>    
+    </div>
+
+    <div class="row mb-3" id="permanent_fields" style="display: block;">
+        <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+            <label for="permanent_docs" class="form-label">Dokumen / SK</label>
+            <input type="file" class="form-control" id="permanent_docs" name="permanent_docs">
+            @error('permanent_docs')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
     </div>
-    @if ($user->firstEmployeeJob === null  && Request::is('*onboarding*'))
+
+    @if ($user->firstEmployeeJob === null && Request::is('*onboarding*'))
         <button type="submit" class="btn btn-primary">Submit</button>
     @endif
 

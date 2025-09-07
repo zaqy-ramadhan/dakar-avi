@@ -25,6 +25,7 @@ use App\Models\SubGolongan;
 use App\Models\Group;
 use App\Models\InventoryRule;
 use App\Models\Item;
+use App\Models\JobDoc;
 use App\Models\JobType;
 use App\Models\JobWageAllowance;
 use App\Models\Level;
@@ -1529,6 +1530,7 @@ class UsersController extends Controller
             'employment_status' => 'nullable|exists:dakar_role,id',
             'work_hour' => 'nullable|string|max:255|exists:dakar_work_hour_code,id',
             'npk' => 'required|string|max:20',
+            'permanent_docs' => 'nullable|file|mimes:pdf|max:2048'
         ]);
 
         try {
@@ -1545,7 +1547,7 @@ class UsersController extends Controller
             $notes = $this->determineJobNotes($lastJob, $user_role, $request, (!$lastJob));
             $user = User::findOrFail($id);
 
-            EmployeeJob::create([
+            $job = EmployeeJob::create([
                 'user_id' => $id,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date ?? null,
@@ -1567,6 +1569,17 @@ class UsersController extends Controller
                 'notes' => $notes ?? null,
                 'npk' => $request->npk ?? $user->npk,
             ]);
+
+            if(isset($request->permanent_docs)){
+                $path = $request->file('permanent_docs')->store("documents/permanent_docs", 'public');
+
+                JobDoc::updateOrCreate([
+                    'employee_job_id' => $job->id,
+                    'type' => 'permanent_docs',
+                ], [
+                    'path' => $path,
+                ]);
+            }
 
             if (isset($request->employment_status)) {
                 $user->dakarRole()->sync($request->employment_status);
@@ -1616,6 +1629,7 @@ class UsersController extends Controller
             'employment_status' => 'nullable|exists:dakar_role,id',
             'work_hour' => 'nullable|string|max:255|exists:dakar_work_hour_code,id',
             'npk' => 'required|string|max:20',
+            'permanent_docs' => 'nullable|file|mimes:pdf|max:2048'
         ]);
 
         try {
@@ -1650,6 +1664,17 @@ class UsersController extends Controller
                 'work_hour_code_id' => $request->work_hour,
                 'notes' => $notes,
             ]);
+
+            if(isset($request->permanent_docs)){
+                $path = $request->file('permanent_docs')->store("documents/permanent_docs", 'public');
+
+                JobDoc::updateOrCreate([
+                    'employee_job_id' => $job->id,
+                    'type' => 'permanent_docs',
+                ], [
+                    'path' => $path,
+                ]);
+            }
 
             if ($request->employment_status) {
                 $user->dakarRole()->sync([$request->employment_status]);
