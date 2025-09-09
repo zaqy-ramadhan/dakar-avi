@@ -2,7 +2,7 @@
 
     @section('content')
 
-    <div class="card" style="border-radius: 20px">
+    <div class="card" style="border-radius: 20px;">
     
     <div class="card-header">
         <p class="fs-6 fw-bold">Change Password</p>
@@ -10,7 +10,7 @@
     <div class="card-body">
         <form action="{{ route('change.password') }}" method="post">
             @csrf
-                <div class="col-3">
+                <div class="col-lg-3 col-md-6 col-sm-12">
                     <label for="old_password" class="form-label">Old Password</label>
                     <input 
                         type="password" 
@@ -23,7 +23,7 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="col-3 mt-4">
+                <div class="col-lg-3 col-md-6 col-sm-12 mt-4">
                     <label for="new_password" class="form-label">New Password</label>
                     <input 
                         type="password" 
