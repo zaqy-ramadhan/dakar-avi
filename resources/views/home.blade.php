@@ -64,19 +64,19 @@
 @endpush
 
 @section('content')
-{{-- @dd(Auth::user()->getRole()) --}}
+    {{-- @dd(Auth::user()->getRole()) --}}
     <div class="row">
         @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
             <div class="col-lg-12 col-md-12 col-sm-12">
                 <p class="fs-8 fw-bold">Welcome {{ Auth::user()->fullname }}</p>
                 @if (Auth::user()->progressOnboardingEmployee()['progress'] == 100)
-                <div class="alert alert-success fade show" role="alert" style="border-radius: 20px">
-                    {{ Auth::user()->progressOnboardingEmployee()['message'] }}
-                </div>
+                    <div class="alert alert-success fade show" role="alert" style="border-radius: 20px">
+                        {{ Auth::user()->progressOnboardingEmployee()['message'] }}
+                    </div>
                 @else
-                <div class="alert alert-warning fade show" role="alert" style="border-radius: 20px">
-                    {{ Auth::user()->progressOnboardingEmployee()['message'] }}
-                </div>
+                    <div class="alert alert-warning fade show" role="alert" style="border-radius: 20px">
+                        {{ Auth::user()->progressOnboardingEmployee()['message'] }}
+                    </div>
                 @endif
             </div>
             <div class="col-lg-7 col-md-12 col-sm-12">
@@ -234,8 +234,8 @@
                     <div class="card-header">
                         Tipe Karyawan
                     </div>
-                    <div class="card-body">
-                        <canvas id="jobCategoryChart" width="400" height="400"></canvas>
+                    <div class="card-body" style="height: 300px;">
+                        <canvas id="jobCategoryChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -245,11 +245,73 @@
                     <div class="card-header">
                         Jumlah Karyawan per Department
                     </div>
-                    <div class="card-body">
-                        <canvas id="barChart" style="height: 300px;"></canvas>
+                    <div class="card-body" style="height: 300px;">
+                        <canvas id="barChart"></canvas>
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="bi bi-people-fill me-2 text-primary"></i>
+                        <span class="fw-semibold">{{ __('Jumlah Karyawan AVI') }}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div class="text-muted">{{ __('Karyawan AVI') }}</div>
+                            <div class="fw-bold fs-5">{{ $karyawan }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="bi bi-mortarboard-fill me-2 text-success"></i>
+                        <span class="fw-semibold">{{ __('Jumlah Karyawan Pemagangan') }}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div class="text-muted">{{ __('Pemagangan') }}</div>
+                            <div class="fw-bold fs-5">{{ $pemagangan }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="bi bi-laptop-fill me-2 text-warning"></i>
+                        <span class="fw-semibold">{{ __('Jumlah Karyawan Intern') }}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div class="text-muted">{{ __('Internship') }}</div>
+                            <div class="fw-bold fs-5">{{ $internship }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="bi bi-person-x-fill me-2 text-danger"></i>
+                        <span class="fw-semibold">{{ __('Onboarding') }}</span>
+                    </div>
+                    <a href="{{ route('users.index.onboarding', ['progressFilter' => true]) }}"
+                        class="card-body text-decoration-none text-dark">
+                        <div class="d-flex justify-content-between">
+                            <div class="text-muted">{{ __('Incomplete Onboarding') }}</div>
+                            <div class="fw-bold fs-5">{{ $uncomplete }}</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
 
             <div class="col-md-6">
                 <div class="card">
@@ -284,74 +346,6 @@
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-header">
-                        {{ __('Karyawan') }}
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between my-1">
-                            <div class="text-muted">{{ __('Karyawan AVI') }}</div>
-                            <div class="fw-bold">{{ $karyawan}}</div>
-                        </div>
-                        <div class="d-flex justify-content-between my-1">
-                            <div class="text-muted">{{ __('Pemagangan') }}</div>
-                            <div class="fw-bold">{{ $pemagangan}}</div>
-                        </div>
-                        <div class="d-flex justify-content-between my-1">
-                            <div class="text-muted">{{ __('Internship') }}</div>
-                            <div class="fw-bold">{{ $internship}}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-header">
-                        {{ __('Onboarding') }}
-                    </div>
-                    <a href="{{ route('users.index.onboarding', ['progressFilter' => true]) }}" class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div class="text-muted">{{ __('Incomplete Onboarding') }}</div>
-                            <div class="fw-bold">{{ $uncomplete }}</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        Karyawan Pembaruan Seragam - {{ now()->translatedFormat('F Y') }}
-                    </div>
-                    <div class="card-body table-responsive">
-                        <table class="table text-nowrap mb-0 align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Nama</th>
-                                    <th>NPK</th>
-                                    <th>Department</th>
-                                    <th>Inventaris</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($uniformRefresh as $inventory)
-                                    <tr>
-                                        <td>{{ $inventory['name'] ?? '-' }}</td>
-                                        <td>{{ $inventory['npk'] ?? '-' }}</td>
-                                        <td>{{ $inventory['department'] ?? '-' }}</td>
-                                        <td>
-                                            <a href="{{ route('users.index.onboarding.detail', $inventory['id']) }}"
-                                                class="btn btn-sm btn-outline-primary"><i
-                                                    class="ti ti-clipboard-list"></i></a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
@@ -377,6 +371,40 @@
                                         <td>{{ $birthday->user->npk ?? '-' }}</td>
                                         <td>{{ $birthday->user->department->department_name ?? '-' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($birthday->birth_date)->isoFormat('DD MMMM YYYY') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+             <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Karyawan Pembaruan Seragam - {{ now()->translatedFormat('F Y') }}
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table text-nowrap mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>NPK</th>
+                                    <th>Department</th>
+                                    <th>Inventaris</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($uniformRefresh as $inventory)
+                                    <tr>
+                                        <td>{{ $inventory['name'] ?? '-' }}</td>
+                                        <td>{{ $inventory['npk'] ?? '-' }}</td>
+                                        <td>{{ $inventory['department'] ?? '-' }}</td>
+                                        <td>
+                                            <a href="{{ route('users.index.onboarding.detail', $inventory['id']) }}"
+                                                class="btn btn-sm btn-outline-primary"><i
+                                                    class="ti ti-clipboard-list"></i></a>
                                         </td>
                                     </tr>
                                 @endforeach
