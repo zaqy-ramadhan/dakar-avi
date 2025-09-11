@@ -42,7 +42,7 @@ class HomeController extends Controller
             // dd($user->password);
             if ($user && Hash::check('Avi123!', $user->password_hash ?? $user->password)) {
                 // dd('true');
-                return redirect()->route('reset.password');
+                return redirect()->route('password');
             }
 
             if (in_array($authRole, $adminRoles)) {
