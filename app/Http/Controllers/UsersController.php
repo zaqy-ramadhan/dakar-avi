@@ -310,9 +310,15 @@ class UsersController extends Controller
                 $personal_status = $user->personal_status()['status'];
                 $personal_date = $user->personal_status()['date'];
 
-                $job = $user->employeeJob->first();
+                // $job = $user->employeeJob->first();
+                $job = $user->firstEmployeeJob;
+
                 $is_signed = $job?->jobDoc->where('type', 'contract')->whereNotNull('first_party_signature')->whereNotNull('second_party_signature')->isNotEmpty();
-                $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id)->isNotEmpty();
+                
+                // $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id)->isNotEmpty();
+                $employment_status = $job && $job->jobDoc->isNotEmpty() && $job->jobWageAllowance->isNotEmpty() && $job->inventory->where('employee_job_id', $job->id);
+
+
                 $employment_date = optional($job?->created_at);
 
                 $contractDoc = $job?->jobDoc->where('type', 'contract')
