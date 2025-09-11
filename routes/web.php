@@ -184,6 +184,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/import', [ImportController::class, 'index'])->name('import.index');
 
     Route::get('change-password', [UsersController::class, 'changePasswordView'])->name('password');
+    Route::get('reset-password', [UsersController::class, 'resetPasswordView'])->name('reset.password');
     Route::post('change-password', [UsersController::class, 'changePassword'])->name('change.password');
 
 

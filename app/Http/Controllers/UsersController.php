@@ -1816,6 +1816,11 @@ class UsersController extends Controller
         return view('admin.users.password');
     }
 
+    public function resetPasswordView()
+    {
+        return view('admin.users.changePassword');
+    }
+
     public function changePassword(Request $request)
     {
         $request->validate([
