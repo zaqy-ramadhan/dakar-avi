@@ -75,6 +75,7 @@ class EmployeeJob extends Model
     {
         return $this->hasMany(EmployeeJob::class, 'user_id', 'user_id')
             ->where('job_status', 'kontrak')
+            ->where('notes', '!=', 'Employee Transfer')
             ->where('user_dakar_role', 'karyawan')
             ->orderBy('id');
     }

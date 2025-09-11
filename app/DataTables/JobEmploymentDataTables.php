@@ -202,7 +202,11 @@ class JobEmploymentDataTables extends DataTable
 
                 $kontrakButton = '';
                 if ($showKontrakButton) {
-                    $kontrakButton = '<a title="Kontrak" href="' . route("user.kontrak-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-6"></i> Kontrak</a>';
+                    if($job->notes != 'Employee Transfer'){
+                        $kontrakButton = '<a title="Kontrak" href="' . route("user.kontrak-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-6"></i> Kontrak</a>';
+                    }else{
+                        $kontrakButton = '';
+                    }
                 }
 
                 $kompensasiButton = '';
