@@ -25,7 +25,8 @@
                     </div>
                     <div class="modal-body">
                         <a href="{{ route('user.data-permission-pdf', $user->id) }}" target="_blank"
-                            class="btn btn-outline-primary mb-4 fs-4 ms-2">Document Preview</a>
+                            class="btn btn-outline-primary mb-4 fs-4">Document Preview</a>
+                        <h5>Tanda Tangan Persetujuan</h5>
                         <canvas id="signature-pad"></canvas>
                         <br>
                         <p class="my-4">
