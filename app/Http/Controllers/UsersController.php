@@ -1845,7 +1845,7 @@ class UsersController extends Controller
                 'password' => bcrypt($request->new_password),
             ]);
 
-            return back()->with('success', 'Password changed successfully.');
+            return redirect('/')->with('success', 'Password changed successfully.');
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while changing the password. ' . $e->getMessage())->withInput();
         }

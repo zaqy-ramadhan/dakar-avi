@@ -60,6 +60,14 @@
             font-weight: 500;
             margin-bottom: 0.25rem;
         }
+        #signature-pad {
+            border: 0.5px solid #000;
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            touch-action: none;
+            background-color: white;
+        }
     </style>
 @endpush
 
