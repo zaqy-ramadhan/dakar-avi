@@ -319,7 +319,7 @@
                                 </td>
                             </tr>
                         @elseif($wage->type === 'Gaji Pokok')
-                            @if ($kontrak->level->level_name === 'Operator' || $kontrak->level->level_name === 'Admin')
+                            @if ($kontrak?->level?->level_name === 'Operator' || $kontrak?->level?->level_name === 'Admin')
                                 <tr>
                                     <td style="vertical-align: top; width: 150px;">{{ $wage->type }}</td>
                                     <td style="vertical-align: top; width: 5px;">:</td>

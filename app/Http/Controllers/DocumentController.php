@@ -691,4 +691,64 @@ class DocumentController extends Controller
         $year = Carbon::now()->year;
         return Excel::download(new UniformRefreshExport(), 'bulan-' . $month . '-' . $year . '-uniform-refresh.xlsx');
     }
+
+    public function permissionSignature(Request $request)
+    {
+        $request->validate([
+            'signature' => 'required',
+        ]);
+
+        try {
+            $signatureData = $request->signature;
+
+            // Cek apakah data dalam format Base64 atau langsung XML SVG
+            if (strpos($signatureData, 'data:image/svg+xml;base64,') !== false) {
+                // Base64 SVG, perlu didecode
+                $signatureData = str_replace('data:image/svg+xml;base64,', '', $signatureData);
+                $signatureData = base64_decode($signatureData);
+            } elseif (strpos($signatureData, '<svg') !== false) {
+                // Data langsung berupa XML SVG, tidak perlu decode
+            } else {
+                return back()->with('error', 'Format tanda tangan tidak valid');
+            }
+
+            // Tentukan nama file dengan ekstensi .svg
+            $fileName = 'permission_signature_' . Auth::user()->id . '_' . time() . '.svg';
+
+            // Cari dokumen kerja terkait
+            
+            $user = User::findOrFail(Auth::user()->id);
+
+            if($user)
+            {
+                $filePath = "documents/permission_signature/{$fileName}";
+                $user->permission_signature = $filePath;
+
+            }
+
+            // Simpan file SVG
+            Storage::disk('public')->put($filePath, $signatureData);
+
+            // Simpan ke database
+            $user->save();
+
+            return redirect()->back()
+                ->with('success', 'Signature has been created successfully');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to save signature: ' . $e->getMessage());
+        }
+    }
+
+    public function permissionPDF($id)
+    {
+        try{
+            $user = User::findOrFail($id);
+             $pdf = PDF::loadView('documents.dataPermission', compact('user'))
+                ->setPaper('a4', 'portrait');
+            $filename = 'Surat_Persetujuan_Data_Pribadi_' . str_replace(' ', '_', $user->fullname ?? 'Employee') . '.pdf';
+            return $pdf->stream($filename);
+        }catch(\Exception $e){
+            return back()->with('error', 'An error occurred while generating the document: ' . $e->getMessage())->withInput();
+         }
+    }
 }

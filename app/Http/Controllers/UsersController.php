@@ -40,6 +40,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
+use function PHPUnit\Framework\isEmpty;
+
 class UsersController extends Controller
 {
     public function index(UserDataTables $dataTable)
@@ -676,6 +678,7 @@ class UsersController extends Controller
         $jobStatus         = JobStatus::all();
         $positions         = Position::with(['department.division'])->get();
         $employeeJobs      = $user->employeeJob;
+        $permissionModal   = empty($user->permission_signature);
 
         if (
             ($employeeDetail && $employeeDetail->is_draft == 0) &&
@@ -703,6 +706,7 @@ class UsersController extends Controller
                 'groups',
                 'lines',
                 'jobStatus',
+                'permuissionModal'
             ));
         }
 
@@ -725,6 +729,7 @@ class UsersController extends Controller
             'groups',
             'lines',
             'jobStatus',
+            'permissionModal',
         ));
     }
 
@@ -1476,7 +1481,7 @@ class UsersController extends Controller
                     $lastJob->department_id !== $request->department_id ||
                     $lastJob->division_id !== $request->division_id
                 ) && (
-                    $lastJob->end_date->format('Y-m-d') === $request->end_date
+                    $lastJob->end_date?->format('Y-m-d') === $request->end_date
                 );
 
                 $isPromotion = ($lastJob->user_dakar_role === 'pemagangan' && $request->user_dakar_role === 'karyawan');

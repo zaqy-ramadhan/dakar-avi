@@ -50,10 +50,10 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home.index');
 
 
-// Route::get('kp', function () {
-//     $pdf = Pdf::loadView('documents.sertif')->setPaper('a4', 'landscape');
-//     return $pdf->stream('kp.pdf');
-// });
+Route::get('kp', function () {
+    $pdf = Pdf::loadView('documents.dataPermission')->setPaper('a4', 'potrait');
+    return $pdf->stream('kp.pdf');
+})->name('kp');
 
 #api routes
 Route::get('api/v1/users', [ApiUsersController::class, 'index']);
@@ -184,8 +184,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/import', [ImportController::class, 'index'])->name('import.index');
 
     Route::get('change-password', [UsersController::class, 'changePasswordView'])->name('password');
-    Route::get('reset-password', [UsersController::class, 'resetPasswordView'])->name('reset.password');
+    Route::get('update-password', [UsersController::class, 'resetPasswordView'])->name('update.password');
     Route::post('change-password', [UsersController::class, 'changePassword'])->name('change.password');
+
+    Route::post('permission-signature', [DocumentController::class, 'permissionSignature'])->name('permission.signature');
+    Route::get('personal-data-permission/{id}', [DocumentController::class, 'permissionPDF'])->name('user.data-permission-pdf');
+
 
 
     Route::get('/employee-jobs/data/{id}', function (JobEmploymentDataTables $dataTable) {

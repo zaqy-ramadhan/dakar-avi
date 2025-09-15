@@ -1,15 +1,92 @@
 @extends('layouts.admin')
 
+@push('styles')
+    <style>
+        #signature-pad {
+            border: 0.5px solid #000;
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            touch-action: none;
+            background-color: white;
+        }
+    </style>
+@endpush
+
 @section('content')
+    @if ($permissionModal ?? false)
+        <div class="modal fade show" id="permissionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+            aria-hidden="true" style="display:block;">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myModalLabel">Persetujuan Data Pribadi</h5>
+                        {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> --}}
+                    </div>
+                    <div class="modal-body">
+                        <a href="{{ route('user.data-permission-pdf', $user->id) }}" target="_blank"
+                            class="btn btn-outline-primary mb-4 fs-4 ms-2">Document Preview</a>
+                        <canvas id="signature-pad"></canvas>
+                        <br>
+                        <p class="my-4">
+                            Dengan ini saya menyatakan bahwa saya telah membaca dan menyetujui isi dokumen di atas,
+                            dan bersedia menandatangani secara digital sebagai bukti persetujuan data pribadi saya.
+                        </p>
+                        <form id="signature-form" method="POST" action="{{ route('permission.signature') }}">
+                            @csrf
+                            <input type="hidden" name="signature" id="signature-input">
+                            <button type="button" class="btn btn-outline-danger me-1" id="clear">Hapus</button>
+                            <button class="btn btn-outline-primary" type="submit">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            var myModal = new bootstrap.Modal(document.getElementById('permissionModal'), {
+                backdrop: 'static', 
+                keyboard: false
+            });
+            myModal.show();
+        });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+        <script>
+            console.log(window.SignaturePad);
+            var canvas = document.getElementById('signature-pad');
+
+            if (canvas) {
+                var signaturePad = new SignaturePad(canvas);
+            } else {
+                console.error("Canvas not found!");
+            }
+
+            document.getElementById('clear').addEventListener('click', function() {
+                signaturePad.clear();
+            });
+
+            document.getElementById('signature-form').addEventListener('submit', function(e) {
+                if (!signaturePad.isEmpty()) {
+                    var signatureData = signaturePad.toSVG();
+                    document.getElementById('signature-input').value = signatureData;
+                } else {
+                    e.preventDefault();
+                    alert("Silakan tanda tangan terlebih dahulu!");
+                }
+            });
+        </script>
+    @endif
     <div class="card" style="border-radius: 20px">
         <div class="card-header">
             <p class="fs-8 fw-bold">Personal Data</p>
         </div>
 
+
         <div class="card-body">
 
             <!-- Tampilkan pesan sukses atau error -->
-            @if (session('success'))
+            {{-- @if (session('success'))
                 <div class="alert alert-success alert-dismissable fade show" role="alert">
                     {{ session('success') }}
                     <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -19,7 +96,7 @@
                     {{ session('error') }}
                     <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-            @endif
+            @endif --}}
 
 
 

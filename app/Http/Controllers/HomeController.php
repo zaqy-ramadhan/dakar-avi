@@ -42,7 +42,7 @@ class HomeController extends Controller
             // dd($user->password);
             if ($user && Hash::check('Avi123!', $user->password_hash ?? $user->password)) {
                 // dd('true');
-                return redirect()->route('password');
+                return redirect('/update-password');
             }
 
             if (in_array($authRole, $adminRoles)) {
@@ -168,6 +168,7 @@ class HomeController extends Controller
             $personal_status = $user->personal_status()['status'];
             $personal_date = $user->personal_status()['date'];
             $job = $user->employeeJob->first();
+            $permissionModal   = empty($user->permission_signature);
 
             $contract_status = false;
             $contract_date = null;
@@ -203,7 +204,8 @@ class HomeController extends Controller
                 'inventories_status',
                 'inventories_date',
                 'inumber_status',
-                'inumber_date'
+                'inumber_date',
+                'permissionModal'
             ));
         } catch (\Exception $e) {
             Log::error($e->getMessage());

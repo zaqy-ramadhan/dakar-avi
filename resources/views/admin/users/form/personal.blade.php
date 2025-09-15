@@ -8,6 +8,11 @@
             <div class="text-danger">{{ $message }}</div>
         @enderror
     </div>
+    <div class="col-sm-3">
+        <label for="permission" class="form-label">Dokumen</label><br>
+        <a href="{{ route('user.data-permission-pdf', $user->id) }}" target="_blank"
+                            class="btn btn-outline-primary">Persetujuan Data Pribadi</a>
+    </div>
 </div>
 
 {{-- @dd($employeeDetail->is_draft) --}}
@@ -71,7 +76,7 @@
         <label for="religion" class="form-label">Agama<span class="text-danger">*</span></label>
         <select name="religion" class="form-control" id="religion">
             <option value="">-- Pilih Agama --</option>
-            <option value="Islam" {{ old('religion', strtolower($employeeDetail?->religion) ?? '') == 'islam' ? 'selected' : '' }}>
+            <option value="Islam" {{ old('religion', strtolower($employeeDetail?->religion) ?? '') == 'i    lam' ? 'selected' : '' }}>
                 Islam</option>
             <option value="Kristen"
                 {{ old('religion', strtolower($employeeDetail?->religion) ?? '') == 'kristen' ? 'selected' : '' }}>Kristen</option>
