@@ -33,7 +33,8 @@ class User extends Authenticatable
         'join_date',
         'password',
         'password_hash',
-        'user_status'
+        'user_status',
+        'permission_signature'
     ];
 
     /**
