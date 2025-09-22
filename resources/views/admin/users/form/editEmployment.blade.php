@@ -180,6 +180,29 @@
                             @enderror
                         </div>
                     </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                            <label for="" class="form-label">Employee Transfer</label>
+                            <select class="form-select" name="employee_transfer" id="">
+                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'baru') selected @endif value="baru">Baru</option>
+                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'ekstensi') selected @endif value="ekstensi">Ekstensi</option>
+                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'mutasi') selected @endif value="mutasi">Mutasi</option>
+                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'promosi') selected @endif value="promosi">Promosi</option>
+                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'kartap') selected @endif value="kartap">Kartap</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                            <label for="doc_sk" class="form-label">Dokumen / SK </label>
+                            <input type="file" class="form-control" id="doc_sk" name="doc_sk">
+                            @if ($doc)
+                                <p>File yang ada: <a href="{{ asset('storage/' . $doc->path) }}" target="_blank">Lihat File</a></p>
+                            @endif
+                            @error('doc_sk')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row mb-3">
@@ -202,7 +225,7 @@
                         @enderror
                     </div>
 
-                     <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                    <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
                         <label for="resign_date" class="form-label">Out date</label>
                         <input type="date" class="form-control" id="resign_date" name="resign_date"
                             value="{{ \Carbon\Carbon::parse($job->resign_date ?? null)->format('Y-m-d') }}"
@@ -217,7 +240,8 @@
                         <select name="job_status" id="job_status" class="form-select"
                             @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
                             @foreach ($jobStatus as $status)
-                                <option data-select="{{ $status->job_status_name }}" value="{{ $status->job_status_name }}"
+                                <option data-select="{{ $status->job_status_name }}"
+                                    value="{{ $status->job_status_name }}"
                                     @if (optional($job)->job_status == $status->job_status_name) selected @endif>
                                     {{ Str::ucfirst($status->job_status_name) }}</option>
                             @endforeach
@@ -272,7 +296,7 @@
                     <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
                         <label for="status" class="form-label">Status</label>
                         <select name="status" id="status" class="form-select">
-                            <option value="1" @if ($job->employment_status == 1) selected @endif >Active</option>
+                            <option value="1" @if ($job->employment_status == 1) selected @endif>Active</option>
                             <option value="0" @if ($job->employment_status == 0) selected @endif>Inactive</option>
                         </select>
                         @error('status')
@@ -281,17 +305,18 @@
                     </div>
 
                     <div id="permanent_fields" style="display: block;" class="col-sm-6 col-md-4 col-lg-4 mb-3">
-                            <label for="permanent_docs" class="form-label">Dokumen / SK </label>
-                            <input type="file" class="form-control" id="permanent_docs" name="permanent_docs">
-                            {{-- @dd($user->employeeJob->last()->jobDoc?->where('type', 'permanent_docs')->first()) --}}
-                            @if($user->employeeJob->last()->jobDoc?->where('type', 'permanent_docs')->first())
-                                <p>File yang ada: <a href="{{ asset('storage/' . $job->jobDoc?->where('type', 'permanent_docs')?->first()?->path) }}" target="_blank">Lihat
-                                        File</a></p>
-                            
-                            @endif
-                            @error('permanent_docs')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
+                        <label for="permanent_docs" class="form-label">Dokumen / SK </label>
+                        <input type="file" class="form-control" id="permanent_docs" name="permanent_docs">
+                        {{-- @dd($user->employeeJob->last()->jobDoc?->where('type', 'permanent_docs')->first()) --}}
+                        @if ($user->employeeJob->last()->jobDoc?->where('type', 'permanent_docs')->first())
+                            <p>File yang ada: <a
+                                    href="{{ asset('storage/' . $job->jobDoc?->where('type', 'permanent_docs')?->first()?->path) }}"
+                                    target="_blank">Lihat
+                                    File</a></p>
+                        @endif
+                        @error('permanent_docs')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
 
                 </div>

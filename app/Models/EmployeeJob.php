@@ -36,7 +36,8 @@ class EmployeeJob extends Model
         'employment_status',
         'work_hour_code_id',
         'notes',
-        'onboarding_progress'
+        'onboarding_progress',
+        'employee_transfer'
     ];
 
     protected $casts = [
@@ -127,27 +128,68 @@ class EmployeeJob extends Model
     // }
 
 
+    // public function getContractAttribute()
+    // {
+    //     if ($this->notes === 'Employee Transfer') {
+    //         return 'Mutasi';
+    //     }
+
+    //     $jobs = $this->relationLoaded('siblingContractJobs')
+    //         ? $this->siblingContractJobs
+    //         : $this->siblingContractJobs()->get();
+
+    //     $jobs = $jobs->filter(function ($j) {
+    //         return $j->notes !== 'Employee Transfer';
+    //     });
+
+    //     $index = $jobs->search(fn($job) => $job->id === $this->id);
+
+    //     if ($index !== false) {
+    //         return 'PKWT-' . ($index + 1);
+    //     }
+
+    //     if ($this->job_status === 'Probation') {
+    //         return 'Probation';
+    //     }
+
+    //     return match ($this->user_dakar_role) {
+    //         'pemagangan' => 'Pemagangan',
+    //         'internship' => 'Internship',
+    //         'karyawan'   => 'Tetap',
+    //         default      => 'N/A',
+    //     };
+    // }
+
+    
     public function getContractAttribute()
     {
-        if ($this->notes === 'Employee Transfer') {
-            return 'Mutasi';
-        }
-
-        $jobs = $this->relationLoaded('siblingContractJobs')
+        $allJobs = $this->relationLoaded('siblingContractJobs')
             ? $this->siblingContractJobs
             : $this->siblingContractJobs()->get();
 
-        $jobs = $jobs->filter(function($j){
-             return $j->notes !== 'Employee Transfer';
-        });
+        $pkwtJobs = $allJobs->filter(fn($j) => $j->notes !== 'Employee Transfer')->values();
 
-        $index = $jobs->search(fn($job) => $job->id === $this->id);
-
-        if ($index !== false) {
-            return 'PKWT-' . ($index + 1);
+        if ($this->notes !== 'Employee Transfer') {
+            $index = $pkwtJobs->search(fn($job) => $job->id === $this->id);
+            if ($index !== false) {
+                return 'PKWT-' . ($index + 1);
+            }
         }
 
-        if($this->job_status === 'Probation'){
+        if ($this->notes === 'Employee Transfer') {
+            $previousContract = $pkwtJobs
+                ->filter(fn($job) => $job->id < $this->id) // asumsinya id naik sesuai waktu
+                ->last();
+
+            if ($previousContract) {
+                $prevIndex = $pkwtJobs->search(fn($job) => $job->id === $previousContract->id);
+                if ($prevIndex !== false) {
+                    return 'PKWT-' . ($prevIndex + 1);
+                }
+            }
+        }
+
+        if ($this->job_status === 'Probation') {
             return 'Probation';
         }
 
@@ -158,6 +200,7 @@ class EmployeeJob extends Model
             default      => 'N/A',
         };
     }
+
 
     public function is_active($date = null)
     {

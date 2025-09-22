@@ -1461,7 +1461,7 @@ class UsersController extends Controller
     private function determineJobNotes(EmployeeJob|null $lastJob, string $user_role, Request $request, bool $isFirstJob): string
     {
         // dd($lastJob, $user_role, $request, $isFirstJob);
-        if ($isFirstJob || $lastJob === null) {
+        if ($isFirstJob || $lastJob === null || $request->employee_transfer === 'baru') {
             if ($user_role === 'karyawan') {
                 return match ($request->job_status) {
                     'tetap' => 'New Employee Tetap',
@@ -1473,7 +1473,28 @@ class UsersController extends Controller
             } elseif ($user_role === 'internship') {
                 return 'New Employee Internship';
             }
-        } else {
+        } elseif($request->employee_transfer === 'ekstensi'){
+            if ($user_role === 'karyawan') {
+                return 'Extension Contract';
+            } elseif ($user_role === 'pemagangan') {
+                return 'Employee Pemagangan Extension';
+            } elseif ($user_role === 'internship') {
+                return 'Employee Internship Extension';
+            }
+        } elseif($request->employee_transfer === 'mutasi'){
+            if ($user_role === 'karyawan') {
+                return 'Employee Transfer';
+            }
+        }elseif($request->employee_transfer === 'promosi'){
+            if($user_role === 'karyawan'){
+                return 'Employee Promotion';
+            }
+        }elseif($request->employee_transfer === 'kartap'){
+            if($user_role === 'karyawan'){
+                return 'New Employee Tetap';
+            }
+        //old logic tapi tetap dipakai sebagai antisipasi
+        }else {
             if ($user_role === 'karyawan') {
                 $isTransfer = (
                     $lastJob->position_id !== $request->position_id ||
@@ -1495,7 +1516,7 @@ class UsersController extends Controller
                 if($isTransfer){
                     return 'Employee Transfer';
                 }elseif($isPromotion){
-                    return 'New Empployee Kontrak';
+                    return 'New Employee Kontrak';
                 }elseif($isPermanent){
                     return 'New Employee Tetap';
                 }else{
@@ -1541,7 +1562,8 @@ class UsersController extends Controller
             'employment_status' => 'nullable|exists:dakar_role,id',
             'work_hour' => 'nullable|string|max:255|exists:dakar_work_hour_code,id',
             'npk' => 'required|string|max:20',
-            'permanent_docs' => 'nullable|file|mimes:pdf|max:2048'
+            'doc_sk' => 'nullable|file|mimes:pdf|max:2048',
+            'employee_transfer' => 'nullable|string',
         ]);
 
         try {
@@ -1579,14 +1601,15 @@ class UsersController extends Controller
                 'work_hour_code_id' => $request->work_hour,
                 'notes' => $notes ?? null,
                 'npk' => $request->npk ?? $user->npk,
+                'employee_transfer' => $request->employee_transfer ?? null,
             ]);
 
-            if(isset($request->permanent_docs)){
-                $path = $request->file('permanent_docs')->store("documents/permanent_docs", 'public');
+            if(isset($request->doc_sk)){
+                $path = $request->file('doc_sk')->store("documents/doc_sk", 'public');
 
                 JobDoc::updateOrCreate([
                     'employee_job_id' => $job->id,
-                    'type' => 'permanent_docs',
+                    'type' => 'doc_sk',
                 ], [
                     'path' => $path,
                 ]);
@@ -1640,7 +1663,8 @@ class UsersController extends Controller
             'employment_status' => 'nullable|exists:dakar_role,id',
             'work_hour' => 'nullable|string|max:255|exists:dakar_work_hour_code,id',
             'npk' => 'required|string|max:20',
-            'permanent_docs' => 'nullable|file|mimes:pdf|max:2048'
+            'doc_sk' => 'nullable|file|mimes:pdf|max:2048',
+            'employee_transfer' => 'nullable|string',
         ]);
 
         try {
@@ -1674,14 +1698,15 @@ class UsersController extends Controller
                 'user_dakar_role' => $user_role ?? null,
                 'work_hour_code_id' => $request->work_hour,
                 'notes' => $notes,
+                'employee_transfer' => $request->employee_transfer ?? null,
             ]);
 
-            if(isset($request->permanent_docs)){
-                $path = $request->file('permanent_docs')->store("documents/permanent_docs", 'public');
+            if(isset($request->doc_sk)){
+                $path = $request->file('doc_sk')->store("documents/doc_sk", 'public');
 
                 JobDoc::updateOrCreate([
                     'employee_job_id' => $job->id,
-                    'type' => 'permanent_docs',
+                    'type' => 'doc_sk',
                 ], [
                     'path' => $path,
                 ]);
@@ -1743,6 +1768,7 @@ class UsersController extends Controller
         $types = JobType::all();
         $jobStatus = JobStatus::all();
         $roles = DakarRole::all();
+        $doc = JobDoc::where('employee_job_id', $id)->where('type', 'doc_sk')->first();
 
         return view('admin.users.form.editEmployment', compact(
             'job',
@@ -1761,6 +1787,7 @@ class UsersController extends Controller
             'jobStatus',
             'roles',
             'user',
+            'doc',
         ));
     }
 

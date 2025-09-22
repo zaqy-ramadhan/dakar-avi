@@ -340,7 +340,7 @@
             const employeeStatus = document.getElementById("employment_status");
             const jobStatus = document.getElementById("job_status");
             const internshipFields = document.getElementById("internship_fields");
-            const permanentFields = document.getElementById("permanent_fields");
+            // const permanentFields = document.getElementById("permanent_fields");
 
             function toggleInternFields() {
                 const selectedOption = employeeStatus.options[employeeStatus.selectedIndex];
@@ -354,25 +354,25 @@
                 }
             }
 
-            function toggleTetapFields() {
-                const selectedJobStatus = jobStatus.options[jobStatus.selectedIndex];
-                const selectedJobStatusValue = selectedJobStatus.getAttribute("data-select");
+            // function toggleTetapFields() {
+            //     const selectedJobStatus = jobStatus.options[jobStatus.selectedIndex];
+            //     const selectedJobStatusValue = selectedJobStatus.getAttribute("data-select");
 
-                if (selectedJobStatusValue === "tetap") {
-                    console.log(selectedJobStatusValue);
-                    permanentFields.style.display = "block";
-                } else {
-                    console.log(selectedJobStatusValue);
-                    permanentFields.style.display = "none";
-                }
-            }
+            //     if (selectedJobStatusValue === "tetap") {
+            //         console.log(selectedJobStatusValue);
+            //         permanentFields.style.display = "block";
+            //     } else {
+            //         console.log(selectedJobStatusValue);
+            //         permanentFields.style.display = "none";
+            //     }
+            // }
 
 
             employeeStatus.addEventListener("change", toggleInternFields);
             toggleInternFields();
 
-            jobStatus.addEventListener("change", toggleTetapFields);
-            toggleTetapFields();
+            // jobStatus.addEventListener("change", toggleTetapFields);
+            // toggleTetapFields();
         });
     </script>
 
@@ -520,6 +520,13 @@
                         orderable: true
                     },
                     {
+                        data: 'notes',
+                        name: 'notes',
+                        title: 'Notes',
+                        searchable: true,
+                        orderable: true
+                    },
+                     {
                         data: 'job_status',
                         name: 'job_status',
                         title: 'Job Status',

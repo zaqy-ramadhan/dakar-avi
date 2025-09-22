@@ -14,6 +14,14 @@
 @endphp
 
 <div class="row mb-3">
+       <div class="col-sm-3">
+        {{-- <label for="permission" class="form-label">Dokumen</label><br> --}}
+        <a href="{{ route('user.data-permission-pdf', $user->id) }}" target="_blank"
+                            class="btn btn-outline-primary">Persetujuan Data Pribadi</a>
+    </div>
+</div>
+
+<div class="row mb-3">
     <div class="col-sm-6 col-md-6 col-lg-6 mb-3">
         <label for="diploma_file" class="form-label">Ijazah dan Transkrip Nilai<span class="text-danger">*</span></label>
         <input type="file" class="form-control" id="diploma_file" name="diploma_file">

@@ -8,11 +8,6 @@
             <div class="text-danger">{{ $message }}</div>
         @enderror
     </div>
-    <div class="col-sm-3">
-        <label for="permission" class="form-label">Dokumen</label><br>
-        <a href="{{ route('user.data-permission-pdf', $user->id) }}" target="_blank"
-                            class="btn btn-outline-primary">Persetujuan Data Pribadi</a>
-    </div>
 </div>
 
 {{-- @dd($employeeDetail->is_draft) --}}

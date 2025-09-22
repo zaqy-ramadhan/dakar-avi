@@ -23,6 +23,7 @@ class StaffMovementReportController extends Controller
         'New Employee Internship',
         'Extension Contract',
         'Employee Transfer',
+        'Employee Promotion',
         'Employee Department Mutation',
         'Employee Internship Extension',
         'Employee Pemagangan Extension',
@@ -53,6 +54,7 @@ class StaffMovementReportController extends Controller
                 'New Employee Internship' => $this->newEmployeeIntern($request)->getData(true),
                 'Extension Contract' => $this->EmployeeContractExtension($request)->getData(true),
                 'Employee Transfer' => $this->EmployeeContractPositionChange($request)->getData(true),
+                'Employee Promotion' => $this->EmployeePromotion($request)->getData(true),
                 'Employee Department Mutation' => $this->EmployeeDepartmentMutation($request)->getData(true),
                 'One Year Service' => $this->EmployeeContractLongTerm($request)->getData(true),
                 'Termination' => $this->termination($request)->getData(true),
@@ -60,6 +62,7 @@ class StaffMovementReportController extends Controller
                 'Onboarding Report' => $this->onboardingReport($request)->getData(true),
                 default => collect(),
             };
+
             $export = match ($note) {
                 'New Employee Kontrak', 'New Employee Pemagangan', 'New Employee Tetap' =>
                 collect($employees['data'])->map(fn($item) => [
@@ -94,6 +97,18 @@ class StaffMovementReportController extends Controller
                 ]),
 
                 'Employee Transfer' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Last Department' => $item['last_department'],
+                    'New Department' => $item['department'],
+                    // 'Section' => $item['section'],
+                    'Last Position' => $item['last_position'],
+                    'New Position' => $item['position'],
+                    'Start Date' => $item['start_date'],
+                ]),
+
+                'Employee Promotion' =>
                 collect($employees['data'])->map(fn($item) => [
                     'NPK' => $item['npk'],
                     'Fullname' => $item['fullname'],
@@ -195,6 +210,7 @@ class StaffMovementReportController extends Controller
             'New Employee Internship' => $this->newEmployeeIntern($request),
             'Extension Contract' => $this->EmployeeContractExtension($request),
             'Employee Transfer' => $this->EmployeeContractPositionChange($request),
+            'Employee Promotion' => $this->EmployeePromotion($request),
             'Employee Department Mutation' => $this->EmployeeDepartmentMutation($request),
             'One Year Service' => $this->EmployeeContractLongTerm($request),
             'Termination' => $this->termination($request),
@@ -339,6 +355,48 @@ class StaffMovementReportController extends Controller
 
         $query = EmployeeJob::with(['user', 'position', 'department'])
             ->where('notes', 'Employee Transfer')
+            ->whereHas('user')
+            ->whereBetween('start_date', [$date, $endDate]);
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
+            ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
+            ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
+            // ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
+            ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
+            ->addColumn('last_position', function ($job) {
+                $oldJob = EmployeeJob::with('position')
+                    ->where('user_id', $job->user_id)
+                    ->where('start_date', '<', $job->start_date)
+                    ->orderByDesc('start_date')
+                    ->first();
+
+                return $oldJob?->position?->position_name ?? '-';
+            })
+            ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
+            ->addColumn('last_department', function ($job) {
+                $oldJob = EmployeeJob::with('department')
+                    ->where('user_id', $job->user_id)
+                    ->where('start_date', '<', $job->start_date)
+                    ->orderByDesc('start_date')
+                    ->first();
+                return $oldJob?->department?->department_name ?? '-';
+            })
+            ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
+            ->make(true);
+    }
+
+    public function EmployeePromotion(Request $request)
+    {
+        $date = $request->input('date')
+            ? Carbon::parse($request->input('date'))->startOfMonth()
+            : Carbon::now()->startOfMonth();
+
+        $endDate = $date->copy()->endOfMonth();
+
+        $query = EmployeeJob::with(['user', 'position', 'department'])
+            ->where('notes', 'Employee Promotion')
             ->whereHas('user')
             ->whereBetween('start_date', [$date, $endDate]);
 

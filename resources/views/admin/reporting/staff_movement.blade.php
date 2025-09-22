@@ -18,6 +18,7 @@
                         'Termination',
                         'Extension Contract',
                         'Employee Transfer',
+                        'Employee Promotion',
                         'One Year Service',
                         'Onboarding Report',
                     ];
@@ -82,7 +83,7 @@
                             <th>Duration</th>
                             <th>Length Of Service</th>
                             <th>Status</th>
-                        @elseif($note == 'Employee Transfer')
+                        @elseif($note == 'Employee Transfer' || $note = 'Employee Promotion')
                             <th>Last Department</th>
                             <th>New Department</th>
                             <th>Last Position</th>
@@ -166,6 +167,14 @@
                         <th>Status</th>`;
                     break;
                 case 'Employee Transfer':
+                    extra =
+                        `<th>Last Department</th>
+                        <th>New Department</th>
+                        <th>Last Position</th>
+                        <th>New Position</th>
+                        <th>Start Date</th>`;
+                    break;
+                case 'Employee Promotion':
                     extra =
                         `<th>Last Department</th>
                         <th>New Department</th>
@@ -304,6 +313,19 @@
                     }
                 ],
                 'Employee Transfer': [{
+                        data: 'last_department'
+                    }, {
+                        data: 'department'
+                    }, {
+                        data: 'last_position'
+                    },
+                    {
+                        data: 'position'
+                    }, {
+                        data: 'start_date'
+                    }
+                ],
+                'Employee Promotion': [{
                         data: 'last_department'
                     }, {
                         data: 'department'

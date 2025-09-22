@@ -114,6 +114,12 @@ class JobEmploymentDataTables extends DataTable
                     $q->where('line_name', 'LIKE', "%{$keyword}%");
                 });
             })
+            ->addColumn('notes', function ($job) {
+                return Str::ucfirst($job->employee_transfer) ?? 'N/A';
+            })
+            ->filterColumn('notes', function ($query, $keyword) {
+                $query->where('employee_transfer', 'LIKE', "%{$keyword}%");
+            })
             ->addColumn('job_status', function ($job) {
                 return Str::ucfirst($job->contract) ?? 'N/A';
             })
@@ -273,7 +279,11 @@ class JobEmploymentDataTables extends DataTable
                         </div>'
                     : '';
 
-
+                    if($job->jobDoc?->where('type', 'doc_sk')?->first()){
+                        $skButton = '<a title="Dokumen / SK" href="' . asset('storage/' . $job->jobDoc?->where('type', 'doc_sk')?->first()?->path) . '" target="_blank" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-6"></i> Dokumen / SK</a>';
+                    }else{
+                        $skButton = '';
+                    }
 
                 if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])) {
                     if ($currentRoute === 'job-docs.details') {
@@ -298,6 +308,7 @@ class JobEmploymentDataTables extends DataTable
                             return '
                                 <div class="d-flex">
                                     ' . $kontrakButton . '
+                                    ' . $skButton . '
                                     ' . $kompensasiButton . '
                                     ' . $kerahasiaanButton . '
                                     ' . $deleteButton . '
@@ -313,27 +324,11 @@ class JobEmploymentDataTables extends DataTable
                         ';
                     } elseif ($currentRoute === 'users.index.employment.detail') {
                         if ($job->user_dakar_role === 'karyawan') {
-                            if($job->job_status === 'tetap'){
-                                if($job->jobDoc?->where('type', 'permanent_docs')?->first()){
-                                    $skButton = '<a title="Dokumen / SK" href="' . asset('storage/' . $job->jobDoc?->where('type', 'permanent_docs')?->first()?->path) . '" target="_blank" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-6"></i> Dokumen / SK</a>';
-                                }else{
-                                    $skButton = '';
-                                }
-                                return '
-                                    <div class="d-flex">
-                                    ' . $wageButton . '
-                                    ' . $skButton . '
-                                    ' . $kerahasiaanButton . '
-                                    ' . $kompensasiButton . '
-                                    ' . $offboardButton . '
-                                    ' . $deleteButton . '
-                                </div>
-                                ';
-                            }
                             return '
                                 <div class="d-flex">
                                     ' . $wageButton . '
                                     ' . $kontrakButton . '
+                                    ' . $skButton . '
                                     ' . $kerahasiaanButton . '
                                     ' . $kompensasiButton . '                                    
                                     ' . $skhkButton . '
@@ -346,6 +341,7 @@ class JobEmploymentDataTables extends DataTable
                                 <div class="d-flex">
                                     ' . $wageButton . '                                    
                                     ' . $kontrakButton . '
+                                    ' . $skButton . '
                                     ' . $kerahasiaanButton . '
                                     ' . $sertifButton . '
                                     ' . $offboardButton . '
@@ -381,6 +377,7 @@ class JobEmploymentDataTables extends DataTable
                         return '
                         <div class="d-flex">
                             ' . $kontrakButton . '
+                            ' . $skButton . '
                             ' . $kerahasiaanButton . '
                             ' . $skhkButton . '
                             ' . $sertifButton .  '
@@ -439,6 +436,7 @@ class JobEmploymentDataTables extends DataTable
             Column::make('group')->title('Group'),
             Column::make('line')->title('Line'),
             Column::make('job_status')->title('Job Status'),
+            Column::make('notes')->title('Notes'),
             Column::make('is_active'),
             Column::computed('actions')
                 ->title('Actions')
