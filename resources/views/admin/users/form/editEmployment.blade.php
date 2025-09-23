@@ -183,7 +183,7 @@
 
                     <div class="row mb-3">
                         <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
-                            <label for="" class="form-label">Employee Transfer</label>
+                            <label for="" class="form-label">Employment Note</label>
                             <select class="form-select" name="employee_transfer" id="">
                                 <option @if (optional($user->employeeJob?->last())->employee_transfer == 'baru') selected @endif value="baru">Baru</option>
                                 <option @if (optional($user->employeeJob?->last())->employee_transfer == 'ekstensi') selected @endif value="ekstensi">Ekstensi</option>

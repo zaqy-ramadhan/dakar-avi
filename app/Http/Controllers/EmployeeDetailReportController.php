@@ -38,13 +38,7 @@ class EmployeeDetailReportController extends Controller
             'employeeJob.golongan',
             'employeeDetail',
             'employeeEducations',
-        ])->whereHas('employeeJob', function ($q) use ($endOfMonth) {
-            $q->whereDate('start_date', '<=', $endOfMonth)
-                ->where(function ($q2) use ($endOfMonth) {
-                    $q2->whereNull('resign_date')
-                        ->orWhereDate('resign_date', '>=', $endOfMonth);
-                });
-        })
+        ])->whereHas('employeeJob')
             ->when(
                 request('department'),
                 fn($q, $val) =>
@@ -92,16 +86,16 @@ class EmployeeDetailReportController extends Controller
                             ->where(function ($q2) use ($startOfMonth) {
                                 $q2->whereNull('resign_date')
                                     ->whereNull('end_date')
-                                    ->orWhere('resign_date', '>=', $startOfMonth)
-                                    ->orWhere('end_date', '>=', $startOfMonth);
+                                    ->orWhereDate('resign_date', '>=', $startOfMonth)
+                                    ->orWhereDate('end_date', '>=', $startOfMonth);
                             });
                     } elseif (request('status') === 'inactive') {
                         $qq->whereDate('start_date', '>', $endOfMonth)
                             ->orWhere(function ($q2) use ($startOfMonth) {
-                                $q2->whereNotNull('resign_date')->where('resign_date', '<', $startOfMonth);
+                                $q2->whereNotNull('resign_date')->whereDate('resign_date', '<', $startOfMonth);
                             })
                             ->orWhere(function ($q2) use ($startOfMonth) {
-                                $q2->whereNotNull('end_date')->where('end_date', '<', $startOfMonth);
+                                $q2->whereNotNull('end_date')->whereDate('end_date', '<', $startOfMonth);
                             });
                     }
                 });
