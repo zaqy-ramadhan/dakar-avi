@@ -595,8 +595,8 @@ class StaffMovementReportController extends Controller
             return [
                 'npk' => $user->npk,
                 'fullname' => $user->fullname,
-                'department' => $user->latestEmployeeJob->department->department_name,
-                'position' => $user->latestEmployeeJob->position->position_name,
+                'department' => $user->latestEmployeeJob->department?->department_name ?? 'N/A',
+                'position' => $user->latestEmployeeJob->position?->position_name ?? 'N/A',
                 'start_date' => $user->latestEmployeeJob->start_date ? Carbon::parse((string)$user->latestEmployeeJob->start_date)->isoFormat('D MMMM Y') : 'N/A',
                 'end_date' => $user->latestEmployeeJob->end_date ? Carbon::parse((string)$user->latestEmployeeJob->end_date)->isoFormat('D MMMM Y') : 'N/A',
                 'out_date' => $user->latestEmployeeJob->resign_date ? Carbon::parse((string)$user->latestEmployeeJob->resign_date)->isoFormat('D MMMM Y') : 'N/A',
