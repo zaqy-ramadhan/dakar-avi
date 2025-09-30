@@ -601,7 +601,7 @@ class StaffMovementReportController extends Controller
                 'end_date' => $user->latestEmployeeJob->end_date ? Carbon::parse((string)$user->latestEmployeeJob->end_date)->isoFormat('D MMMM Y') : 'N/A',
                 'out_date' => $user->latestEmployeeJob->resign_date ? Carbon::parse((string)$user->latestEmployeeJob->resign_date)->isoFormat('D MMMM Y') : 'N/A',
                 'reason' => $user->offboarding->reason ? $user->offboarding->reason : 'N/A',
-                'status' => $user->latestEmployeeJob->contract,
+                'status' => $user->latestEmployeeJob?->contract ? $user->latestEmployeeJob->contract : 'N/A',
             ];
         });
 
