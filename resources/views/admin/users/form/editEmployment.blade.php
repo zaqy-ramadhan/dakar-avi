@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
+    @include('admin.users.profileCard')
     {{-- @dd(request('prev')) --}}
     <div class="card" style="border-radius:20px">
         <div class="card-header">
