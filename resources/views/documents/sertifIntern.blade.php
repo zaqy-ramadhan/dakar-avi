@@ -146,7 +146,7 @@
       </p>
 
       <div class="date">
-          <h3>{{ $kontrak->start_date->format('F jS Y') . ' — ' . $kontrak?->resign_date->format('F jS Y') ?? $kontrak->end_date->format('F jS Y') }}</h3>
+          <h3>{{ $kontrak->start_date->format('F jS Y') . ' — ' . Carbon\Carbon::parse($kontrak?->resign_date)->format('F jS Y') ?? $kontrak->end_date->format('F jS Y') }}</h3>
       </div>
       
       <div class="footer-container">
