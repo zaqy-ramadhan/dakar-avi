@@ -43,7 +43,6 @@
                         </li>
                     @endforeach
                 </ul>
-
                 <form method="GET" class="mb-4">
                     <input type="hidden" name="note" value="{{ $note }}">
                     <div class="input-group" style="max-width: fit-content;">
@@ -83,7 +82,7 @@
                             <th>Duration</th>
                             <th>Length Of Service</th>
                             <th>Status</th>
-                        @elseif($note == 'Employee Transfer' || $note = 'Employee Promotion')
+                        @elseif($note == 'Employee Transfer' || $note == 'Employee Promotion')
                             <th>Last Department</th>
                             <th>New Department</th>
                             <th>Last Position</th>
@@ -140,6 +139,7 @@
 @push('scripts')
     <script>
         let currentNote = @json($note);
+        console.log(currentNote);
         let datatable;
 
         function renderTableHeader(note) {
