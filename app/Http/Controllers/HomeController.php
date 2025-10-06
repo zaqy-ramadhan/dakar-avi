@@ -128,7 +128,7 @@ class HomeController extends Controller
                 //     ->values();
 
                 $signatures = JobDoc::with('employeeJob')->where('type', 'contract')->whereNull('first_party_signature')->get();      
-                $compensations = EmployeeJob::whereHas('jobdoc', function($q){
+                $compensations = EmployeeJob::where('employment_status', true)->where('user_dakar_role', 'karyawan')->whereHas('jobdoc', function($q){
                     $q->where('type', 'contract')
                     ->whereNotNull('first_party_signature');
                 })->whereDoesntHave('jobdoc', function($q2){
