@@ -414,16 +414,17 @@
                                     <div class="notification bg-primary rounded-circle"></div>
                                 </a>
                                 @php
-                                    $adminNotifications = [
-                                        'personal_completed' => 'Completed Personal Data',
-                                        'employment_completed' => 'Completed Employment Data',
-                                        'wage_filled' => 'Wage Filled',
-                                        'starterkit_given' => 'Starter Kit Provided',
-                                        'starterkit_accepted' => 'Starter Kit Accepted',
-                                        'contract_signed' => 'Contract Signed',
-                                        'compensation_signed' => 'Compensation Signed',
-                                        'digital_account_given' => 'Digital Account Given',
+                                   $adminNotifications = [
+                                        'personal_completed'      => 'Waiting Employment Data',
+                                        'employment_completed'    => 'Waiting Wage Filling',
+                                        'wage_filled'             => 'Waiting Starter Kit',
+                                        'starterkit_given'        => 'Waiting Starter Kit Acceptance',
+                                        'starterkit_accepted'     => 'Waiting Contract Signing',
+                                        'contract_signed'         => 'Waiting Compensation Signing',
+                                        'compensation_signed'     => 'Waiting Digital Account',
+                                        'digital_account_given'   => 'Completed All Steps',
                                     ];
+
 
                                     $notifications = Auth::user()->adminNotif();
                                 @endphp
