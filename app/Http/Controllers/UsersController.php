@@ -706,7 +706,7 @@ class UsersController extends Controller
                 'groups',
                 'lines',
                 'jobStatus',
-                'permuissionModal'
+                'permissionModal'
             ));
         }
 

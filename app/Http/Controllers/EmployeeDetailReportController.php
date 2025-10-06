@@ -26,9 +26,13 @@ class EmployeeDetailReportController extends Controller
 
     public function index()
     {
-        $date = request('date') ? Carbon::parse(request('date')) : Carbon::now();
-        $startOfMonth = $date->copy()->startOfMonth()->startOfDay();
-        $endOfMonth = $date->copy()->endOfMonth()->endOfDay();
+        $date_from = request('date_from') ? Carbon::parse(request('date_from')) : Carbon::now();
+        $date_to = request('date_to') ? Carbon::parse(request('date_to')) : Carbon::now();
+        $startOfMonth = $date_from;
+        $endOfMonth = $date_to;
+        //$date = request('date') ? Carbon::parse(request('date')) : Carbon::now();
+        // $startOfMonth = $date->copy()->startOfMonth()->startOfDay();
+        // $endOfMonth = $date->copy()->endOfMonth()->endOfDay();
 
         $query = User::with([
             'employeeJob.department',
@@ -103,17 +107,18 @@ class EmployeeDetailReportController extends Controller
 
         $employees = $query->get();
 
-        $employees = $employees->map(function ($employee) use ($date) {
+        $employees = $employees->map(function ($employee) use ($startOfMonth, $endOfMonth) {
             $detail = $employee->employeeDetail;
             $firstJob = $employee->firstEmployeeJob;
-            $job = $employee->currentEmployeeJob($date) ?? $employee->latestEmployeeJob;
+            // $job = $employee->currentEmployeeJob($date) ?? $employee->latestEmployeeJob;
+            $job = $employee->rangeEmployeeJob($startOfMonth, $endOfMonth) ?? $employee->latestEmployeeJob;
             $latestEducation = $employee->latestEducation();
 
             return [
                 'npk' => $employee->npk,
                 'fullname' => $employee->fullname,
                 'gender' => in_array($detail?->gender, [1, '1'], true) ? 'P' : (in_array($detail?->gender, [0, '0'], true) ? 'L' : 'N/A'),
-                'age' => $detail?->age($date) ?? 'N/A',
+                'age' => $detail?->age($endOfMonth) ?? 'N/A',
                 'education' => $latestEducation?->education_level ?? 'N/A',
                 'blood_type' => $detail?->blood_type ?? 'N/A',
                 'join_date' => $employee->join_date
@@ -122,18 +127,18 @@ class EmployeeDetailReportController extends Controller
                 'start_date' => $job?->start_date?->isoFormat('D MMMM Y') ?? 'N/A',
                 'end_date' => $job?->end_date?->isoFormat('D MMMM Y') ?? 'N/A',
                 'duration' => $job?->duration() ?? 'N/A',
-                'LOS' => $employee->LOS($date),
+                'LOS' => $employee->LOS($endOfMonth),
                 'department' => $job?->department?->department_name ?? 'N/A',
                 'employment_status' => Str::ucfirst($job?->user_dakar_role ?? 'N/A'),
                 'job_status' => $job?->contract ?? 'N/A',
                 'job_type' => $job?->jobType?->job_type_name ?? 'N/A',
                 'gol' => $job?->golongan?->golongan_name ?? 'N/A',
-                'status' => $job?->is_active($date) ?? 'inactive',
+                'status' => $job?->is_active_range($startOfMonth, $endOfMonth) ?? 'inactive',
             ];
         });
 
         if (request()->has('export') && request('export') == 'excel') {
-            return Excel::download(new EmployeeExport($employees), 'employee-report-' . $date->isoFormat('MMMM Y') . '.xlsx');
+            return Excel::download(new EmployeeExport($employees), 'employee-report-' . $startOfMonth->isoFormat('MMMM Y') . '-' . $endOfMonth->isoFormat('MMMM Y') . '.xlsx');
         }
 
         if (request()->ajax()) {

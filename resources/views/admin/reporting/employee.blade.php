@@ -76,13 +76,17 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <input type="month" class="form-control" name="date"
+                    <input type="date" class="form-control" name="date_from"  title="Date Start"
                         value="{{ \Carbon\Carbon::now()->format('Y-m') }}">
                 </div>
                 <div class="col-md-2">
+                    <input type="date" class="form-control" name="date_to" title="Date End"
+                        value="{{ \Carbon\Carbon::now()->format('Y-m') }}">
+                </div>
+                <div class="col-md-1">
                     <button type="submit" class="btn btn-primary w-100"><i class="ti ti-filter fs-4"></i> Filter</button>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <button type="button" id="resetFilters" class="btn btn-secondary w-100"><i
                             class="ti ti-reload fs-4"></i> Reset</button>
                 </div>
@@ -138,7 +142,8 @@
                         d.job_type = $('select[name=job_type]').val();
                         d.status = $('select[name=status]').val();
                         d.education = $('select[name=education]').val();
-                        d.date = $('input[name=date]').val();
+                        d.date_from = $('input[name=date_from]').val();
+                        d.date_to = $('input[name=date_to]').val();
                     }
                 },
                 columns: [{

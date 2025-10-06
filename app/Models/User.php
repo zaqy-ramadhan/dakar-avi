@@ -90,7 +90,7 @@ class User extends Authenticatable
 
         if (!$startDate && $this->firstEmployeeJob) {
             $startDate = $this->firstEmployeeJob->start_date;
-        }
+        }   
 
         if ($startDate) {
             $start = \Carbon\Carbon::parse($startDate);
@@ -220,6 +220,36 @@ class User extends Authenticatable
 
                 return $date->greaterThanOrEqualTo($start)
                     && (is_null($end) || $date->lessThanOrEqualTo($end));
+            })
+            ->sortByDesc('start_date')
+            ->first();
+    }
+
+    public function rangeEmployeeJob($date_from = null, $date_to = null)
+    {
+        $date_from = $date_from
+            ? \Carbon\Carbon::parse($date_from)
+            : \Carbon\Carbon::now()->startOfMonth()->startOfDay();
+
+        $date_to = $date_to
+            ? \Carbon\Carbon::parse($date_to)
+            : \Carbon\Carbon::now()->endOfMonth()->endOfDay();
+
+        $jobs = $this->relationLoaded('employeeJob')
+            ? $this->employeeJob
+            : $this->employeeJob()->get();
+
+        return $jobs
+            ->filter(function ($job) use ($date_to, $date_from) {
+                $start = \Carbon\Carbon::parse($job->start_date)->startOfDay(); // 00:00:00
+                $end = $job->resign_date
+                    ? \Carbon\Carbon::parse($job->resign_date)->endOfDay()     // 23:59:59
+                    : ($job->end_date
+                        ? \Carbon\Carbon::parse($job->end_date)->endOfDay()
+                        : null);
+
+                return $date_to->greaterThanOrEqualTo($start)
+                    && (is_null($end) || $date_to->lessThanOrEqualTo($end));
             })
             ->sortByDesc('start_date')
             ->first();

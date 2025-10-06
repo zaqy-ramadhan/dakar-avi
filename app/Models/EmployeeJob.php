@@ -224,6 +224,29 @@ class EmployeeJob extends Model
         }
     }
 
+    public function is_active_range($date_from, $date_to)
+    {
+        $date_from = $date_from ? Carbon::parse($date_from) : Carbon::now();
+        $date_to = $date_to ? Carbon::parse($date_to) : Carbon::now();
+
+        $monthStart = $date_from;
+        $monthEnd = $date_to;
+
+        $start = Carbon::parse($this->start_date)->startOfDay();
+        $end = $this->resign_date
+            ? Carbon::parse($this->resign_date)->endOfDay()
+            : ($this->end_date ? Carbon::parse($this->end_date)->endOfDay() : null);
+
+        if (
+            $start->lessThanOrEqualTo($monthEnd) &&
+            (is_null($end) || $end->greaterThanOrEqualTo($monthStart))
+        ) {
+            return 'active';
+        } else {
+            return 'inactive';
+        }
+    }
+
 
     public function duration()
     {
