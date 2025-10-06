@@ -74,7 +74,7 @@
 @section('content')
     {{-- @dd(Auth::user()->getRole()) --}}
 
-        @if ($permissionModal ?? false)
+    @if ($permissionModal ?? false)
         <div class="modal fade show" id="permissionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
             aria-hidden="true" style="display:block;">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -456,7 +456,7 @@
              <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        Karyawan Pembaruan Seragam - {{ now()->translatedFormat('F Y') }}
+                        Menunggu Tanda Tangan Kontrak
                     </div>
                     <div class="card-body table-responsive">
                         <table class="table text-nowrap mb-0 align-middle">
@@ -465,17 +465,19 @@
                                     <th>Nama</th>
                                     <th>NPK</th>
                                     <th>Department</th>
-                                    <th>Inventaris</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($uniformRefresh as $inventory)
+                                @foreach ($signatures as $s)
                                     <tr>
-                                        <td>{{ $inventory['name'] ?? '-' }}</td>
-                                        <td>{{ $inventory['npk'] ?? '-' }}</td>
-                                        <td>{{ $inventory['department'] ?? '-' }}</td>
+                                        <td>{{ $s->employeeJob?->user?->fullname ?? '-' }}</td>
+                                        <td>{{ $s->employeeJob?->npk ?? '-' }}</td>
+                                        <td>{{ $s->employeeJob?->department?->department_name ?? '-' }}</td>
+                                        <td>{{ $s->employeeJob?->contract ?? '-'}}</td></td>
                                         <td>
-                                            <a href="{{ route('users.index.onboarding.detail', $inventory['id']) }}"
+                                            <a href="{{ route('signature.index', $s->employee_job_id) }}"
                                                 class="btn btn-sm btn-outline-primary"><i
                                                     class="ti ti-clipboard-list"></i></a>
                                         </td>

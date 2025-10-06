@@ -217,7 +217,11 @@ class JobEmploymentDataTables extends DataTable
 
                 $kompensasiButton = '';
                 if ($showKompensasiButton) {
-                    $kompensasiButton = '<a title="Kompensasi" href="' . route("user.kompensasi-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-presentation-analytics fs-6"></i> Kompensasi</a>';
+                    if($job->user_dakar_role === 'karyawan'){
+                        $kompensasiButton = '<a title="Kompensasi" href="' . route("user.kompensasi-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-presentation-analytics fs-6"></i> Kompensasi</a>';
+                    }else{
+                        $kompensasiButton = '';
+                    }
                 }
 
                 $kerahasiaanButton =  $job->id === $job->user->firstEmployeeJob->id

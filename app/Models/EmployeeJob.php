@@ -37,7 +37,8 @@ class EmployeeJob extends Model
         'work_hour_code_id',
         'notes',
         'onboarding_progress',
-        'employee_transfer'
+        'employee_transfer',
+        'npk',
     ];
 
     protected $casts = [

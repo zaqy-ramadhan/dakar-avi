@@ -2,6 +2,11 @@
 
 @section('content')
     {{-- @dd(redirect()->back()) --}}
+    @php
+        if(!isset($type)){
+            $type = 'contract';
+        }
+    @endphp
     <div class="card" style="border-radius: 20px">
         <div class="card-body">
             <a href="{{ redirect()->back()->getTargetUrl() }}" class="btn btn-outline-primary mb-4 fs-4">

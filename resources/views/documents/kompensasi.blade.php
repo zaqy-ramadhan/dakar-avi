@@ -176,7 +176,7 @@
                 <td>{{ $no +=1 }}</td>
                 <td>NPK</td>
                 <td class="space">:</td>
-                <td>{{ $kontrak->npk ?? $kontrak->npk }}</td>
+                <td>{{ $kontrak->npk ?? '-' }}</td>
             </tr>
 
             <tr>

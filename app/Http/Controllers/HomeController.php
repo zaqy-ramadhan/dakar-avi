@@ -6,6 +6,7 @@ use App\Models\DakarRole;
 use App\Models\EmployeeDetail;
 use App\Models\EmployeeJob;
 use App\Models\Inventory;
+use App\Models\JobDoc;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -111,20 +112,22 @@ class HomeController extends Controller
                     ->take(5)
                     ->get();
 
-                $uniformRefresh = Inventory::with(['user', 'item', 'employeeJob.department'])
-                    ->whereHas('item', fn($q) => $q->where('type', 'baju'))
-                    ->whereHas('employeeJob', fn($q) => $q->where('employment_status', true))
-                    ->where('acc_date', '<=', Carbon::now()->subMonths(12))
-                    ->where('status', 'Diterima')
-                    ->get()
-                    ->map(fn($inv) => [
-                        'id' => $inv->user_id,
-                        'npk' => $inv->user->npk,
-                        'name' => $inv->user->fullname,
-                        'department' => optional($inv->employeeJob->department)->department_name ?? 'N/A',
-                    ])
-                    ->unique('id')
-                    ->values();
+                // $uniformRefresh = Inventory::with(['user', 'item', 'employeeJob.department'])
+                //     ->whereHas('item', fn($q) => $q->where('type', 'baju'))
+                //     ->whereHas('employeeJob', fn($q) => $q->where('employment_status', true))
+                //     ->where('acc_date', '<=', Carbon::now()->subMonths(12))
+                //     ->where('status', 'Diterima')
+                //     ->get()
+                //     ->map(fn($inv) => [
+                //         'id' => $inv->user_id,
+                //         'npk' => $inv->user->npk,
+                //         'name' => $inv->user->fullname,
+                //         'department' => optional($inv->employeeJob->department)->department_name ?? 'N/A',
+                //     ])
+                //     ->unique('id')
+                //     ->values();
+
+                $signatures = JobDoc::with('employeeJob')->where('type', ['contract', 'kompensasi'])->whereNull('first_party_signature')->get();                
 
                 $birthdays = EmployeeDetail::with(['user.latestEmployeeJob.department'])
                     ->whereMonth('birth_date', Carbon::now()->month)
@@ -152,7 +155,8 @@ class HomeController extends Controller
                     'jobType',
                     'departments',
                     'expiredThisMonth',
-                    'uniformRefresh',
+                    'signatures',
+                    //'uniformRefresh',
                     'birthdays',
                     'uncomplete'
                 ));

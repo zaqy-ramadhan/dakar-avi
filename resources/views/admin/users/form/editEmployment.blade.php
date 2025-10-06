@@ -258,7 +258,7 @@
                             @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
                             @foreach ($roles as $role)
                                 <option data-select = "{{ $role->role_name }}" value="{{ $role->id }}"
-                                    @if (optional($user->dakarRole->first())->role_name == $role->role_name) selected @endif>
+                                    @if (optional($job)->user_dakar_role == $role->role_name) selected @endif>
                                     {{ Str::ucfirst($role->role_name) }}
                                 </option>
                             @endforeach
@@ -275,7 +275,7 @@
                             <option value="">Select Work Hour</option>
                             @foreach ($workHour as $code)
                                 <option data-select = "{{ $code->work_hour }}" value="{{ $code->id }}"
-                                    @if (optional($user->latestEmployeeJob)->work_hour_code_id == $code->id) selected @endif>
+                                    @if (optional($job)->work_hour_code_id == $code->id) selected @endif>
                                     {{ Str::ucfirst($code->work_hour) }}
                                 </option>
                             @endforeach
@@ -284,11 +284,10 @@
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
-
                     <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
                         <label for="npk" class="form-label">Update NPK</label>
                         <input type="text" class="form-control" id="npk" name="npk"
-                            value="{{ $user->npk }}">
+                            value="{{ $job->npk }}">
                         @error('npk')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -308,8 +307,8 @@
                     <div id="permanent_fields" style="display: block;" class="col-sm-6 col-md-4 col-lg-4 mb-3">
                         <label for="permanent_docs" class="form-label">Dokumen / SK </label>
                         <input type="file" class="form-control" id="permanent_docs" name="permanent_docs">
-                        {{-- @dd($user->employeeJob->last()->jobDoc?->where('type', 'permanent_docs')->first()) --}}
-                        @if ($user->employeeJob->last()->jobDoc?->where('type', 'permanent_docs')->first())
+                        {{-- @dd($job->jobDoc?->where('type', 'permanent_docs')->first()) --}}
+                        @if ($job->jobDoc?->where('type', 'permanent_docs')->first())
                             <p>File yang ada: <a
                                     href="{{ asset('storage/' . $job->jobDoc?->where('type', 'permanent_docs')?->first()?->path) }}"
                                     target="_blank">Lihat
@@ -390,11 +389,11 @@
 
             // Ambil data lama dari Blade
             const oldDivisionId =
-                "{{ optional($user->employeeJob->last())->division_id }}";
+                "{{ optional($job)->division_id }}";
             const oldDepartmentId =
-                "{{ optional($user->employeeJob->last())->department_id }}";
-            const oldPositionId = "{{ optional($user->employeeJob->last())->position_id }}";
-            const oldSectionId = "{{ optional($user->employeeJob->last())->section_id }}";
+                "{{ optional($job)->department_id }}";
+            const oldPositionId = "{{ optional($job)->position_id }}";
+            const oldSectionId = "{{ optional($job)->section_id }}";
 
             // Inisialisasi Select2
             function initSelect2(element) {

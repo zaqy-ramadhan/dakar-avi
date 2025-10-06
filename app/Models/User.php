@@ -638,7 +638,7 @@ class User extends Authenticatable
                 $message = $step['message'] ?? $message;
 
                 if($job->user_dakar_role != 'karyawan'){
-                    if($progress === 85){
+                    if($progress === 68){
                         $progress = 100;
                         $message = '🎉 Onboarding completed!';
                     }

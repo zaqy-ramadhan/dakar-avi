@@ -216,19 +216,43 @@
                             location.reload();
                         });
                     },
+                    // error: function(xhr) {
+                    //     let errorMessage = 'Failed to save user details. Please try again.';
+                    //     if (xhr.responseJSON && xhr.responseJSON.message) {
+                    //         errorMessage = xhr.responseJSON.message;
+                    //     }
+                    //     Swal.fire({
+                    //         icon: 'error',
+                    //         title: 'Error!',
+                    //         text: errorMessage,
+                    //     });
+
+                    //     $('#submitBtn').prop('disabled', false);
+                    // }
                     error: function(xhr) {
                         let errorMessage = 'Failed to save user details. Please try again.';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message;
+
+                        if (xhr.responseJSON) {
+                            if (xhr.responseJSON.errors) {
+                                // Gabungkan semua pesan validasi jadi satu teks
+                                errorMessage = xhr.responseJSON.errors.join('\n');
+                            } else if (xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
                         }
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
                             text: errorMessage,
+                            customClass: {
+                                popup: 'swal-wide'
+                            }
                         });
 
                         $('#submitBtn').prop('disabled', false);
                     }
+
                 });
             });
         });

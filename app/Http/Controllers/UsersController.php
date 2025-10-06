@@ -39,6 +39,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -1082,6 +1083,15 @@ class UsersController extends Controller
                 'message' => 'User detail created successfully',
                 'success' => 'User detail created successfully.'
             ], 200);
+        } catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+
+            Log::error('Validation failed: ' . json_encode($errors));
+
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $errors,
+            ], 422);
         } catch (\Exception $e) {
             // DB::rollBack();
 
@@ -1579,6 +1589,7 @@ class UsersController extends Controller
 
             $notes = $this->determineJobNotes($lastJob, $user_role, $request, (!$lastJob));
             $user = User::findOrFail($id);
+            // dd($request);
 
             $job = EmployeeJob::create([
                 'user_id' => $id,
@@ -1699,6 +1710,7 @@ class UsersController extends Controller
                 'work_hour_code_id' => $request->work_hour,
                 'notes' => $notes,
                 'employee_transfer' => $request->employee_transfer ?? null,
+                'npk' => $request->npk ?? $user->npk,
             ]);
 
             if(isset($request->doc_sk)){
@@ -1713,9 +1725,11 @@ class UsersController extends Controller
             }
 
             if ($request->employment_status) {
-                $user->dakarRole()->sync([$request->employment_status]);
-                $user->npk = $request->npk;
-                $user->save();
+                if($request->status == true){
+                    $user->dakarRole()->sync([$request->employment_status]);
+                    $user->npk = $request->npk;
+                    $user->save();
+                }
             }
 
             DB::commit();
