@@ -4,7 +4,7 @@
     {{-- @dd(redirect()->back()) --}}
     @php
         if(!isset($type)){
-            $type = 'contract';
+             $type = request('type'); 
         }
     @endphp
     <div class="card" style="border-radius: 20px">

@@ -127,7 +127,13 @@ class HomeController extends Controller
                 //     ->unique('id')
                 //     ->values();
 
-                $signatures = JobDoc::with('employeeJob')->where('type', ['contract', 'kompensasi'])->whereNull('first_party_signature')->get();                
+                $signatures = JobDoc::with('employeeJob')->where('type', 'contract')->whereNull('first_party_signature')->get();      
+                $compensations = EmployeeJob::whereHas('jobdoc', function($q){
+                    $q->where('type', 'contract')
+                    ->whereNotNull('first_party_signature');
+                })->whereDoesntHave('jobdoc', function($q2){
+                    $q2->where('type', 'kompensasi');
+                })->get();
 
                 $birthdays = EmployeeDetail::with(['user.latestEmployeeJob.department'])
                     ->whereMonth('birth_date', Carbon::now()->month)
@@ -156,6 +162,7 @@ class HomeController extends Controller
                     'departments',
                     'expiredThisMonth',
                     'signatures',
+                    'compensations',
                     //'uniformRefresh',
                     'birthdays',
                     'uncomplete'

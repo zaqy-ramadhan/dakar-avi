@@ -422,7 +422,7 @@
                                         'starterkit_accepted'     => 'Waiting Contract Signing',
                                         'contract_signed'         => 'Waiting Compensation Signing',
                                         'compensation_signed'     => 'Waiting Digital Account',
-                                        'digital_account_given'   => 'Completed All Steps',
+                                        // 'digital_account_given'   => 'Completed All Steps',
                                     ];
 
 

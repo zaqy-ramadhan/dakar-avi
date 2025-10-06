@@ -477,7 +477,43 @@
                                         <td>{{ $s->employeeJob?->department?->department_name ?? '-' }}</td>
                                         <td>{{ $s->employeeJob?->contract ?? '-'}}</td></td>
                                         <td>
-                                            <a href="{{ route('signature.index', $s->employee_job_id) }}"
+                                            <a href="{{ route('signature.index', ['id' => $s->employee_job_id, 'type' => 'contract']) }}"
+                                                class="btn btn-sm btn-outline-primary"><i
+                                                    class="ti ti-clipboard-list"></i></a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+             <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Menunggu Tanda Tangan Data Kompensasi
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table text-nowrap mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>NPK</th>
+                                    <th>Department</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($compensations as $c)
+                                    <tr>
+                                        <td>{{ $s->user?->fullname ?? '-' }}</td>
+                                        <td>{{ $s->npk ?? '-' }}</td>
+                                        <td>{{ $s->department?->department_name ?? '-' }}</td>
+                                        <td>{{ $s->contract ?? '-'}}</td></td>
+                                        <td>
+                                            <a href="{{ route('signature.index', ['id' => $s->employee_job_id, 'type' => 'kompensasi']) }}"
                                                 class="btn btn-sm btn-outline-primary"><i
                                                     class="ti ti-clipboard-list"></i></a>
                                         </td>
