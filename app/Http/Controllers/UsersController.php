@@ -1711,6 +1711,7 @@ class UsersController extends Controller
                 'notes' => $notes,
                 'employee_transfer' => $request->employee_transfer ?? null,
                 'npk' => $request->npk ?? $user->npk,
+                'employment_status' => $request->status ?? false,
             ]);
 
             if(isset($request->doc_sk)){
