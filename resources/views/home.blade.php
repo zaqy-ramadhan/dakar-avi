@@ -508,12 +508,12 @@
                             <tbody>
                                 @foreach ($compensations as $c)
                                     <tr>
-                                        <td>{{ $s->user?->fullname ?? '-' }}</td>
-                                        <td>{{ $s->npk ?? '-' }}</td>
-                                        <td>{{ $s->department?->department_name ?? '-' }}</td>
-                                        <td>{{ $s->contract ?? '-'}}</td></td>
+                                        <td>{{ $c->user?->fullname ?? '-' }}</td>
+                                        <td>{{ $c->npk ?? '-' }}</td>
+                                        <td>{{ $c->department?->department_name ?? '-' }}</td>
+                                        <td>{{ $c->contract ?? '-'}}</td></td>
                                         <td>
-                                            <a href="{{ route('signature.index', ['id' => $s->employee_job_id, 'type' => 'kompensasi']) }}"
+                                            <a href="{{ route('signature.index', ['id' => $c->employee_job_id, 'type' => 'kompensasi']) }}"
                                                 class="btn btn-sm btn-outline-primary"><i
                                                     class="ti ti-clipboard-list"></i></a>
                                         </td>
