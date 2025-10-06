@@ -186,6 +186,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('change-password', [UsersController::class, 'changePasswordView'])->name('password');
     Route::get('update-password', [UsersController::class, 'resetPasswordView'])->name('update.password');
     Route::post('change-password', [UsersController::class, 'changePassword'])->name('change.password');
+    Route::get('reset-password/{id}', [UsersController::class, 'resetPasswordbyAdmin'])->name('reset.password');
+
 
     Route::post('permission-signature', [DocumentController::class, 'permissionSignature'])->name('permission.signature');
     Route::get('personal-data-permission/{id}', [DocumentController::class, 'permissionPDF'])->name('user.data-permission-pdf');

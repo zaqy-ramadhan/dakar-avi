@@ -1892,6 +1892,22 @@ class UsersController extends Controller
         }
     }
 
+    public function resetPasswordbyAdmin($id){
+        try{
+            $user = User::findOrFail($id);
+            $user->update([
+                'password_hash' => bcrypt('Avi123!'),
+                'password' => bcrypt('Avi123!'),
+            ]);
+
+            return back()->with('success', 'Password successfully reset.');
+
+        }catch(\Exception $e){
+            return back()->with('error', 'An error occurred while resetting the password. ' . $e->getMessage());
+        }
+
+    }
+
     public function destroy($id)
     {
         try {
