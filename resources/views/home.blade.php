@@ -513,7 +513,7 @@
                                         <td>{{ $c->department?->department_name ?? '-' }}</td>
                                         <td>{{ $c->contract ?? '-'}}</td></td>
                                         <td>
-                                            <a href="{{ route('signature.index', ['id' => $c->employee_job_id, 'type' => 'kompensasi']) }}"
+                                            <a href="{{ route('signature.index', ['id' => $c->id, 'type' => 'kompensasi']) }}"
                                                 class="btn btn-sm btn-outline-primary"><i
                                                     class="ti ti-clipboard-list"></i></a>
                                         </td>
