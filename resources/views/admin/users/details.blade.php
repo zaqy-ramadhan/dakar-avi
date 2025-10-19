@@ -216,27 +216,65 @@
                             location.reload();
                         });
                     },
+
                     // error: function(xhr) {
                     //     let errorMessage = 'Failed to save user details. Please try again.';
-                    //     if (xhr.responseJSON && xhr.responseJSON.message) {
-                    //         errorMessage = xhr.responseJSON.message;
+
+                    //     if (xhr.responseJSON) {
+                    //         console.log('1', xhr.responseJSON);
+                    //         if (xhr.responseJSON.errors) {
+                    //             console.log('2', xhr.responseJSON.errors);
+                    //             errorMessage = xhr.responseJSON.errors.join('\n');
+                    //         } else if (xhr.responseJSON.message) {
+                    //             console.log('3', xhr.responseJSON.message);
+                    //             errorMessage = xhr.responseJSON.message;
+                    //         }
                     //     }
+
                     //     Swal.fire({
                     //         icon: 'error',
                     //         title: 'Error!',
                     //         text: errorMessage,
+                    //         customClass: {
+                    //             popup: 'swal-wide'
+                    //         }
                     //     });
 
                     //     $('#submitBtn').prop('disabled', false);
                     // }
+
                     error: function(xhr) {
                         let errorMessage = 'Failed to save user details. Please try again.';
 
                         if (xhr.responseJSON) {
-                            if (xhr.responseJSON.errors) {
-                                // Gabungkan semua pesan validasi jadi satu teks
-                                errorMessage = xhr.responseJSON.errors.join('\n');
+                            if (Array.isArray(xhr.responseJSON.errors)) {
+                                // Jika errors berupa array langsung
+                                const formattedErrors = xhr.responseJSON.errors
+                                    .map(err => `<li>${err}</li>`)
+                                    .join('');
+
+                                errorMessage = `
+                                    <div style="text-align:left">
+                                        <p><b>Missing data detected.</b><br>Fill in the empty section to continue:</p>
+                                        <ul style="margin-top:8px;">${formattedErrors}</ul>
+                                    </div>
+                                `;
+                            } else if (xhr.responseJSON.errors) {
+                                // Jika errors berupa object {field: [messages]}
+                                let formattedErrors = '';
+                                for (const [field, messages] of Object.entries(xhr.responseJSON.errors)) {
+                                    messages.forEach(msg => {
+                                        formattedErrors += `<li>${msg}</li>`;
+                                    });
+                                }
+                                errorMessage = `
+                                    <div style="text-align:left">
+                                        <p><b>Missing data detected.</b><br>Fill in the empty section to continue:</p>
+                                        <ul style="margin-top:8px;">${formattedErrors}</ul>
+                                    </div>
+                                `;
                             } else if (xhr.responseJSON.message) {
+                                // Jika hanya ada message umum
                                 errorMessage = xhr.responseJSON.message;
                             }
                         }
@@ -244,7 +282,7 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
-                            text: errorMessage,
+                            html: errorMessage, // gunakan html agar list tampil rapi
                             customClass: {
                                 popup: 'swal-wide'
                             }
@@ -252,6 +290,7 @@
 
                         $('#submitBtn').prop('disabled', false);
                     }
+
 
                 });
             });
