@@ -109,6 +109,20 @@ class UserDataTables extends DataTable
                 $resetpass = route('reset.password', $row->id);
                 $jobDocsUrl = route('users.index.job.documents.details', $row->id);
                 $currentRoute = request()->route()->getName();
+                
+                $resetButton = '';
+                if(Auth::user()->getRole() == 'admin')
+                {
+                    $resetButton = 
+                    '
+                     <a href="' . $resetpass . '"
+                            class="btn btn-sm btn-outline-warning m-1"
+                            title="Reset Password"
+                            onclick="return confirm(`Apakah Anda yakin ingin mereset password user ini?`)">
+                            <i class="ti ti-lock fs-6"></i>
+                            </a>
+                    ';
+                }
 
                 if (Auth::user()->getRole() == 'admin 4') {
                     $buttons = '<a href="' . $employmentUrl . '" class="btn btn-sm btn-outline-primary m-1" title="Employment"><i class="ti ti-script fs-6" ></i><a/>';
@@ -117,12 +131,7 @@ class UserDataTables extends DataTable
                     <a href="' . $detailUrl . '" class="btn btn-sm btn-outline-success m-1" title="User Details"><i class="ti ti-list-details fs-6"></i></a>
                     <a href="' . $employmentUrl . '" class="btn btn-sm btn-outline-primary m-1" title="Employment"><i class="ti ti-script fs-6" ></i><a/>       
                     <a href="' . $offboardingUrl . '" class="btn btn-sm btn-outline-warning m-1" title="Proceed Offboarding"><i class="ti ti-briefcase-off fs-6" ></i><a/>
-                    <a href="' . $resetpass . '"
-                        class="btn btn-sm btn-outline-warning m-1"
-                        title="Reset Password"
-                        onclick="return confirm(`Apakah Anda yakin ingin mereset password user ini?`)">
-                        <i class="ti ti-lock fs-6"></i>
-                        </a>
+                    ' . $resetButton . '
                     ';
                 }
 
