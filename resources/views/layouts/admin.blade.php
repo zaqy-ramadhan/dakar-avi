@@ -217,6 +217,16 @@
                                         <span class="hide-menu">Employee Birthday</span>
                                     </a>
                                 </li>
+
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link {{ Request::is('*payroll-pemagangan*') ? 'active' : '' }}"
+                                        href="/payroll-pemagangan" aria-expanded="false">
+                                        <span>
+                                            <i class="ti ti-cash-banknote"></i>
+                                        </span>
+                                        <span class="hide-menu">Payroll Pemagangan</span>
+                                    </a>
+                                </li>
                             </ul>
                             <ul id="sidebarnav">
                                 <li class="nav-small-cap">

@@ -52,7 +52,7 @@ class PayrollController extends Controller
                 ->addColumn('total_salary', fn($p) => 'Rp ' . number_format($p->total_salary, 0, ',', '.'))
                 ->addColumn('action', function ($p) {
                     return '
-                        <a href="' . route('payroll.edit', $p->id) . '" class="btn btn-sm btn-primary">Detail</a>
+                        <a href="' . route('payroll.edit', $p->id) . '" class="btn btn-sm btn-outline-warning" title="Edit Data"><i class="ti ti-edit fs-4"></i></a>
                         ';
                     // <a href="' . route('payroll.export', $p->id) . '" class="btn btn-sm btn-success">Export</a>
                 })
