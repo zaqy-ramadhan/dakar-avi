@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\UniformRefreshController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +41,7 @@ use App\Http\Controllers\ExpiredContractController;
 use App\Http\Controllers\JoinedEmployeeController;
 use App\Http\Controllers\OffboardingReasonController;
 use App\Http\Controllers\StaffMovementReportController;
+use App\Models\Payroll;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
@@ -148,8 +150,16 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/offboarding/{id}', [OffboardingController::class, 'store'])->name('offboarding.store');
         Route::put('/offboarding/{id}', [OffboardingController::class, 'update'])->name('offboarding.update');
 
+        Route::get('/payroll-pemagangan', [PayrollController::class, 'index'])->name('payroll.index');
+        Route::get('/payroll-pemagangan/edit/{id}', [PayrollController::class, 'edit'])->name('payroll.edit');
+        Route::get('/payroll-pemagangan/create', [PayrollController::class, 'create'])->name('payroll.create');
+        Route::post('/payroll-pemagangan', [PayrollController::class, 'store'])->name('payroll.store');
+        Route::put('/payroll-pemagangan/{id}', [PayrollController::class, 'update'])->name('payroll.update');
+
+
+
         //seeding role to users
-        Route::get('assign-role', [UsersController::class, 'assignRole']);
+        //Route::get('assign-role', [UsersController::class, 'assignRole']);
     });
 
     #export pdf
