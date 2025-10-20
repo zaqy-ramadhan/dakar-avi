@@ -155,6 +155,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/payroll-pemagangan/create', [PayrollController::class, 'create'])->name('payroll.create');
         Route::post('/payroll-pemagangan', [PayrollController::class, 'store'])->name('payroll.store');
         Route::put('/payroll-pemagangan/{id}', [PayrollController::class, 'update'])->name('payroll.update');
+        Route::delete('/payroll-pemagangan/{id}', [PayrollController::class, 'destroy'])->name('payroll.destroy');
+
 
 
 

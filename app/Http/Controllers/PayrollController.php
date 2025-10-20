@@ -51,10 +51,16 @@ class PayrollController extends Controller
                 ->addColumn('total_employee', fn($p) => $p->payroll_detail_count)
                 ->addColumn('total_salary', fn($p) => 'Rp ' . number_format($p->total_salary, 0, ',', '.'))
                 ->addColumn('action', function ($p) {
-                    return '
-                        <a href="' . route('payroll.edit', $p->id) . '" class="btn btn-sm btn-outline-warning" title="Edit Data"><i class="ti ti-edit fs-4"></i></a>
-                        ';
-                    // <a href="' . route('payroll.export', $p->id) . '" class="btn btn-sm btn-success">Export</a>
+                    $editButton = '<a href="' . route('payroll.edit', $p->id) . '" class="btn btn-sm btn-outline-warning me-1" title="Edit Data"><i class="ti ti-edit fs-4"></i></a>';
+                    $deleteButton = '
+                        <form action="' . route('payroll.destroy', $p->id) . '" method="POST" onsubmit="return confirm(\'Are you sure you want to delete this payroll data?\');" style="display:inline;">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Data"><i class="ti ti-trash fs-4"></i></button>
+                        </form>
+                    ';
+
+                    return '<div class="d-flex">' . $editButton . $deleteButton . '</div>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -354,8 +360,19 @@ class PayrollController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Payroll $payroll)
+    public function destroy($id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $payroll = Payroll::findOrFail($id);
+            $payroll->payrollDetail()->delete();
+            $payroll->delete();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Payroll and its details have been deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'An error occurred while deleting the data: ' . $e->getMessage())->withInput();
+        }
     }
 }
