@@ -160,10 +160,8 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/payroll-pemagangan/{id}', [PayrollController::class, 'update'])->name('payroll.update');
         Route::delete('/payroll-pemagangan/{id}', [PayrollController::class, 'destroy'])->name('payroll.destroy');
         Route::post('/payroll/calculate-workdays', [PayrollController::class, 'calculateWorkdays'])->name('payroll.calculateWorkdays');
-
-
-
-
+        
+        Route::post('/get-pemagangan', [PayrollController::class, 'getPemagangan']);
 
         //seeding role to users
         //Route::get('assign-role', [UsersController::class, 'assignRole']);

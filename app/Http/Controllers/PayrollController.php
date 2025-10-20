@@ -410,4 +410,60 @@ class PayrollController extends Controller
             'workdays' => $workdays,
         ]);
     }
+
+    public function getPemagangan(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date'   => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $start = Carbon::parse($request->start_date);
+        $end   = Carbon::parse($request->end_date);
+
+        $employee = User::whereHas('latestEmployeeJob', function ($q) use ($start, $end) {
+            $q->where('user_dakar_role', '!=', 'karyawan')
+                ->where(function ($sub) use ($start, $end) {
+                    $sub->whereDate('start_date', '<=', $end)
+                        ->where(function ($inner) use ($start) {
+                            $inner->whereNull('resign_date')
+                                ->orWhereDate('resign_date', '>=', $start);
+                        });
+                });
+        })
+            ->with([
+                'latestEmployeeJob.jobWageAllowance' => function ($q) {
+                    $q->where('type', 'Uang Saku');
+                },
+                'latestEmployeeJob.position',
+                'latestEmployeeJob.department',
+            ])
+            ->get()
+            ->map(function ($user) {
+                $wage = $user->latestEmployeeJob->jobWageAllowance[0]?->amount ?? 0;
+                $basic_salary = (int) preg_replace('/\D/', '', $wage);
+                $job = $user->latestEmployeeJob;
+
+                if ($job->resign_date) {
+                    $status = 'Inactive - ' . Carbon::parse($job->resign_date)->format('d M Y');
+                } else {
+                    $status = 'Active';
+                }
+
+                return [
+                    'id'           => $user->id,
+                    'npk'          => $user->npk,
+                    'name'         => $user->fullname,
+                    'position'     => $job->position?->position_name ?? '-',
+                    'department'   => $job->department?->department_name ?? '-',
+                    'basic_salary' => $basic_salary,
+                    'status'       => $status,
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => $employee
+        ]);
+    }
 }

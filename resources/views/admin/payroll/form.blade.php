@@ -74,6 +74,108 @@
             let mode = "{{ $mode ?? 'create' }}"; // 'create', 'edit', 'view'
             let payroll = @json($payroll ?? null);
 
+            $('#start_date, #end_date').on('change', function() {
+                if (mode === 'view') return;
+
+                let start_date = $('#start_date').val();
+                let end_date = $('#end_date').val();
+
+                if (start_date && end_date) {
+                    fetchPemagangan(start_date, end_date)
+                        .then(() => {
+                            return calculateWorkdays(start_date, end_date);
+                        })
+                        .then(() => {
+                            console.log('✅ Pemagangan & Workdays selesai diproses');
+                        })
+                        .catch(err => {
+                            console.error('❌ Error:', err);
+                        });
+                } else {
+                    employees = @json($employee ?? []);
+                }
+            });
+
+            function fetchPemagangan(start_date, end_date) {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: '/get-pemagangan',
+                        type: 'POST',
+                        data: {
+                            start_date: start_date,
+                            end_date: end_date,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                employees = response.data;
+                                console.log('✅ Employees updated from API:', employees);
+                                refreshEmployeeDropdowns();
+                                resolve();
+                            } else {
+                                console.warn('⚠️ Response tidak valid:', response);
+                                resolve();
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('❌ Gagal ambil data pemagangan:', xhr.responseText);
+                            employees = @json($employee ?? []);
+                            reject(xhr);
+                        }
+                    });
+                });
+            }
+
+            function calculateWorkdays(start_date, end_date) {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: "{{ route('payroll.calculateWorkdays') }}",
+                        type: "POST",
+                        data: {
+                            start_date: start_date,
+                            end_date: end_date,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(res) {
+                            if (res.success) {
+                                let weekdays = res.workdays;
+                                $('.workdays').val(weekdays);
+                                $('#items-container tr').each(function() {
+                                    calculateTotal($(this));
+                                });
+                                resolve();
+                            } else {
+                                reject('Response tidak valid');
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error(xhr.responseText);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: 'Gagal menghitung hari kerja.'
+                            });
+                            reject(xhr);
+                        }
+                    });
+                });
+            }
+
+            function refreshEmployeeDropdowns() {
+                $('.employeeSelect').each(function() {
+                    const selectedId = $(this).val();
+                    $(this).html(createEmpDropdown(selectedId));
+                });
+
+                $('#items-container').empty();
+
+                employees.forEach(emp => {
+                    addItem(emp.id);
+                    let lastRow = $('#items-container tr').last();
+                    lastRow.find('.employeeSelect').val(emp.id).trigger('change');
+                });
+            }
+
             if ((mode === 'edit' || mode === 'view') && payroll && Array.isArray(payroll.payroll_detail)) {
                 payroll.payroll_detail.forEach(detail => {
                     const exists = employees.some(e => String(e.id) === String(detail.user_id));
@@ -343,42 +445,6 @@
                 return count;
             }
 
-            $('#start_date, #end_date').on('change', function() {
-                if (mode === 'view') return;
-
-                let startDate = $('#start_date').val();
-                let endDate = $('#end_date').val();
-
-                if (startDate && endDate) {
-                    $.ajax({
-                        url: "{{ route('payroll.calculateWorkdays') }}",
-                        type: "POST",
-                        data: {
-                            start_date: startDate,
-                            end_date: endDate,
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function(res) {
-                            if (res.success) {
-                                let weekdays = res.workdays;
-                                $('.workdays').val(weekdays);
-                                $('#items-container tr').each(function() {
-                                    calculateTotal($(this));
-                                });
-                            }
-                        },
-                        error: function(xhr) {
-                            console.error(xhr.responseText);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal!',
-                                text: 'Gagal menghitung hari kerja.'
-                            });
-                        }
-                    });
-                }
-            });
-
             // --- submit ---
             $.ajaxSetup({
                 headers: {
@@ -401,7 +467,8 @@
                     if (userId) {
                         payload.details.push({
                             user_id: userId,
-                            user_name: row.find('.employeeSelect option:selected').text().trim(),
+                            user_name: row.find('.employeeSelect option:selected').text()
+                                .trim(),
                             npk: row.find('.npk').val(),
                             work_days: row.find('.workdays').val(),
                             attendance: row.find('.attendance').val(),
