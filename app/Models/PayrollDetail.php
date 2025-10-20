@@ -16,7 +16,8 @@ class PayrollDetail extends Model
         'total_attend',
         'basic_salary',
         'total_salary',
-        'note'
+        'note',
+        'user_name'
     ];
 
     public function payroll()

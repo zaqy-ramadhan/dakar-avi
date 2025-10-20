@@ -74,6 +74,21 @@
             let mode = "{{ $mode ?? 'create' }}"; // 'create', 'edit', 'view'
             let payroll = @json($payroll ?? null);
 
+            if ((mode === 'edit' || mode === 'view') && payroll && Array.isArray(payroll.payroll_detail)) {
+                payroll.payroll_detail.forEach(detail => {
+                    const exists = employees.some(e => String(e.id) === String(detail.user_id));
+                    if (!exists) {
+                        employees.push({
+                            id: detail.user_id,
+                            name: detail.user_name || `Nonaktif - ID ${detail.user_id}`,
+                            npk: detail.npk || '-',
+                            basic_salary: detail.basic_salary || 0,
+                            active: false
+                        });
+                    }
+                });
+            }
+
             // createEmpDropdown: selalu tampilkan opsi yang belum dipilih, tapi selalu
             // sertakan option untuk selectedId supaya tidak hilang saat edit
             function createEmpDropdown(selectedId = null, disabled = false) {
@@ -386,6 +401,7 @@
                     if (userId) {
                         payload.details.push({
                             user_id: userId,
+                            user_name: row.find('.employeeSelect option:selected').text().trim(),
                             npk: row.find('.npk').val(),
                             work_days: row.find('.workdays').val(),
                             attendance: row.find('.attendance').val(),
