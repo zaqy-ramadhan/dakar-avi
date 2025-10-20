@@ -355,6 +355,15 @@
                                                     <span class="hide-menu">Work Hour</span>
                                                 </a>
                                             </li>
+                                             <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/holidays"
+                                                    aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-calendar-off"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Holiday Date</span>
+                                                </a>
+                                            </li>
                                             <li class="sidebar-item">
                                                 <a class="sidebar-link" href="/admin/offboarding_reason"
                                                     aria-expanded="false">

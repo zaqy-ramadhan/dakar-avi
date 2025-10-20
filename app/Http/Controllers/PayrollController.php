@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use App\Models\HolidayDate;
 use App\Models\Payroll;
 use App\Models\PayrollDetail;
 use App\Models\User;
@@ -12,8 +13,7 @@ use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
-
-
+use Carbon\CarbonPeriod;
 
 class PayrollController extends Controller
 {
@@ -374,5 +374,36 @@ class PayrollController extends Controller
             DB::rollBack();
             return back()->with('error', 'An error occurred while deleting the data: ' . $e->getMessage())->withInput();
         }
+    }
+
+    public function calculateWorkdays(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $start = Carbon::parse($request->start_date);
+        $end = Carbon::parse($request->end_date);
+
+        $holidays = HolidayDate::whereBetween('date', [$start, $end])
+            ->where('is_active', true)
+            ->pluck('date')
+            ->map(fn($date) => Carbon::parse($date)->toDateString())
+            ->toArray();
+
+        $period = CarbonPeriod::create($start, $end);
+        $workdays = 0;
+
+        foreach ($period as $date) {
+            if (!in_array($date->toDateString(), $holidays) && $date->isWeekday()) {
+                $workdays++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'workdays' => $workdays,
+        ]);
     }
 }

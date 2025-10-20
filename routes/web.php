@@ -38,9 +38,11 @@ use App\Http\Controllers\Api\v1\ApiPositionController;
 use App\Http\Controllers\EmployeeBirthdayController;
 use App\Http\Controllers\EmployeeDetailReportController;
 use App\Http\Controllers\ExpiredContractController;
+use App\Http\Controllers\HolidayDateController;
 use App\Http\Controllers\JoinedEmployeeController;
 use App\Http\Controllers\OffboardingReasonController;
 use App\Http\Controllers\StaffMovementReportController;
+use App\Models\HolidayDate;
 use App\Models\Payroll;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -115,6 +117,7 @@ Route::middleware(['auth'])->group(function () {
         //master data
         Route::prefix('admin')->group(function () {
             Route::resource('divisions', DivisionController::class);
+            Route::resource('holidays', HolidayDateController::class);
             Route::resource('departments', DepartmentController::class);
             Route::resource('positions', PositionController::class);
             Route::resource('sections', SectionController::class);
@@ -156,6 +159,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/payroll-pemagangan', [PayrollController::class, 'store'])->name('payroll.store');
         Route::put('/payroll-pemagangan/{id}', [PayrollController::class, 'update'])->name('payroll.update');
         Route::delete('/payroll-pemagangan/{id}', [PayrollController::class, 'destroy'])->name('payroll.destroy');
+        Route::post('/payroll/calculate-workdays', [PayrollController::class, 'calculateWorkdays'])->name('payroll.calculateWorkdays');
+
 
 
 

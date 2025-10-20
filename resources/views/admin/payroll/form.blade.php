@@ -28,6 +28,14 @@
                     </div>
                 </div>
 
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label for="default_attendance" class="form-label">Default Attendance</label>
+                        <input type="number" id="default_attendance" name="default_attendance" class="form-control"
+                            placeholder="Isi angka, contoh: 22">
+                    </div>
+                </div>
+
                 <!-- Tabel Detail Payroll -->
                 <div class="mb-3 mt-3">
                     <div class="table-responsive">
@@ -69,19 +77,31 @@
             // createEmpDropdown: selalu tampilkan opsi yang belum dipilih, tapi selalu
             // sertakan option untuk selectedId supaya tidak hilang saat edit
             function createEmpDropdown(selectedId = null, disabled = false) {
-                let select = `<select name="user_id[]" class="form-select employeeSelect" ${disabled ? 'disabled' : ''}>
-            <option value="">Pilih Employee</option>`;
+                let select = `
+                    <select name="user_id[]" class="form-select employeeSelect" ${disabled ? 'disabled' : ''}>
+                    <option value="">Pilih Employee</option>
+                `;
+
                 employees.forEach(emp => {
+                    let basicSalary = emp.basic_salary && emp.basic_salary > 0 ? emp.basic_salary : 2500000;
+
                     if (!selectedEmployees.includes(emp.id) || String(selectedId) === String(emp.id)) {
-                        select += `<option value="${emp.id}" ${String(selectedId) === String(emp.id) ? 'selected' : ''}
-                    data-npk="${emp.npk}" data-basic_salary="${emp.basic_salary}">
-                    ${emp.name}
-                </option>`;
+                        select += `
+                            <option 
+                                value="${emp.id}" 
+                                ${String(selectedId) === String(emp.id) ? 'selected' : ''}
+                                data-npk="${emp.npk}" 
+                                data-basic_salary="${basicSalary}">
+                                ${emp.name}
+                            </option>
+                        `;
                     }
                 });
+
                 select += `</select>`;
                 return select;
             }
+
 
             // addItem: tambahkan baris. data bisa berisi prefilled fields (untuk edit/view)
             function addItem(selectedId = null, data = {}) {
@@ -93,6 +113,7 @@
                     actionButtons =
                         `<button type="button" class="btn btn-outline-danger btn-sm remove-item"><i class="ti ti-trash"></i></button>`;
                 }
+                let defaultBasic = data.basic_salary ?? 2500000;
 
                 let newRow = $(`
             <tr class="item-row">
@@ -101,8 +122,8 @@
                 <td><input type="number" name="work_days[]" class="form-control workdays" ${isView ? 'readonly' : ''} min="0" value="${data.work_days ?? ''}"></td>
                 <td><input type="number" name="attendance[]" class="form-control attendance" ${isView ? 'readonly' : ''} min="0" value="${data.total_attend ?? ''}"></td>
                 <td>
-                    <input type="text" name="basic_salary_display[]" class="form-control basic-salary" ${isView ? 'readonly' : ''} value="${data.basic_salary ? formatRupiah(data.basic_salary) : ''}" placeholder="Masukkan gaji...">
-                    <input type="hidden" name="basic_salary[]" class="basic-salary-raw" value="${data.basic_salary ?? ''}">
+                    <input type="text" name="basic_salary_display[]" class="form-control basic-salary" ${isView ? 'readonly' : ''} value="${formatRupiah(defaultBasic)}" placeholder="Masukkan gaji...">
+                    <input type="hidden" name="basic_salary[]" class="basic-salary-raw" value="${defaultBasic}">
                 </td>
                 <td>
                     <input type="text" name="total_salary_display[]" class="form-control total-salary" readonly value="${data.total_salary ? formatRupiah(data.total_salary) : ''}">
@@ -122,8 +143,21 @@
                 }
             }
 
-             $('#add-item').click(function() {
+            $('#add-item').click(function() {
                 addItem();
+            });
+
+            $('#default_attendance').on('input', function() {
+                if (mode === 'view') return;
+                let defaultValue = parseInt($(this).val()) || 0;
+
+                if (defaultValue > 0) {
+                    $('.attendance').each(function() {
+                        $(this).val(defaultValue);
+                        let row = $(this).closest('tr');
+                        calculateTotal(row);
+                    });
+                }
             });
 
             // refresh dropdown HTML di setiap baris berdasarkan selectedEmployees
@@ -151,7 +185,7 @@
             }
 
             function calculateTotal(row) {
-                let basicSalary = parseRupiah(row.find('.basic-salary').val()) || 0;
+                let basicSalary = parseRupiah(row.find('.basic-salary').val()) || 2500000;
                 let workDays = parseInt(row.find('.workdays').val()) || 0;
                 let attendance = parseInt(row.find('.attendance').val()) || 0;
                 if (workDays > 0 && attendance >= 0 && basicSalary > 0) {
@@ -296,17 +330,39 @@
 
             $('#start_date, #end_date').on('change', function() {
                 if (mode === 'view') return;
+
                 let startDate = $('#start_date').val();
                 let endDate = $('#end_date').val();
+
                 if (startDate && endDate) {
-                    let weekdays = countWeekdays(startDate, endDate);
-                    $('.workdays').val(weekdays);
-                    $('#items-container tr').each(function() {
-                        calculateTotal($(this));
+                    $.ajax({
+                        url: "{{ route('payroll.calculateWorkdays') }}",
+                        type: "POST",
+                        data: {
+                            start_date: startDate,
+                            end_date: endDate,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(res) {
+                            if (res.success) {
+                                let weekdays = res.workdays;
+                                $('.workdays').val(weekdays);
+                                $('#items-container tr').each(function() {
+                                    calculateTotal($(this));
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error(xhr.responseText);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: 'Gagal menghitung hari kerja.'
+                            });
+                        }
                     });
                 }
             });
-
 
             // --- submit ---
             $.ajaxSetup({
