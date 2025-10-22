@@ -78,6 +78,8 @@
             });
         </script>
     @endif
+    
+    @include('admin.users.profileCard')
 
     <div class="card" style="border-radius: 20px">
         {{-- <h2>User Details</h2> --}}

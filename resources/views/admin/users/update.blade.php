@@ -78,6 +78,9 @@
             });
         </script>
     @endif
+    
+    @include('admin.users.profileCard')
+
     <div class="card" style="border-radius: 20px">
         <div class="card-header">
             <p class="fs-8 fw-bold">Personal Data</p>
