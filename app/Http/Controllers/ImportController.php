@@ -290,13 +290,13 @@ class ImportController extends Controller
                     $endDateRaw   = $row[21 + ($i * 2)];
 
                     $startDate = $this->parseExcelDate($startDateRaw);
-                    $endDate   = $this->parseExcelDate($endDateRaw);
+                    $endDate   = !empty($endDateRaw) ? $this->parseExcelDate($endDateRaw) : null;                    
                     // dd($role);
                     
                     // $user_role = DakarRole::findOrFail($role->id)->role_name;
                     // dd($role->role_name, $role->id);
 
-                    if ($startDate && $endDate) {
+                    if ($startDate) {
 
                         $employmentStatus = true;
                         for ($j = $i + 1; $j < 5; $j++) {
@@ -334,8 +334,8 @@ class ImportController extends Controller
                         $create = EmployeeJob::updateOrCreate([
                             'user_id' => $user->id,
                             'start_date' => $startDate,
-                            'end_date' => $endDate,
                         ], [
+                            'end_date' => $endDate,
                             'group_id' => $group ? $group->id : null,
                             'division_id' => $div ? $div->id : null,
                             'department_id' => $dept ? $dept->id : null,
