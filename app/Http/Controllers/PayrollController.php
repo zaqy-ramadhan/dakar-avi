@@ -52,6 +52,7 @@ class PayrollController extends Controller
                 ->addColumn('total_salary', fn($p) => 'Rp ' . number_format($p->total_salary, 0, ',', '.'))
                 ->addColumn('action', function ($p) {
                     $editButton = '<a href="' . route('payroll.edit', $p->id) . '" class="btn btn-sm btn-outline-warning me-1" title="Edit Data"><i class="ti ti-edit fs-4"></i></a>';
+                    $exportButton = '<a href="' . route('payroll.export', $p->id) . '" class="btn btn-sm btn-outline-primary me-1" title="Export Data"><i class="ti ti-file-spreadsheet fs-4"></i></a>';
                     $deleteButton = '
                         <form action="' . route('payroll.destroy', $p->id) . '" method="POST" onsubmit="return confirm(\'Are you sure you want to delete this payroll data?\');" style="display:inline;">
                             ' . csrf_field() . '
@@ -60,7 +61,7 @@ class PayrollController extends Controller
                         </form>
                     ';
 
-                    return '<div class="d-flex">' . $editButton . $deleteButton . '</div>';
+                    return '<div class="d-flex">' . $exportButton . $editButton . $deleteButton . '</div>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -465,5 +466,83 @@ class PayrollController extends Controller
             'success' => true,
             'data' => $employee
         ]);
+    }
+
+    public function exportExcel($id)
+    {
+        $payroll = Payroll::with('payrollDetail')->findOrFail($id);
+        $fileName = "payroll-{$payroll->start_date}.xlsx";
+
+        return Excel::download(new class($payroll) implements
+            \Maatwebsite\Excel\Concerns\FromCollection,
+            \Maatwebsite\Excel\Concerns\WithHeadings,
+            \Maatwebsite\Excel\Concerns\WithTitle,
+            \Maatwebsite\Excel\Concerns\ShouldAutoSize,
+            \Maatwebsite\Excel\Concerns\WithCustomStartCell,
+            \Maatwebsite\Excel\Concerns\WithEvents {
+
+            private $payroll;
+
+            public function __construct($payroll)
+            {
+                $this->payroll = $payroll;
+            }
+
+            public function collection()
+            {
+                return $this->payroll->payrollDetail->map(function ($detail, $index) {
+                    return [
+                        $index + 1,
+                        $detail->npk,
+                        $detail->user->fullname,
+                        $detail->work_days,
+                        $detail->total_attend,
+                        $detail->basic_salary,
+                        $detail->total_salary,
+                        $detail->note
+                    ];
+                });
+            }
+
+            public function headings(): array
+            {
+                return [
+                    ['PERIODE: ' . $this->payroll->start_date . ' s/d ' . $this->payroll->end_date],
+                    ['KETERANGAN: ' . ($this->payroll->title ?? '-')],
+                    [],
+                    ['No', 'NPK', 'Nama', 'Hari Kerja', 'Kehadiran', 'Gaji Pokok', 'Total Gaji', 'Keterangan']
+                ];
+            }
+
+            public function startCell(): string
+            {
+                return 'A1'; // mulai dari baris pertama
+            }
+
+            public function registerEvents(): array
+            {
+                return [
+                    \Maatwebsite\Excel\Events\AfterSheet::class => function (\Maatwebsite\Excel\Events\AfterSheet $event) {
+                        $sheet = $event->sheet->getDelegate();
+
+                        // Bold untuk baris keterangan & header
+                        $sheet->getStyle('A1:A2')->getFont()->setBold(true);
+                        $sheet->getStyle('A4:H4')->getFont()->setBold(true);
+
+                        // Merge cell untuk periode dan keterangan
+                        $sheet->mergeCells('A1:H1');
+                        $sheet->mergeCells('A2:H2');
+
+                        // Atur alignment ke tengah vertikal & horizontal
+                        $sheet->getStyle('A1:H2')->getAlignment()->setHorizontal('center')->setVertical('center');
+                    }
+                ];
+            }
+
+            public function title(): string
+            {
+                return 'Payroll Data';
+            }
+        }, $fileName);
     }
 }
