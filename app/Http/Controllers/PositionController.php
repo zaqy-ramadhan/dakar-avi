@@ -51,7 +51,7 @@ class PositionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'position_name' => 'required|position_name',
+            'position_name' => 'required',
             'department_id' => 'nullable|exists:dakar_departments,id',
             'is_active' => 'required'
         ]);
@@ -72,7 +72,7 @@ class PositionController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'position_name' => 'required|position_name,'.$id,
+            'position_name' => 'required',
             'department_id' => 'nullable|exists:dakar_departments,id',
             'is_active' => 'required'
         ]);
