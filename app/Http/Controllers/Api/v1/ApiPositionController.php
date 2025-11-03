@@ -34,7 +34,7 @@ class ApiPositionController extends Controller
             }
 
 
-            $positions = Position::with('department')->get();
+            $positions = Position::with('department')->where('is_active', true)->get();
 
             $data = $positions->map(function ($position) {
                 $employee = User::whereHas('latestEmployeeJob', function ($query) use ($position) {

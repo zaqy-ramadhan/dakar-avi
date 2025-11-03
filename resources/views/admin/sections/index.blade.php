@@ -17,6 +17,7 @@
                     <th>No</th>
                     <th>Section Name</th>
                     <th>Department</th>
+                    <th>Is Active</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -46,6 +47,12 @@
                                     <option value="{{ $department->id }}">{{ $department->department_name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="">Is Active</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_active">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -80,6 +87,19 @@
                         name: 'department.department_name'
                     },
                     {
+                        data: 'is_active',
+                        name: 'is_active',
+                        render: function(data, type, row) {
+                            var val = data === true || data === 'true' || data === 1 || data === '1';
+                            if (type === 'display') {
+                                return val
+                                    ? '<span class="badge bg-success">Active</span>'
+                                    : '<span class="badge bg-danger">Inactive</span>';
+                            }
+                            return val ? 'Active' : 'Inactive';
+                        }
+                    },
+                    {
                         data: 'actions',
                         name: 'actions',
                         searchable: false,
@@ -93,6 +113,7 @@
                 $('#section_id').val('');
                 $('#section_name').val('');
                 $('#department_id').val('');
+                $('#is_active').prop('checked', false);
                 $('#sectionModal').modal('show');
                 $('#modalTitle').text('Create section');
             });
@@ -110,6 +131,7 @@
                     data: {
                         section_name: $('#section_name').val(),
                         department_id: $('#department_id').val(),
+                        is_active: $('#is_active').is(':checked') ? 1 : 0,
                         _token: "{{ csrf_token() }}"
                     },
                     success: function(response) {
@@ -130,6 +152,7 @@
                     $('#section_id').val(data.id);
                     $('#section_name').val(data.section_name);
                     $('#department_id').val(data.department_id);
+                    $('#is_active').prop('checked', data.is_active);
                     $('#sectionModal').modal('show');
                     $('#modalTitle').text('Edit Section');
                 });

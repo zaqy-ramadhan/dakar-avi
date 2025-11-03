@@ -17,7 +17,9 @@ class Position extends Model
     protected $fillable = [
         'position_name',
         'department_id',
-        'cost_center_id'
+        'cost_center_id',
+        'is_active'
+
     ];
 
     public function department()

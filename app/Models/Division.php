@@ -15,7 +15,9 @@ class Division extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'division_name'
+        'division_name',
+        'is_active'
+
     ];
 
     public function department()

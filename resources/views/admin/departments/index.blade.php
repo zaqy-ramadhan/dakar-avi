@@ -47,6 +47,12 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="">Is Active</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_active">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -70,6 +76,14 @@ $(document).ready(function() {
             { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false },
             { data: 'department_name', name: 'department_name' },
             { data: 'division.division_name', name: 'division.division_name' },
+            { data: 'is_active', name: 'is_active', render: function(data, type, row) {
+                var val = data === true || data === 'true' || data === 1 || data === '1';
+                if (type === 'display') { 
+                    return val ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>';
+                }
+                return val ? 'Active' : 'Inactive';
+                }, searchable: false, orderable: false
+            },
             { data: 'actions', name: 'actions', searchable: false, orderable: false }
         ]
     });
@@ -79,6 +93,7 @@ $(document).ready(function() {
         $('#department_id').val('');
         $('#department_name').val('');
         $('#division_id').val('');
+        $('#is_active').prop('checked', false);
         $('#departmentModal').modal('show');
         $('#modalTitle').text('Create Department');
     });
@@ -96,6 +111,7 @@ $(document).ready(function() {
             data: { 
                 department_name: $('#department_name').val(),
                 division_id: $('#division_id').val(),
+                is_active: $('#is_active').is(':checked') ? 1 : 0,
                 _token: "{{ csrf_token() }}"
             },
             success: function(response) {
@@ -116,6 +132,7 @@ $(document).ready(function() {
             $('#department_id').val(data.id);
             $('#department_name').val(data.department_name);
             $('#division_id').val(data.division_id);
+            $('#is_active').prop('checked', data.is_active);
             $('#departmentModal').modal('show');
             $('#modalTitle').text('Edit Department');
         });

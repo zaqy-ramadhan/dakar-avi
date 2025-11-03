@@ -15,7 +15,7 @@ class PositionController extends Controller
         if ($request->ajax()) {
             $departments = Position::with(['department' => function ($query) {
                 $query->select('id', 'department_name');
-            }])->select(['dakar_positions.id', 'dakar_positions.position_name', 'dakar_positions.department_id']);
+            }])->select(['dakar_positions.id', 'dakar_positions.position_name', 'dakar_positions.department_id', 'dakar_positions.is_active']);
 
             return DataTables::of($departments)
                 ->addIndexColumn() 
@@ -52,13 +52,15 @@ class PositionController extends Controller
     {
         $request->validate([
             'position_name' => 'required|unique:dakar_positions,position_name',
-            'department_id' => 'nullable|exists:dakar_departments,id'
+            'department_id' => 'nullable|exists:dakar_departments,id',
+            'is_active' => 'required'
         ]);
 
         try {
             Position::create([
                 'position_name' => $request->position_name,
-                'department_id' => $request->department_id
+                'department_id' => $request->department_id,
+                'is_active' => $request->is_active
             ]);
 
             return response()->json(['success' => 'Position added successfully!']);
@@ -71,7 +73,8 @@ class PositionController extends Controller
     {
         $request->validate([
             'position_name' => 'required|unique:dakar_positions,position_name,'.$id,
-            'department_id' => 'nullable|exists:dakar_departments,id'
+            'department_id' => 'nullable|exists:dakar_departments,id',
+            'is_active' => 'required'
         ]);
 
         try {
@@ -79,7 +82,8 @@ class PositionController extends Controller
 
             $position->update([
                 'position_name' => $request->position_name,
-                'department_id' => $request->department_id
+                'department_id' => $request->department_id,
+                'is_active' => $request->is_active
             ]);
 
             return response()->json(['success' => 'Position updated successfully!']);

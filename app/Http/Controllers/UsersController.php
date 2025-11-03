@@ -1720,9 +1720,11 @@ class UsersController extends Controller
                 'npk' => $request->npk ?? $user->npk,
                 'employment_status' => $request->status ?? false,
             ]);
-
-            $user->npk = $request->npk;
-            $user->save();
+            
+            // if($request->employment_status == true){
+            //     $user->npk = $request->npk;
+            //     $user->save();
+            // }
 
             if(isset($request->doc_sk)){
                 $path = $request->file('doc_sk')->store("documents/doc_sk", 'public');
@@ -1738,7 +1740,7 @@ class UsersController extends Controller
             if ($request->employment_status) {
                 if($request->status == true){
                     $user->dakarRole()->sync([$request->employment_status]);
-                    // $user->npk = $request->npk;
+                    $user->npk = $request->npk;
                     $user->save();
                 }
             }

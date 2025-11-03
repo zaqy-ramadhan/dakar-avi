@@ -16,6 +16,7 @@
                 <tr>
                     <th>No</th>
                     <th>Division Name</th>
+                    <th>Is Active</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -36,6 +37,12 @@
                         <div class="mb-3">
                             <label>Division Name</label>
                             <input type="text" id="division_name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="">Is Active</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_active">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -66,6 +73,21 @@
                         name: 'division_name'
                     },
                     {
+                        data: 'is_active',
+                        name: 'is_active',
+                        render: function(data, type, row) {
+                            var val = data === true || data === 'true' || data === 1 || data === '1';
+                            if (type === 'display') {
+                                return val
+                                    ? '<span class="badge bg-success">Active</span>'
+                                    : '<span class="badge bg-danger">Inactive</span>';
+                            }
+                            return val ? 'Active' : 'Inactive';
+                        },
+                        searchable: false,
+                        orderable: false
+                    },
+                    {
                         data: 'actions',
                         name: 'actions',
                         searchable: false,
@@ -78,6 +100,7 @@
             $('#addDivisionBtn').click(function() {
                 $('#division_id').val('');
                 $('#division_name').val('');
+                $('#is_active').prop('checked', false);
                 $('#divisionModal').modal('show');
                 $('#modalTitle').text('Create Division');
             });
@@ -95,6 +118,7 @@
                     method: method,
                     data: {
                         division_name: $('#division_name').val(),
+                        is_active: $('#is_active').is(':checked') ? 1 : 0,
                         _token: "{{ csrf_token() }}"
                     },
                     success: function(response) {
@@ -114,6 +138,7 @@
                 $.get("{{ route('divisions.show', ':id') }}".replace(':id', id), function(data) {
                     $('#division_id').val(data.id);
                     $('#division_name').val(data.division_name);
+                    $('#is_active').prop('checked', data.is_active);
                     $('#divisionModal').modal('show');
                     $('#modalTitle').text('Edit Division');
 

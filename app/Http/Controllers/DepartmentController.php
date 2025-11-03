@@ -14,7 +14,7 @@ class DepartmentController extends Controller
         if ($request->ajax()) {
             $departments = Department::with(['division' => function ($query) {
                 $query->select('id', 'division_name');
-            }])->select('dakar_departments.id', 'dakar_departments.department_name', 'dakar_departments.division_id');
+            }])->select('dakar_departments.id', 'dakar_departments.department_name', 'dakar_departments.division_id', 'dakar_departments.is_active');
 
             return DataTables::of($departments)
                 ->addIndexColumn() 
@@ -52,13 +52,15 @@ class DepartmentController extends Controller
         // Validasi input
         $request->validate([
             'department_name' => 'required|unique:dakar_departments,department_name',
-            'division_id' => 'nullable|exists:dakar_divisions,id'
+            'division_id' => 'nullable|exists:dakar_divisions,id',
+            'is_active' => 'required'
         ]);
 
         try {
             Department::create([
                 'department_name' => $request->department_name,
-                'division_id' => $request->division_id
+                'division_id' => $request->division_id,
+                'is_active' => $request->is_active
             ]);
 
             return response()->json(['success' => 'Department added successfully!']);
@@ -71,7 +73,8 @@ class DepartmentController extends Controller
     {
         $request->validate([
             'department_name' => 'required|unique:dakar_departments,department_name,'.$id,
-            'division_id' => 'nullable|exists:dakar_divisions,id'
+            'division_id' => 'nullable|exists:dakar_divisions,id',
+            'is_active' => 'required'
         ]);
 
         try {
@@ -79,7 +82,8 @@ class DepartmentController extends Controller
 
             $department->update([
                 'department_name' => $request->department_name,
-                'division_id' => $request->division_id
+                'division_id' => $request->division_id,
+                'is_active' => $request->is_active
             ]);
 
             return response()->json(['success' => 'Department updated successfully!']);

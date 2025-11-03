@@ -15,7 +15,7 @@ class SectionController extends Controller
         if ($request->ajax()) {
             $departments = Section::with(['department' => function ($query) {
                 $query->select('id', 'department_name');
-            }])->select(['dakar_sections.id', 'dakar_sections.section_name', 'dakar_sections.department_id']);
+            }])->select(['dakar_sections.id', 'dakar_sections.section_name', 'dakar_sections.department_id', 'dakar_sections.is_active']);
 
             return DataTables::of($departments)
                 ->addIndexColumn() 
@@ -52,13 +52,15 @@ class SectionController extends Controller
     {
         $request->validate([
             'section_name' => 'required|unique:dakar_sections,section_name',
-            'department_id' => 'nullable|exists:dakar_departments,id'
+            'department_id' => 'nullable|exists:dakar_departments,id',
+            'is_active' => 'required'
         ]);
 
         try {
             Section::create([
                 'section_name' => $request->section_name,
-                'department_id' => $request->department_id
+                'department_id' => $request->department_id,
+                'is_active' => $request->is_active
             ]);
 
             return response()->json(['success' => 'Section added successfully!']);
@@ -71,7 +73,8 @@ class SectionController extends Controller
     {
         $request->validate([
             'section_name' => 'required|unique:dakar_sections,section_name,'.$id,
-            'department_id' => 'nullable|exists:dakar_departments,id'
+            'department_id' => 'nullable|exists:dakar_departments,id',
+            'is_active' => 'required'
         ]);
 
         try {
@@ -79,7 +82,8 @@ class SectionController extends Controller
 
             $section->update([
                 'section_name' => $request->section_name,
-                'department_id' => $request->department_id
+                'department_id' => $request->department_id,
+                'is_active' => $request->is_active
             ]);
 
             return response()->json(['success' => 'Section updated successfully!']);

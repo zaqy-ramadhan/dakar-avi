@@ -34,7 +34,7 @@ class ApiDepartmentController extends Controller
             }
 
 
-            $departments = Department::with('division')->get();
+            $departments = Department::with('division')->where('is_active', true)->get();
 
             $data = $departments->map(function ($department) {
                 $manager = User::whereHas('latestEmployeeJob', function ($query) use ($department) {

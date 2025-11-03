@@ -11,7 +11,7 @@ class DivisionController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $divisions = Division::select(['id', 'division_name']);
+            $divisions = Division::select(['id', 'division_name', 'is_active']);
 
             return DataTables::of($divisions)
                 ->addIndexColumn()
