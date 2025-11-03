@@ -51,7 +51,7 @@ class PositionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'position_name' => 'required|unique:dakar_positions,position_name',
+            'position_name' => 'required|position_name',
             'department_id' => 'nullable|exists:dakar_departments,id',
             'is_active' => 'required'
         ]);
