@@ -72,7 +72,7 @@ class PositionController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'position_name' => 'required|unique:dakar_positions,position_name,'.$id,
+            'position_name' => 'required|position_name,'.$id,
             'department_id' => 'nullable|exists:dakar_departments,id',
             'is_active' => 'required'
         ]);
