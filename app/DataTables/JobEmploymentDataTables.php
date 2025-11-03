@@ -243,7 +243,7 @@ class JobEmploymentDataTables extends DataTable
                         </form>';
                 }
 
-                if(Auth::user()->getRole() === 'admin'){
+                // if(Auth::user()->getRole() === 'admin'){
                      $deleteButton = '
                         <a type="button" href="' . route('employee-jobs.edit', ["id" => $job->id, "prev" => $currentRoute]) . '" class="btn btn-sm btn-outline-warning m-1" title="Edit Job"><i class="ti ti-edit fs-6"></i> Edit</a>
                         <form action="' . route('job.destroy', $job->id) . '" method="POST">
@@ -251,7 +251,7 @@ class JobEmploymentDataTables extends DataTable
                         ' . method_field('POST') . '
                         <button type="submit" class="btn btn-sm btn-outline-danger m-1" onclick="return confirm(\'Are you sure?\')"><i class="ti ti-trash fs-6"></i> Delete</button>
                         </form>';
-                }
+                // }
 
                 $offboardButton = $job->employment_status == true
                     ? '<button type="button" class="btn btn-sm btn-outline-warning m-1" data-bs-toggle="modal" data-bs-target="#offboardingModal' . $job->id . '" title="Add Out Date"><i class="ti ti-briefcase-off fs-6"></i> Out</button>

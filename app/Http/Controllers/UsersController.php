@@ -1577,7 +1577,7 @@ class UsersController extends Controller
         ]);
 
         try {
-            // DB::beginTransaction();
+            DB::beginTransaction();
 
             $user_role = DakarRole::findOrFail($request->employment_status)->role_name;
 
@@ -1611,10 +1611,16 @@ class UsersController extends Controller
                 'employment_status' => true,
                 'work_hour_code_id' => $request->work_hour,
                 'notes' => $notes ?? null,
-                'npk' => $request->npk ?? $user->npk,
+                'npk' => $request->npk,
                 'employee_transfer' => $request->employee_transfer ?? null,
             ]);
 
+            // dd($job->npk);
+
+            $user->npk = $request->npk;
+            $user->save();
+
+            
             if(isset($request->doc_sk)){
                 $path = $request->file('doc_sk')->store("documents/doc_sk", 'public');
 
@@ -1625,7 +1631,7 @@ class UsersController extends Controller
                     'path' => $path,
                 ]);
             }
-
+            
             if (isset($request->employment_status)) {
                 $user->dakarRole()->sync($request->employment_status);
                 $user->npk = $request->npk;
@@ -1638,11 +1644,12 @@ class UsersController extends Controller
                     'resign_date' => $lastJob->resign_date ?? $request->start_date
                 ]);
             }
-
+            
+            DB::commit();
             return redirect()->back()
                 ->with('success', 'Job Employment created successfully');
         } catch (\Exception $e) {
-            // DB::rollBack();
+            DB::rollBack();
             Log::error('Error updating user jobs: ' . $e->getMessage());
 
             return response()->json([
@@ -1714,6 +1721,9 @@ class UsersController extends Controller
                 'employment_status' => $request->status ?? false,
             ]);
 
+            $user->npk = $request->npk;
+            $user->save();
+
             if(isset($request->doc_sk)){
                 $path = $request->file('doc_sk')->store("documents/doc_sk", 'public');
 
@@ -1728,7 +1738,7 @@ class UsersController extends Controller
             if ($request->employment_status) {
                 if($request->status == true){
                     $user->dakarRole()->sync([$request->employment_status]);
-                    $user->npk = $request->npk;
+                    // $user->npk = $request->npk;
                     $user->save();
                 }
             }
