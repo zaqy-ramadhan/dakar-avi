@@ -283,13 +283,17 @@ class User extends Authenticatable
 
     public function firstEmployeeJob()
     {
-        return $this->hasOne(EmployeeJob::class)->where('job_sequence', 1);
-
+        return $this->hasOne(EmployeeJob::class)->where('job_sequence', 1)->orderByDesc('created_at');
     }
 
     public function firstEmployeeJobIncomplete()
     {
         return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->where('job_sequence', 1);
+    }
+
+    public function firstPkwtIncomplete()
+    {
+        return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->where('notes', 'New Employee Kontrak');
     }
 
 

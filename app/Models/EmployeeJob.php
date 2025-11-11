@@ -39,6 +39,7 @@ class EmployeeJob extends Model
         'onboarding_progress',
         'employee_transfer',
         'npk',
+        'job_sequence'
     ];
 
     protected $casts = [
@@ -82,6 +83,55 @@ class EmployeeJob extends Model
             ->orderBy('id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($job) {
+            self::reorderSequence($job->user_id);
+        });
+
+        static::updated(function ($job) {
+            self::reorderSequence($job->user_id);
+        });
+    }
+
+    /**
+     * Reorder sequence berdasarkan aturan:
+     * - Urut berdasarkan start_date ASC
+     * - Jika ada "internship/pemagangan" lalu muncul "kontrak",
+     *   maka sequence reset ulang mulai 1 dari kontrak itu.
+     */
+    public static function reorderSequence($userId)
+    {
+        $jobs = self::where('user_id', $userId)
+            ->orderBy('start_date', 'asc')
+            ->get();
+
+        $sequence = 1;
+        $reset = false;
+
+        foreach ($jobs as $job) {
+            if (in_array(strtolower($job->notes), ['new employee kontrak'])) {
+                if ($reset === false) {
+                    $sequence = 1;
+                    $reset = true;
+                }
+            }
+
+            $job->job_sequence = $sequence;
+            $job->saveQuietly();
+            
+            $sequence++;
+        }
+        
+        // $first = self::where('user_id', $userId)->where('sequence', 1)->first();
+        // if ($first) {
+        //     self::where('user_id', $userId)->update(['is_first_job' => false]);
+        //     $first->is_first_job = true;
+        //     $first->saveQuietly();
+        // }
+    }
 
     // public function getContractAttribute()
     // {

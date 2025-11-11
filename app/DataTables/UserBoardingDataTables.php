@@ -129,7 +129,8 @@ class UserBoardingDataTables extends DataTable
             // })
             ->where(function ($q) {
                 $q->doesntHave('employeeJob')
-                ->orWhereHas('firstEmployeeJobIncomplete');
+                ->orWhereHas('firstEmployeeJobIncomplete')
+                ->orWhereHas('firstPkwtIncomplete');
             })
             ;
 
