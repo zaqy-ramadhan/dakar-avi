@@ -204,13 +204,12 @@
                     }
                 }
             @endphp
-            @if ($user->firstEmployeeJob && $allowWageTab)
+            {{-- @if ($user->firstEmployeeJob && $allowWageTab)
                 <li class="nav-item" role="presentation">
-                    {{-- @dd($allowWageTab) --}}
                     <button class="nav-link" id="wage-tab" data-bs-toggle="tab" data-bs-target="#wage" type="button"
                         role="tab" aria-controls="wage" aria-selected="false">Wage/Allowance</button>
                 </li>
-            @endif
+            @endif --}}
         @endif
         <li class="nav-item" role="presentation">
             @if (optional($user->employeeJob)->isNotEmpty() && $user->employeeDetail)
@@ -292,14 +291,14 @@
         </div>
     @endif
 
-    @if ($user->firstEmployeeJob && !Request::is('*employment*'))
+    {{-- @if ($user->firstEmployeeJob && !Request::is('*employment*'))
         <div class="tab-pane py-4 px-2 fade" id="wage" role="tabpanel" aria-labelledby="inventory-tab">
             @php
                 $jobEmploymentId = optional($user->firstEmployeeJob)->id;
             @endphp
             @include('admin.users.form.wage')
         </div>
-    @endif
+    @endif --}}
 @endif
 
 @if (Request::is('*employment*') && optional($user->latestEmployeeJob)->user_dakar_role === 'karyawan')

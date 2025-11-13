@@ -312,6 +312,7 @@ class JobEmploymentDataTables extends DataTable
                             return '
                                 <div class="d-flex">
                                     ' . $kontrakButton . '
+                                    ' . $wageButton . '
                                     ' . $skButton . '
                                     ' . $kompensasiButton . '
                                     ' . $kerahasiaanButton . '
