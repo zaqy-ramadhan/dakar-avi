@@ -274,7 +274,7 @@ class ImportController extends Controller
                 } elseif ($row[97 + 8] == 'Inactive') {
                     $jobStatus = false;
                 } else {
-                    $jobStatus = null;
+                    $jobStatus = true;
                 }
                 // dd(strtolower($row[19]));
                 // dd($role->role_name);
@@ -282,32 +282,44 @@ class ImportController extends Controller
                 
 
                 $lastJob = null;
-                for ($i = 0; $i < 5; $i++) {
-                    // $startDate = $row[20 + ($i * 2)];
-                    // $endDate = $row[21 + ($i * 2)];
 
+                // Hitung dulu total periode kerja yang valid
+                $maxPeriods = 0;
+                for ($x = 0; $x < 5; $x++) {
+                    $startCheck = $this->parseExcelDate($row[20 + ($x * 2)]);
+                    $endCheck   = $this->parseExcelDate($row[21 + ($x * 2)]);
+                    if ($startCheck || $endCheck) {
+                        $maxPeriods++;
+                    } else {
+                        break; // berhenti kalau sudah kosong
+                    }
+                }
+
+                // Loop hanya sampai periode valid
+                for ($i = 0; $i < $maxPeriods; $i++) {
                     $startDateRaw = $row[20 + ($i * 2)];
                     $endDateRaw   = $row[21 + ($i * 2)];
 
                     $startDate = $this->parseExcelDate($startDateRaw);
-                    $endDate   = !empty($endDateRaw) ? $this->parseExcelDate($endDateRaw) : null;                    
-                    // dd($role);
-                    
-                    // $user_role = DakarRole::findOrFail($role->id)->role_name;
-                    // dd($role->role_name, $role->id);
+                    $endDate   = !empty($endDateRaw) ? $this->parseExcelDate($endDateRaw) : null;
 
                     if ($startDate) {
-
+                        // Default aktif
                         $employmentStatus = true;
-                        for ($j = $i + 1; $j < 5; $j++) {
+
+                        // Cek apakah masih ada periode kerja setelah ini
+                        for ($j = $i + 1; $j < $maxPeriods; $j++) {
                             $nextStart = $this->parseExcelDate($row[20 + ($j * 2)]);
                             $nextEnd   = $this->parseExcelDate($row[21 + ($j * 2)]);
-                            if ($nextStart && $nextEnd) {
+                            
+                            // Kalau ada start atau end berikutnya, berarti periode ini bukan terakhir
+                            if ($nextStart || $nextEnd) {
                                 $employmentStatus = false;
                                 break;
                             }
                         }
 
+                        // Ambil job terakhir sebelum start date sekarang
                         if ($lastJob === null) {
                             $lastJob = EmployeeJob::where('user_id', $user->id)
                                 ->where('start_date', '<', $startDate)
@@ -315,6 +327,7 @@ class ImportController extends Controller
                                 ->first();
                         }
 
+                        // Dummy request untuk penentuan notes
                         $requestDummy = new Request([
                             'job_status' => strtolower($row[19]),
                             'position_id' => $pos ? $pos->id : null,
@@ -330,7 +343,7 @@ class ImportController extends Controller
                             $lastJob === null
                         );
 
-                        // if ($startDate && $endDate) {
+                        // Simpan atau update data job
                         $create = EmployeeJob::updateOrCreate([
                             'user_id' => $user->id,
                             'start_date' => $startDate,
@@ -355,10 +368,9 @@ class ImportController extends Controller
                         ]);
 
                         $lastJob = $create;
-                        // }
                     }
-
                 }
+
                 $user->dakarRole()->sync($role?->id ?? null);
             }
 
