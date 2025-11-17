@@ -147,9 +147,9 @@ class ImportController extends Controller
 
                 for ($i = 0; $i < 5; $i++) {
                     $start = $this->parseExcelDate($row[20 + $i * 2]);
-                    $end   = $this->parseExcelDate($row[21 + $i * 2]);
+                    $end   = $this->parseExcelDate($row[21 + $i * 2]) ?? null;
 
-                    if (!$start || !$end) continue;
+                    if (!$start) continue;
 
                     $reqDummy = new Request([
                         'job_status' => strtolower($row[19]),
@@ -170,9 +170,9 @@ class ImportController extends Controller
                         [
                             'user_id' => $user->id,
                             'start_date' => $start,
-                            'end_date' => $end
                         ],
                         [
+                            'end_date' => $end ?? null,
                             'group_id' => $group?->id,
                             'division_id' => $div?->id,
                             'department_id' => $dept?->id,
@@ -185,15 +185,17 @@ class ImportController extends Controller
                             'sub_golongan_id' => $subgol?->id,
                             'job_status' => strtolower($row[19]),
                             'user_dakar_role' => strtolower($row[30]),
-                            'is_onboarding_completed' => true,
-                            'employment_status' => true,
+                            'is_onboarding_completed' => 1,
+                            'employment_status' => 1,
                             'work_hour_code_id' => $work?->id,
-                            'notes' => $notes
+                            'notes' => $notes,
+                            'npk' => (string)$row[0],
                         ]
                     );
-
+                    
                     $lastJob = $job;
                 }
+
             }
 
             DB::commit();

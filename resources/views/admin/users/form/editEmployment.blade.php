@@ -219,7 +219,7 @@
                     <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
                         <label for="end_date" class="form-label">End date</label>
                         <input type="date" class="form-control" id="end_date" name="end_date"
-                            value="{{ \Carbon\Carbon::parse($job->end_date ?? null)->format('Y-m-d') }}"
+                            value="{{ $job->end_date ? \Carbon\Carbon::parse($job->end_date)->format('Y-m-d') : '' }}"
                             @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
                         @error('end_date')
                             <div class="text-danger">{{ $message }}</div>
@@ -229,7 +229,7 @@
                     <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
                         <label for="resign_date" class="form-label">Out date</label>
                         <input type="date" class="form-control" id="resign_date" name="resign_date"
-                            value="{{ \Carbon\Carbon::parse($job->resign_date ?? null)->format('Y-m-d') }}"
+                            value="{{ $job->resign_date ? \Carbon\Carbon::parse($job->resign_date)->format('Y-m-d') : '' }}"
                             @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
                         @error('resign_date')
                             <div class="text-danger">{{ $message }}</div>
