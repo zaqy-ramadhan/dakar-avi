@@ -24,6 +24,7 @@ use App\Models\WorkHour;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
@@ -35,6 +36,178 @@ class ImportController extends Controller
     }
 
     public function import(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls'
+            ]);
+
+            $rows = Excel::toArray([], $request->file('file'))[0];
+            unset($rows[0]); // remove header
+
+            // =====================================
+            // CACHE SEMUA MASTER SEKALI QUERY
+            // =====================================
+            $masters = [
+                'group'      => Group::all()->keyBy(fn($i) => strtolower($i->group_name)),
+                'division'   => Division::all()->keyBy(fn($i) => strtolower($i->division_name)),
+                'department' => Department::all()->keyBy(fn($i) => strtolower($i->department_name)),
+                'section'    => Section::all()->keyBy(fn($i) => strtolower($i->section_name)),
+                'position'   => Position::all()->keyBy(fn($i) => strtolower($i->position_name)),
+                'level'      => Level::all()->keyBy(fn($i) => strtolower($i->level_name)),
+                'jobtype'    => JobType::all()->keyBy(fn($i) => strtolower($i->job_type_name)),
+                'workhour'   => WorkHour::all()->keyBy(fn($i) => strtolower($i->work_hour)),
+                'line'       => Line::all()->keyBy(fn($i) => strtolower($i->line_name)),
+                'gol'        => Golongan::all()->keyBy(fn($i) => strtolower($i->golongan_name)),
+                'subgol'     => SubGolongan::all()->keyBy(fn($i) => strtolower($i->sub_golongan_name)),
+                'role'       => DakarRole::all()->keyBy(fn($i) => strtolower($i->role_name)),
+            ];
+
+            // =====================================
+            // WRAP SEMUA DALAM TRANSACTION
+            // =====================================
+            DB::beginTransaction();
+
+            foreach ($rows as $row) {
+
+                // ========================
+                // USER
+                // ========================
+                $user = User::updateOrCreate(
+                    ['npk' => (string)$row[0]],
+                    [
+                        'fullname' => $row[1],
+                        'username' => $row[0],
+                        'email' => $row[2],
+                        'join_date' => $this->parseExcelDate($row[3]),
+                        'password' => 'Avi123!',
+                        'password_hash' => bcrypt('Avi123!'),
+                    ]
+                );
+
+                // ========================
+                // DETAIL (NO QUERY RAW LAGI)
+                // ========================
+                $gender = $row[5] == 'L' ? 0 : ($row[5] == 'P' ? 1 : null);
+
+                EmployeeDetail::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'birth_date' => $this->parseExcelDate($row[4]),
+                        'gender' => $gender,
+                        'birth_place' => $row[6],
+                        'blood_type' => $row[7],
+                        'religion' => $row[31],
+                        'no_jamsostek' => $row[32],
+                        'no_npwp' => $row[33],
+                        'no_ktp' => $row[34],
+                        'no_phone_house' => $row[35],
+                        'no_phone' => $row[36],
+                        'ktp_address' => $row[38],
+                        'current_address' => $row[39],
+                        'emergency_contact' => $row[40],
+                        'tax_status' => $row[41],
+                        'marital_status' => $row[42],
+                        'married_year' => $row[44],
+                        'is_draft' => false,
+                    ]
+                );
+
+                // =====================================
+                // MASTER LOOKUP CEPAT (NO QUERY)
+                // =====================================
+                $group   = $masters['group'][strtolower($row[8])] ?? null;
+                $div     = $masters['division'][strtolower($row[9])] ?? null;
+                $dept    = $masters['department'][strtolower($row[10])] ?? null;
+                $sec     = $masters['section'][strtolower($row[11])] ?? null;
+                $pos     = $masters['position'][strtolower($row[12])] ?? null;
+                $lvl     = $masters['level'][strtolower($row[13])] ?? null;
+                $jtype   = $masters['jobtype'][strtolower($row[14])] ?? null;
+                $work    = $masters['workhour'][strtolower($row[15])] ?? null;
+                $line    = $masters['line'][strtolower($row[16])] ?? null;
+                $gol     = $masters['gol'][strtolower($row[17])] ?? null;
+
+                $subgolInput = strtolower(preg_replace('/(\d)([a-zA-Z])/', '$1 $2', $row[18]));
+                $subgol   = $masters['subgol'][$subgolInput] ?? null;
+
+                $role = $masters['role'][strtolower($row[30])] ?? null;
+
+                // role sync
+                if ($role) {
+                    $user->dakarRole()->sync([$role->id]);
+                }
+
+                // =====================================
+                // JOB LOOP OPTIMIZED
+                // =====================================
+
+                $lastJob = EmployeeJob::where('user_id', $user->id)
+                    ->latest('start_date')
+                    ->first();
+
+                for ($i = 0; $i < 5; $i++) {
+                    $start = $this->parseExcelDate($row[20 + $i * 2]);
+                    $end   = $this->parseExcelDate($row[21 + $i * 2]);
+
+                    if (!$start || !$end) continue;
+
+                    $reqDummy = new Request([
+                        'job_status' => strtolower($row[19]),
+                        'position_id' => $pos?->id,
+                        'level_id' => $lvl?->id,
+                        'department_id' => $dept?->id,
+                        'division_id' => $div?->id,
+                    ]);
+
+                    $notes = $this->determineJobNotes(
+                        $lastJob,
+                        strtolower($role?->role_name ?? ''),
+                        $reqDummy,
+                        $lastJob === null
+                    );
+
+                    $job = EmployeeJob::updateOrCreate(
+                        [
+                            'user_id' => $user->id,
+                            'start_date' => $start,
+                            'end_date' => $end
+                        ],
+                        [
+                            'group_id' => $group?->id,
+                            'division_id' => $div?->id,
+                            'department_id' => $dept?->id,
+                            'section_id' => $sec?->id,
+                            'position_id' => $pos?->id,
+                            'role_level_id' => $lvl?->id,
+                            'job_type_id' => $jtype?->id,
+                            'line_id' => $line?->id,
+                            'golongan_id' => $gol?->id,
+                            'sub_golongan_id' => $subgol?->id,
+                            'job_status' => strtolower($row[19]),
+                            'user_dakar_role' => strtolower($row[30]),
+                            'is_onboarding_completed' => true,
+                            'employment_status' => true,
+                            'work_hour_code_id' => $work?->id,
+                            'notes' => $notes
+                        ]
+                    );
+
+                    $lastJob = $job;
+                }
+            }
+
+            DB::commit();
+
+            return back()->with('success', 'Import berhasil!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Import failed: ' . $e->getMessage());
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+
+    public function importOld(Request $request)
     {
         try {
             $request->validate([
@@ -426,14 +599,16 @@ class ImportController extends Controller
                 //     return 'Extension Contract';
                 // }
 
-                $isTransfer = (
+               $isTransfer =
+                (
                     $lastJob->position_id !== $request->position_id ||
                     $lastJob->role_level_id !== $request->level_id ||
                     $lastJob->department_id !== $request->department_id ||
                     $lastJob->division_id !== $request->division_id
-                ) && (
-                    $lastJob->end_date->format('Y-m-d') === $request->end_date
-                );
+                ) &&
+                $lastJob->end_date !== null &&
+                $lastJob->end_date->format('Y-m-d') === $request->end_date;
+
 
                 if ($isTransfer) {
                     return 'Employee Transfer';
