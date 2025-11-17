@@ -146,11 +146,35 @@ class ImportController extends Controller
                     ->first();
 
                 for ($i = 0; $i < 5; $i++) {
+
                     $start = $this->parseExcelDate($row[20 + $i * 2]);
                     $end   = $this->parseExcelDate($row[21 + $i * 2]) ?? null;
 
                     if (!$start) continue;
 
+                    // ===========================
+                    // SET JOB SEBELUMNYA NON-AKTIF
+                    // ===========================
+                    if ($lastJob) {
+                        $lastJob->employment_status = false;
+                        $lastJob->saveQuietly();
+                    }
+
+                    // ===========================
+                    // TENTUKAN EMPLOYMENT STATUS
+                    // ===========================
+                    $employmentStatus = true; // default aktif
+
+                    if ($end) {
+                        // jika end_date < hari ini → non-aktif
+                        if (Carbon::parse($end)->lt(Carbon::today())) {
+                            $employmentStatus = false;
+                        }
+                    }
+
+                    // ===========================
+                    // PERSIAPAN NOTES
+                    // ===========================
                     $reqDummy = new Request([
                         'job_status' => strtolower($row[19]),
                         'position_id' => $pos?->id,
@@ -166,13 +190,16 @@ class ImportController extends Controller
                         $lastJob === null
                     );
 
+                    // ===========================
+                    // SIMPAN JOB
+                    // ===========================
                     $job = EmployeeJob::updateOrCreate(
                         [
                             'user_id' => $user->id,
                             'start_date' => $start,
                         ],
                         [
-                            'end_date' => $end ?? null,
+                            'end_date' => $end,
                             'group_id' => $group?->id,
                             'division_id' => $div?->id,
                             'department_id' => $dept?->id,
@@ -186,15 +213,16 @@ class ImportController extends Controller
                             'job_status' => strtolower($row[19]),
                             'user_dakar_role' => strtolower($row[30]),
                             'is_onboarding_completed' => 1,
-                            'employment_status' => 1,
+                            'employment_status' => $employmentStatus, // <-- hasil cek
                             'work_hour_code_id' => $work?->id,
                             'notes' => $notes,
                             'npk' => (string)$row[0],
                         ]
                     );
-                    
+
                     $lastJob = $job;
                 }
+
 
             }
 
