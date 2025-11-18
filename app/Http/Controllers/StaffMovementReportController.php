@@ -555,7 +555,7 @@ class StaffMovementReportController extends Controller
 
         $expiredContracts = EmployeeJob::with(['user', 'department', 'position'])
             ->whereBetween('end_date', [$date, $endDate])
-            ->whereNull('resign_date')
+            // ->whereNull('resign_date')
             // ->where('employment_status', true)
             ->whereHas('user')
             ->get();
