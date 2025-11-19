@@ -23,32 +23,36 @@ class EmployeeBirthdayController extends Controller
             'user.employeeJob.jobType',
             'user.employeeJob.position'
         ])
-            ->whereMonth('birth_date', (int) $birthMonth)
-            ->whereHas('user.employeeJob', function ($query) {
-                $query->where('employment_status', true);
-                $query->where('user_dakar_role', 'karyawan');
-            })
-            ->get()
-            ->map(function ($detail) {
-                $user = $detail->user;
-                $job = $user && $user->employeeJob ? $user->employeeJob->last() : null;
+        ->whereMonth('birth_date', (int) $birthMonth)
+        ->whereHas('user.employeeJob', function ($query) {
+            $query->where('employment_status', true);
+            $query->where('user_dakar_role', 'karyawan');
+        })
+        ->get()
+        ->map(function ($detail) {
+            $user = $detail->user;
+            $job = $user && $user->employeeJob ? $user->employeeJob->last() : null;
 
-                return [
-                    'id' => $user ? $user->id : 'N/A',
-                    'npk' => $user ? $user->npk : 'N/A',
-                    'name' => $user ? $user->fullname : 'N/A',
-                    'status_karyawan' => $job ? $job->job_status : 'N/A',
-                    'jabatan' => $job && $job->position ? $job->position->position_name : 'N/A',
-                    'department' => $job && $job->department ? $job->department->department_name : 'N/A',
-                    'group' => $job && $job->group ? $job->group->group_name : 'N/A',
-                    'type' => $job && $job->jobType ? $job->jobType->job_type_name : 'N/A',
-                    'gender' => $detail->gender == 1 ? 'P' : ($detail->gender == 0 ? 'L' : 'N/A'),
-                    'birth_date' => Carbon::parse($detail->birth_date)->isoFormat('D MMMM Y'),
-                ];
-            });
+            return [
+                'id' => $user ? $user->id : 'N/A',
+                'npk' => $user ? $user->npk : 'N/A',
+                'name' => $user ? $user->fullname : 'N/A',
+                'status_karyawan' => $job ? $job->job_status : 'N/A',
+                'jabatan' => $job && $job->position ? $job->position->position_name : 'N/A',
+                'department' => $job && $job->department ? $job->department->department_name : 'N/A',
+                'group' => $job && $job->group ? $job->group->group_name : 'N/A',
+                'type' => $job && $job->jobType ? $job->jobType->job_type_name : 'N/A',
+                'gender' => $detail->gender == 1 ? 'P' : ($detail->gender == 0 ? 'L' : 'N/A'),
+                'birth_date' => Carbon::parse($detail->birth_date)->isoFormat('D MMMM Y'),
+                'birth_raw' => Carbon::parse($detail->birth_date), // UNTUK SORTING
+            ];
+        })
+        ->sortBy(function ($item) {
+            return $item['birth_raw']->format('md'); // sort berdasarkan bulan+hari
+        })
+        ->values(); // reset index
         
-            // dd($employeeDetails);
-            return view('admin.reporting.birthday', compact('employeeDetails', 'birthMonth'));
+        return view('admin.reporting.birthday', compact('employeeDetails', 'birthMonth'));
 
     }
 
