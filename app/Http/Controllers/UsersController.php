@@ -836,7 +836,7 @@ class UsersController extends Controller
             $user = User::findOrFail($id);
 
             $user->email = $request->email;
-            $user->fullname = $request->fullname;
+            $user->fullname = ucwords(strtolower($request->fullname));
             $user->update();
 
             // Simpan detail karyawan
@@ -1206,7 +1206,7 @@ class UsersController extends Controller
             $user = User::findOrFail($id);
             $user->update([
                 'email'    => $request->email,
-                'fullname' => $request->fullname,
+                'fullname' => ucwords(strtolower($request->fullname)),
             ]);
 
             // Update Employee Detail
@@ -1960,7 +1960,7 @@ class UsersController extends Controller
             $user = User::with('employeeDetail')->findOrFail($id);
 
             $user->update([
-                'fullname' => $request->fullname,
+                'fullname' => ucwords(strtolower($request->fullname)),
                 'email'    => $request->email,
             ]);
 
