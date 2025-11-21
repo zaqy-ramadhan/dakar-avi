@@ -176,19 +176,22 @@
             <option value="K3"
                 {{ old('tax_status', $employeeDetail->tax_status ?? '') == 'K3' ? 'selected' : '' }}>K/3 kawin dan 3
                 tanggungan</option>
-            <option value="K10"
-                {{ old('tax_status', $employeeDetail->tax_status ?? '') == 'K10' ? 'selected' : '' }}>K/I/0 penghasilan
-                suami dan istri digabung dan tidak ada tanggungan</option>
-            <option value="K11"
-                {{ old('tax_status', $employeeDetail->tax_status ?? '') == 'K11' ? 'selected' : '' }}>K/I/1 penghasilan
-                suami dan istri digabung dan 1 tanggungan</option>
-            <option value="K12"
-                {{ old('tax_status', $employeeDetail->tax_status ?? '') == 'K12' ? 'selected' : '' }}>K/I/2 penghasilan
-                suami dan istri digabung dan 2 tanggungan</option>
-            <option value="K13"
-                {{ old('tax_status', $employeeDetail->tax_status ?? '') == 'K13' ? 'selected' : '' }}>K/I/3 penghasilan
-                suami dan istri digabung dan 3 tanggungan</option>
-
+            <option value="KI0"
+                {{ in_array(old('tax_status', $employeeDetail->tax_status ?? ''), ['K10', 'KI0']) ? 'selected' : '' }}>
+                K/I/0 penghasilan suami dan istri digabung dan tidak ada tanggungan
+            </option>
+           <option value="KI1"
+                {{ in_array(old('tax_status', $employeeDetail->tax_status ?? ''), ['K11', 'KI1']) ? 'selected' : '' }}>
+                K/I/1 penghasilan suami dan istri digabung dan 1 tanggungan
+            </option>
+            <option value="KI2"
+                {{ in_array(old('tax_status', $employeeDetail->tax_status ?? ''), ['K12', 'KI2']) ? 'selected' : '' }}>
+                K/I/2 penghasilan suami dan istri digabung dan 2 tanggungan
+            </option>
+            <option value="KI3"
+                {{ in_array(old('tax_status', $employeeDetail->tax_status ?? ''), ['K13', 'KI3']) ? 'selected' : '' }}>
+                K/I/3 penghasilan suami dan istri digabung dan 3 tanggungan
+            </option>
         </select>
         <small class="text-muted">Wajib diisi</small>
         @error('tax_status')
