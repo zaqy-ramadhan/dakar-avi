@@ -50,7 +50,7 @@
                                     </li>
                                 @endforeach
                             </ul>
-                            @if (Request::is('*onboarding*'))
+                            @if (Request::is('*onboarding*') && in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
                                 <div class="mt-2 mt-lg-0 ms-auto">
                                     <a class="btn btn-primary" href="{{ route('admin.user.create') }}">Add Karyawan</a>
                                 </div>

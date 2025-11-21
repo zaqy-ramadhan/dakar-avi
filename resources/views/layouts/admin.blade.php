@@ -124,7 +124,7 @@
                             @endif
                         </ul>
 
-                        @if (Auth::user()->getRole() != 'admin 4')
+                        {{-- @if (Auth::user()->getRole() != 'admin 4') --}}
 
                             <ul id="sidebarnav">
                                 <li class="nav-small-cap">
@@ -141,7 +141,7 @@
                                     </a>
                                 </li>
 
-                                @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
+                                @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
                                     <li class="sidebar-item">
                                         <a class="sidebar-link {{ Request::is('*employment*') ? 'active' : '' }}"
                                             href="{{ route('users.index.employment') }}" aria-expanded="false">
@@ -164,7 +164,7 @@
                                 </li>
                             </ul>
 
-                        @endif
+                        {{-- @endif --}}
 
                         @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
                             <ul id="sidebarnav">
@@ -218,6 +218,7 @@
                                     </a>
                                 </li>
 
+                                @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
                                 <li class="sidebar-item">
                                     <a class="sidebar-link {{ Request::is('*payroll-pemagangan*') ? 'active' : '' }}"
                                         href="/payroll-pemagangan" aria-expanded="false">
@@ -227,6 +228,7 @@
                                         <span class="hide-menu">Payroll Pemagangan</span>
                                     </a>
                                 </li>
+                                @endif
                             </ul>
                             <ul id="sidebarnav">
                                 <li class="nav-small-cap">
