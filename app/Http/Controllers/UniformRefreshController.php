@@ -45,6 +45,8 @@ class UniformRefreshController extends Controller
                         'npk' => $user?->npk ?? 'N/A',
                         'name' => $user?->fullname ?? 'N/A',
                         'department' => $inventory->employeeJob->department->department_name ?? 'N/A',
+                        'los' => $user?->LOS(),
+                        'status' => $inventory->employeeJob->job_status ?? 'N/A',
                     ];
                 })
                 ->unique('id') // pakai 'id' karena kita kembalikan id user
@@ -58,6 +60,8 @@ class UniformRefreshController extends Controller
                         'NPK' => $item['npk'],
                         'Nama' => $item['name'],
                         'Departemen' => $item['department'],
+                        'Status' => $item['status'],
+                        'LOS' => $item['los'],
                     ];
                 });                
 

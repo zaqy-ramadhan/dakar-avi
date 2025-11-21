@@ -27,6 +27,8 @@
                             <th>NPK</th>
                             <th>Name</th>
                             <th>Department</th>
+                            <th>Status</th>
+                            <th>LOS</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -37,6 +39,8 @@
                                 <td>{{ $employee['npk'] }}</td>
                                 <td>{{ $employee['name'] }}</td>
                                 <td>{{ $employee['department'] }}</td>
+                                <td>{{ $employee['status'] }}</td>
+                                <td>{{ $employee['los'] }}</td>
                                 <td>
                                     <a href="{{ route('users.index.employment.detail', $employee['id']) }}"
                                         class="btn btn-sm btn-outline-primary"><i
@@ -45,7 +49,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center">Tidak ada data karyawan untuk refresh seragam.</td>
+                                <td colspan="7" class="text-center">Tidak ada data karyawan untuk refresh seragam.</td>
                             </tr>
                         @endforelse
                     </tbody>
