@@ -197,7 +197,7 @@ class UserDataTables extends DataTable
             ->columns($this->getColumns())
             ->responsive(true)
             ->minifiedAjax()
-            ->orderBy(1)
+            ->orderBy(index: 1)
             ->selectStyleSingle();
     }
 

@@ -284,6 +284,7 @@
         <script>
             $(document).ready(function() {
                 var table = $('#datatable').DataTable({
+                    order: [[1, 'asc']],
                     processing: true,
                     serverSide: true,
                     pageLength: 5,

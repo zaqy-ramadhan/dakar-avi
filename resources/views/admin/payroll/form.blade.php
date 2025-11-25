@@ -42,8 +42,9 @@
                         <table class="table table-bordered align-middle">
                             <thead>
                                 <tr>
-                                    <th>Employee</th>
+                                     <th>No</th>
                                     <th>NPK</th>
+                                    <th>Employee</th>
                                     <th>Work Days</th>
                                     <th>Attendance</th>
                                     <th>Basic Salary</th>
@@ -231,11 +232,14 @@
                         `<button type="button" class="btn btn-outline-danger btn-sm remove-item"><i class="ti ti-trash"></i></button>`;
                 }
                 let defaultBasic = data.basic_salary ?? 2500000;
+                
+                let rowNumber = $('#items-container tr').length + 1;
 
                 let newRow = $(`
             <tr class="item-row">
-                <td>${createEmpDropdown(selectedId, isView)}</td>
+                 <td class="row-number">${rowNumber}</td>
                 <td><input type="text" name="npk[]" class="form-control npk" value="${data.npk ?? ''}" readonly></td>
+                <td>${createEmpDropdown(selectedId, isView)}</td>
                 <td><input type="number" name="work_days[]" class="form-control workdays" ${isView ? 'readonly' : ''} min="0" value="${data.work_days ?? ''}"></td>
                 <td><input type="number" name="attendance[]" class="form-control attendance" ${isView ? 'readonly' : ''} min="0" value="${data.total_attend ?? ''}"></td>
                 <td>

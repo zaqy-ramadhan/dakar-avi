@@ -92,6 +92,10 @@ class PayrollController extends Controller
                 }
             ])
             ->get()
+            ->sortBy(function ($user) {
+                return intval(preg_replace('/\D/', '', $user->npk));
+            })
+            ->values() 
             ->map(function ($user) {
                 $wage = $user->latestEmployeeJob->jobWageAllowance[0]?->amount ?? 0;
                 $basic_salary = (int) preg_replace('/\D/', '', $wage);
@@ -104,6 +108,8 @@ class PayrollController extends Controller
                     'basic_salary' => $basic_salary,
                 ];
             });
+
+            // dd($employee);
 
         $mode = 'create';
         $payroll = null;
