@@ -100,7 +100,7 @@
                         }
                     },
                     order: [
-                        [4, 'desc']
+                        [6, 'desc']
                     ],
                     columns: [{
                             data: 'DT_RowIndex',

@@ -42,7 +42,10 @@ class EmployeeDetailReportController extends Controller
             'employeeJob.golongan',
             'employeeDetail',
             'employeeEducations',
-        ])->whereHas('employeeJob')
+        ])->whereHas('employeeJob', function ($q) use ($endOfMonth) {
+            $q->whereDate('start_date', '<=', $endOfMonth);
+        })
+
             ->when(
                 request('department'),
                 fn($q, $val) =>

@@ -724,11 +724,14 @@ class User extends Authenticatable
     public function inventory_set_status()
     {
         $nonSpecific = $this->nonSpecificInventories();
-        $job = $this->firstEmployeeJob;
+        // $job = $this->firstEmployeeJob;
         // dd($nonSpecific);
-        if ($nonSpecific->isNotEmpty() && $job) {
+        // if ($nonSpecific->isNotEmpty() && $job) {
+        if ($nonSpecific->isNotEmpty()) {
+
             $date = $nonSpecific
-                ->where('employee_job_id', $job->id)
+                // ->where('employee_job_id', $job->id)
+                ->where('user_id', $this->id)
                 ->reverse()
                 ->first()?->updated_at;
 
@@ -745,9 +748,11 @@ class User extends Authenticatable
     public function inventory_acc_status()
     {
         $nonSpecific = $this->nonSpecificInventories();
-        $job = $this->firstEmployeeJob;
+        // $job = $this->firstEmployeeJob;
         // dd($nonSpecific);
-        if ($nonSpecific->isNotEmpty() && $job) {
+        // if ($nonSpecific->isNotEmpty() && $job) {
+        if ($nonSpecific->isNotEmpty()) {
+
             $active = $nonSpecific->reject(function ($item) {
                 return in_array($item->status, ['Dikembalikan', 'Dinonaktifkan']);
             });
