@@ -35,6 +35,16 @@ class UserBoardingDataTables extends DataTable
                 });
             })
 
+            ->orderColumn('position_name', function ($query, $direction) {
+                $query->orderBy(
+                    EmployeeJob::select('dakar_positions.position_name')
+                        ->join('dakar_positions', 'dakar_positions.id', '=', 'dakar_employee_job.position_id')
+                        ->whereColumn('dakar_employee_job.user_id', 'users.id')
+                        ->limit(1),
+                    $direction
+                );
+            })
+
             ->addColumn('start_date', function ($user) {
                 return $user->firstEmployeeJob && $user->firstEmployeeJob->start_date
                     ? $user->firstEmployeeJob->start_date->isoFormat('D MMMM YYYY')
