@@ -84,7 +84,7 @@
                         {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> --}}
                     </div>
                     <div class="modal-body">
-                        <a href="{{ route('kp') }}" target="_blank"
+                        <a href="{{ route('user.data-permission-pdf', Auth::user()->id) }}" target="_blank"
                             class="btn btn-outline-primary mb-4 fs-4 ms-2">Document Preview</a>
                         <canvas id="signature-pad"></canvas>
                         <br>
