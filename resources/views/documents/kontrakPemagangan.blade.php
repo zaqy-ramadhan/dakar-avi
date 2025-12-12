@@ -449,7 +449,7 @@
         <p>Demikianlah Perjanjian ini dibuat dan ditandatangani oleh Para Pihak dalam rangkap 2 (dua) dan masing-masing
             mempunyai kekuatan hukum yang sama. Satu untuk Pihak Pertama dan satu lainnya untuk Pihak Kedua.</p>
 
-        <div class="signature" style="margin-right: 240px">
+        <div class="signature" style="margin-right: 340px">
             <div>Pihak Pertama,</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}"
                 alt="Tanda Tangan Pihak Pertama"style="width: auto; height: 30px; margin-bottom: 50px; margin-top: 30px;">
@@ -467,13 +467,13 @@
             <div>Mengetahui dan Mengesahkan,</div>
             <div>Kepala Dinas Tenaga Kerja</div>
             <div>Kabupaten Bogor</div>
-            <div style="height: 60px;"></div>
+            <div style="height: 100px;"></div>
             <div>{{ $disnaker?->nama ?? '-' }}</div>
             <div>{{ $disnaker?->jabatan ?? '-' }}</div>
             <div>NIP. {{ $disnaker?->nip ?? '-' }}</div>
         </div>
 
-        <div style="text-align: right; margin-top: 190px;"><span>4</span></div>
+        <div style="text-align: right; margin-top: 150px;"><span>4</span></div>
         <table>
             <tr>
                 <td>
