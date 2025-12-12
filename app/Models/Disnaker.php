@@ -13,6 +13,7 @@ class Disnaker extends Model
     protected $fillable = [
         "nama",
         "nip",
+        "jabatan",
     ];
 
 }

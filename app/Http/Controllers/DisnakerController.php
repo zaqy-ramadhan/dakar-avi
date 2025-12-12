@@ -23,7 +23,8 @@ class DisnakerController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'nip' => 'required|string|max:255'
+            'nip' => 'required|string|max:255',
+            'jabatan' => 'nullable|string|max:255',
         ]);
 
         Disnaker::create($request->all());
@@ -38,7 +39,8 @@ class DisnakerController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'nip' => 'required|string|max:255'
+            'nip' => 'required|string|max:255',
+            'jabatan' => 'nullable|string|max:255',
         ]);
 
         $disnaker = Disnaker::findOrFail($id);

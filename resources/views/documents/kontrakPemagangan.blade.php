@@ -469,6 +469,7 @@
             <div>Kabupaten Bogor</div>
             <div style="height: 60px;"></div>
             <div>{{ $disnaker?->nama ?? '-' }}</div>
+            <div>{{ $disnaker?->jabatan ?? '-' }}</div>
             <div>NIP. {{ $disnaker?->nip ?? '-' }}</div>
         </div>
 

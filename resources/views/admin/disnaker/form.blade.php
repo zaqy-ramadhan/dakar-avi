@@ -15,6 +15,11 @@
                         value="{{ $disnaker ? $disnaker->nama : old('nama') }}" required>
                 </div>
                 <div class="form-group mt-3">
+                    <label for="jabatan">Jabatan</label>
+                    <input type="text" class="form-control" id="jabatan" name="jabatan"
+                        value="{{ $disnaker ? $disnaker->jabatan : old('jabatan') }}">
+                </div>
+                <div class="form-group mt-3">
                     <label for="nip">NIP</label>
                     <input type="text" class="form-control" id="nip" name="nip"
                         value="{{ $disnaker ? $disnaker->nip : old('nip') }}" required>
