@@ -449,7 +449,7 @@
         <p>Demikianlah Perjanjian ini dibuat dan ditandatangani oleh Para Pihak dalam rangkap 2 (dua) dan masing-masing
             mempunyai kekuatan hukum yang sama. Satu untuk Pihak Pertama dan satu lainnya untuk Pihak Kedua.</p>
 
-        <div class="signature" style="margin-right: 340px">
+        <div class="signature" style="margin-right: 260px">
             <div>Pihak Pertama,</div>
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}"
                 alt="Tanda Tangan Pihak Pertama"style="width: auto; height: 30px; margin-bottom: 50px; margin-top: 30px;">
