@@ -101,7 +101,7 @@
         </div>
 
         <div class="row mb-3">
-            <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+            <div class="col-sm-3 col-md-3 col-lg-2 mb-3">
                 <label for="" class="form-label">Group</label>
                 <select name="group_id" id="group_id" class="form-select"
                     @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
@@ -116,7 +116,7 @@
                 @enderror
             </div>
 
-            <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+            <div class="col-sm-3 col-md-3 col-lg-2 mb-3">
                 <label for="" class="form-label">Line</label>
                 <select name="line_id" id="line_id" class="form-select"
                     @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
@@ -157,6 +157,14 @@
                     @endforeach
                 </select>
                 @error('sub_golongan_id')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                <label for="permanent_docs" class="form-label">Dokumen / SK </label>
+                <input type="file" class="form-control" id="permanent_docs" name="permanent_docs" @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
+                @error('permanent_docs')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
             </div>
@@ -250,13 +258,6 @@
                     <option @if (optional($user->employeeJob?->last())->employee_transfer == 'promosi') selected @endif value="promosi">Promosi</option>
                     <option @if (optional($user->employeeJob?->last())->employee_transfer == 'kartap') selected @endif value="kartap">Kartap</option>
                 </select>
-            </div>
-            <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
-                <label for="permanent_docs" class="form-label">Dokumen / SK </label>
-                <input type="file" class="form-control" id="permanent_docs" name="permanent_docs" @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
-                @error('permanent_docs')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
             </div>
         </div>
     </div>
