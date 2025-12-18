@@ -117,7 +117,7 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                        <div class="col-sm-3 col-md-2 col-lg-2 mb-3">
                             <label for="" class="form-label">Group</label>
                             <select name="group_id" id="group_id" class="form-select"
                                 @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
@@ -133,7 +133,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                        <div class="col-sm-3 col-md-2 col-lg-2 mb-3">
                             <label for="" class="form-label">Line</label>
                             <select name="line_id" id="line_id" class="form-select"
                                 @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
@@ -180,19 +180,7 @@
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div>
 
-                    <div class="row mb-3">
-                        <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
-                            <label for="" class="form-label">Employment Note</label>
-                            <select class="form-select" name="employee_transfer" id="">
-                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'baru') selected @endif value="baru">Baru</option>
-                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'ekstensi') selected @endif value="ekstensi">Ekstensi</option>
-                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'mutasi') selected @endif value="mutasi">Mutasi</option>
-                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'promosi') selected @endif value="promosi">Promosi</option>
-                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'kartap') selected @endif value="kartap">Kartap</option>
-                            </select>
-                        </div>
                         <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
                             <label for="doc_sk" class="form-label">Dokumen / SK </label>
                             <input type="file" class="form-control" id="doc_sk" name="doc_sk">
@@ -302,6 +290,17 @@
                         @error('status')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
+                    </div>
+
+                    <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                            <label for="" class="form-label">Employment Note</label>
+                            <select class="form-select" name="employee_transfer" id="">
+                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'baru') selected @endif value="baru">Baru</option>
+                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'ekstensi') selected @endif value="ekstensi">Ekstensi</option>
+                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'mutasi') selected @endif value="mutasi">Mutasi</option>
+                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'promosi') selected @endif value="promosi">Promosi</option>
+                                <option @if (optional($user->employeeJob?->last())->employee_transfer == 'kartap') selected @endif value="kartap">Kartap</option>
+                            </select>
                     </div>
 
                     <div id="permanent_fields" style="display: block;" class="col-sm-6 col-md-4 col-lg-4 mb-3">
