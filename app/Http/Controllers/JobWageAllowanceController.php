@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use App\Models\JobWageAllowance;
 use Illuminate\Support\Facades\Auth;
@@ -109,6 +110,15 @@ class JobWageAllowanceController extends Controller
                 'status' => $request->status[$index],
             ]);
         }
+
+        $log = ActivityLog::create([
+            'actor_id' => Auth::user()->id,
+            'employee_id' => $employeeJob->user_id,
+            'note' => 'Filling Wage/Allowance data',
+            'table_name' => 'dakar_employee_job',
+            'table_id' => $employeeJob->id,
+
+        ]);
 
         return redirect()->back()->with('success', 'Wage/Allowance data saved successfully!');
     }

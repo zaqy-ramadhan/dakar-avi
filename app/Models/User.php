@@ -59,6 +59,29 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function activityLogs()
+    {
+        $logs = ActivityLog::with(['actor', 'employee'])
+                ->where('employee_id', $this->id)
+                ->get()
+                ->map(function ($log) {
+                    return [
+                        'id' => $log->id,
+                        'actor' => $log->actor?->fullname,
+                        'employee' => $log->employee?->fullname,
+                        'note' => $log->note,
+                        'table_name' => $log->table_name,
+                        'table_id' => $log->table_id,
+                        'created_at' => $log->created_at->format('d M Y H:i'),
+                    ];
+                });
+        
+        return $logs;
+
+        //return $this->hasMany(ActivityLog::class, 'employee_id', 'id')->orderBy('created_at', 'desc');
+    }
+
     public function getAuthPassword()
     {
         return $this->password_hash;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\User;
@@ -81,6 +82,15 @@ class InventoryController extends Controller
                 'status' => $currentStatusDiterima ?? $currentStatusDikembalikan ?? '-',
             ]);
         }
+
+        $log = ActivityLog::create([
+            'actor_id' => Auth::user()->id,
+            'employee_id' => $user->id,
+            'note' => 'Filling Starter Kit',
+            'table_name' => 'users',
+            'table_id' => $user->id,
+
+        ]);
 
         return redirect()->back()->with('success', 'Inventaris berhasil disimpan.');
     }
@@ -171,6 +181,15 @@ class InventoryController extends Controller
                 ]);
             }
         }
+
+        $log = ActivityLog::create([
+            'actor_id' => Auth::user()->id,
+            'employee_id' => $user->id,
+            'note' => 'Updating Starter Kit',
+            'table_name' => 'users',
+            'table_id' => $user->id,
+
+        ]);
     
         return redirect()->back()->with('success', 'Inventaris berhasil diperbarui.');
     }

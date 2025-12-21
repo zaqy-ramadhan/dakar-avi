@@ -22,6 +22,7 @@ use App\Models\EmployeeInventoryNumber;
 use App\Models\Item;
 use App\Models\JobWageAllowance;
 use App\Exports\UsersBirthdayExport;
+use App\Models\ActivityLog;
 use App\Models\Offboarding;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -655,6 +656,15 @@ class DocumentController extends Controller
                     ->with('success', 'Signature has been created successfully');
             }
 
+             $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $employeeJob->user_id,
+                'note' => 'Signing Document, type: ' . $request->type,
+                'table_name' => 'dakar_job_documents',
+                'table_id' => $jobDoc->id,
+
+            ]);
+
             return redirect()->back()
                 // ->route('users.index.employment.details', $employeeJob->user_id)
                 ->with('success', 'Signature has been created successfully');
@@ -731,6 +741,15 @@ class DocumentController extends Controller
 
             // Simpan ke database
             $user->save();
+
+            $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $user->id,
+                'note' => 'Signing Personal Data Permission',
+                'table_name' => 'users',
+                'table_id' => $user->id,
+
+            ]);
 
             return redirect()->back()
                 ->with('success', 'Signature has been created successfully');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\UserBoardingDataTables;
 use App\DataTables\UserDataTables;
 use App\DataTables\UserOffboardingDataTables;
+use App\Models\ActivityLog;
 use App\Models\CostCenter;
 use App\Models\DakarRole;
 use App\Models\Department;
@@ -626,6 +627,13 @@ class UsersController extends Controller
             //     'user_id' => $user->id,
             //     'position_id' => $request->position_id
             // ]);
+            $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $user->id,
+                'note' => 'Creating Employee Account',
+                'table_name' => 'users',
+                'table_id' => $user->id,
+            ]);
 
             return redirect()->back()->with('success', 'User created successfully');
         } catch (\Exception $e) {
@@ -1078,6 +1086,14 @@ class UsersController extends Controller
             // DB::commit();
 
             // return redirect()->route('users.index')->with('success', 'User detail created successfully');
+            $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $user->id,
+                'note' => 'Filling Personal Data',
+                'table_name' => 'users',
+                'table_id' => $user->id,
+
+            ]);
 
             return response()->json([
                 'message' => 'User detail created successfully',
@@ -1411,6 +1427,14 @@ class UsersController extends Controller
                 }
             }
 
+            $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $user->id,
+                'note' => 'Updating Personal Data',
+                'table_name' => 'users',
+                'table_id' => $user->id,
+            ]);
+
             // DB::commit();
 
             return response()->json([
@@ -1644,6 +1668,14 @@ class UsersController extends Controller
                     'resign_date' => $lastJob->resign_date ?? $request->start_date
                 ]);
             }
+
+            $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $user->id,
+                'note' => 'Filling Employment Data',
+                'table_name' => 'dakar_employee_job',
+                'table_id' => $job->id,
+            ]);
             
             DB::commit();
             return redirect()->back()
@@ -1745,6 +1777,14 @@ class UsersController extends Controller
                 }
             }
 
+            $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $user->id,
+                'note' => 'Updating Employment Data',
+                'table_name' => 'dakar_employee_job',
+                'table_id' => $job->id,
+            ]);
+
             DB::commit();
 
             return redirect()->back()->with('success', 'Job Employment updated successfully');
@@ -1758,8 +1798,6 @@ class UsersController extends Controller
             ], 500);
         }
     }
-
-
 
     public function editJob($id)
     {
@@ -1864,6 +1902,16 @@ class UsersController extends Controller
             $employeeJob->resign_date = $request->resign_date;
             $employeeJob->employment_status = false;
             $employeeJob->update();
+            
+            $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $employeeJob?->user_id,
+                'note' => 'Add Out Date to Employment Data',
+                'table_name' => 'dakar_employee_job',
+                'table_id' => $employeeJob->id,
+                
+            ]);
+
             return redirect()->back()->with('success',  'Out date added succesfully');
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while changing the resign date. ' . $e->getMessage())->withInput();
@@ -1899,6 +1947,14 @@ class UsersController extends Controller
                 'password' => bcrypt($request->new_password),
             ]);
 
+            $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $user->id,
+                'note' => 'Updating Password',
+                'table_name' => 'users',
+                'table_id' => $user->id,
+            ]);
+
             return redirect('/')->with('success', 'Password changed successfully.');
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while changing the password. ' . $e->getMessage())->withInput();
@@ -1911,6 +1967,14 @@ class UsersController extends Controller
             $user->update([
                 'password_hash' => bcrypt('Avi123!'),
                 'password' => bcrypt('Avi123!'),
+            ]);
+
+            $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $user->id,
+                'note' => 'Reset Password by Admin',
+                'table_name' => 'users',
+                'table_id' => $user->id,
             ]);
 
             return back()->with('success', 'Password successfully reset.');
@@ -1946,6 +2010,14 @@ class UsersController extends Controller
                 $lastJob->resign_date = null;
                 $lastJob->save();
             }
+
+            $log = ActivityLog::create([
+                'actor_id' => Auth::user()->id,
+                'employee_id' => $user->id,
+                'note' => 'Delete Employment Data',
+                'table_name' => 'dakar_employee_job',
+                'table_id' => $job->id,
+            ]);
 
             return redirect()->back()->with('success', 'Job Employment deleted successfully');
         } catch (\Exception $e) {
