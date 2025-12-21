@@ -64,6 +64,7 @@ class User extends Authenticatable
     {
         $logs = ActivityLog::with(['actor', 'employee'])
                 ->where('employee_id', $this->id)
+                ->orderByDesc('created_at')
                 ->get()
                 ->map(function ($log) {
                     return [

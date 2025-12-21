@@ -73,16 +73,17 @@
 </div>
 
 <div class="modal fade" id="modalActivityLogs" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Activity Logs: {{ $user->fullname }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            
             <div class="modal-body">
                 <div class="table-responsive">
                     <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
-                        <thead>
+                        <thead class="sticky-top bg-white" style="z-index: 1;">
                             <tr class="fw-bold text-muted">
                                 <th>Date</th>
                                 <th>Actor</th>
@@ -94,10 +95,9 @@
                         <tbody>
                             @php
                                 $activityLogs = $user->activityLogs();
-                                // dd($activityLogs);
                             @endphp
                             @forelse($activityLogs as $log)
-                                <tr>
+                                 <tr>
                                     <td>{{ $log['created_at'] }}</td>
                                     <td>{{ $log['actor'] ?? 'Admin' }}</td>
                                     <td>{{ $log['employee'] ?? 'Employee' }}</td>
@@ -106,12 +106,18 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center">No activity logs found.</td>
+                                    <td colspan="5" class="text-center text-muted py-5">
+                                        No activity logs found.
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

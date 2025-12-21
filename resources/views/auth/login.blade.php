@@ -26,17 +26,28 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="mb-4">
+                               <div class="mb-4">
                                     <label for="password" class="form-label">Password</label>
-                                    <input id="password" type="password"
-                                        class="form-control @error('password') is-invalid @enderror" required
-                                        autocomplete="current-password">
+                                    <div class="input-group">
+                                        <input id="password" type="password"
+                                            class="form-control @error('password') is-invalid @enderror" 
+                                            required
+                                            placeholder="Masukkan password"
+                                            autocomplete="current-password">
+                                        
+                                        <button class="btn btn-outline-primary" type="button" id="btnTogglePassword" style="border-left: none;">
+                                            <i class="ti ti-eye-off" id="iconEye"></i>
+                                        </button>
+
+                                        @error('password')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                    
+                                    {{-- Input hidden untuk penampung hasil enkripsi --}}
                                     <input type="hidden" name="password" id="password_encrypted">
-                                    @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">
                                     Sign In
@@ -66,4 +77,31 @@
             document.querySelector("#password").disabled = true;
         });
     </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordInput = document.getElementById('password');
+        const btnToggle = document.getElementById('btnTogglePassword');
+        const iconEye = document.getElementById('iconEye');
+
+        btnToggle.addEventListener('click', function () {
+            // Cek apakah sekarang sedang disensor (type="password")
+            if (passwordInput.type === 'password') {
+                // Buka sensor
+                passwordInput.type = 'text';
+                
+                // Ubah ikon jadi mata terbuka
+                iconEye.classList.remove('ti-eye-off');
+                iconEye.classList.add('ti-eye');
+            } else {
+                // Tutup sensor (kembali ke titik-titik)
+                passwordInput.type = 'password';
+                
+                // Ubah ikon jadi mata coret
+                iconEye.classList.remove('ti-eye');
+                iconEye.classList.add('ti-eye-off');
+            }
+        });
+    });
+</script>
 @endsection

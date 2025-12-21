@@ -13,7 +13,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-12">
                     <label for="old_password" class="form-label">Old Password</label>
                     <input 
-                        type="password" 
+                        type="text" 
                         class="form-control @error('old_password') is-invalid @enderror" 
                         id="old_password" 
                         name="old_password" 
@@ -26,7 +26,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-12 mt-4">
                     <label for="new_password" class="form-label">New Password</label>
                     <input 
-                        type="password" 
+                        type="text" 
                         class="form-control @error('new_password') is-invalid @enderror" 
                         id="new_password" 
                         name="new_password" 
