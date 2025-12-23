@@ -428,7 +428,7 @@ class PayrollController extends Controller
         $start = Carbon::parse($request->start_date);
         $end   = Carbon::parse($request->end_date);
 
-        $employee = User::whereHas('latestEmployeeJob', function ($q) use ($start, $end) {
+        $employee = User::whereHas('employeeJob', function ($q) use ($start, $end) {
             $q->where('user_dakar_role', '!=', 'karyawan')
                 ->where(function ($sub) use ($start, $end) {
                     $sub->whereDate('start_date', '<=', $end)
@@ -439,17 +439,17 @@ class PayrollController extends Controller
                 });
         })
             ->with([
-                'latestEmployeeJob.jobWageAllowance' => function ($q) {
+                'employeeJob.jobWageAllowance' => function ($q) {
                     $q->where('type', 'Uang Saku');
                 },
-                'latestEmployeeJob.position',
-                'latestEmployeeJob.department',
+                'employeeJob.position',
+                'employeeJob.department',
             ])
             ->get()
             ->map(function ($user) {
-                $wage = $user->latestEmployeeJob->jobWageAllowance[0]?->amount ?? 0;
+                $wage = $user->employeeJob->first()->jobWageAllowance[0]?->amount ?? 0;
                 $basic_salary = (int) preg_replace('/\D/', '', $wage);
-                $job = $user->latestEmployeeJob;
+                $job = $user->employeeJob->first();
 
                 if ($job->resign_date) {
                     $status = 'Inactive - ' . Carbon::parse($job->resign_date)->format('d M Y');
