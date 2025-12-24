@@ -262,6 +262,10 @@
                             orderable: true
                         },
                         {
+                            data: 'reason',
+                            orderable: true
+                        },
+                        {
                             data: 'actions',
                             name: 'actions'
                         }

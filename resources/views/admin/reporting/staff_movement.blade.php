@@ -252,11 +252,15 @@
                 },
                 {
                     data: 'fullname',
-                    name: 'fullname'
+                    name: 'fullname',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'npk',
-                    name: 'npk'
+                    name: 'npk',
+                    orderable: true,
+                    searchable: true
                 },
             ];
 
@@ -296,21 +300,21 @@
                     data: 'duration'
                 }],
                 'Extension Contract': [{
-                        data: 'department'
-                    }, {
-                        data: 'position'
-                    }, {
-                        data: 'start_date'
-                    },
-                    {
-                        data: 'end_date'
-                    }, {
-                        data: 'duration'
-                    }, {
-                        data: 'LOS'
-                    }, {
-                        data: 'contract'
-                    }
+                    data: 'department'
+                }, {
+                    data: 'position'
+                }, {
+                    data: 'start_date'
+                },
+                {
+                    data: 'end_date'
+                }, {
+                    data: 'duration'
+                }, {
+                    data: 'LOS'
+                }, {
+                    data: 'contract'
+                }
                 ],
                 'Employee Transfer': [{
                         data: 'last_department'
@@ -383,43 +387,43 @@
                     data: 'status'
                 }],
                 'Onboarding Report': [{
-                        data: 'department'
-                    }, {
-                        data: 'position'
-                    }, {
-                        data: 'start_date'
-                    }, {
-                        data: 'status'
-                    }, {
-                        data: 'deadline_pre'
-                    }, {
-                        data: 'create_employee'
-                    }, {
-                        data: 'employment_data'
-                    }, {
-                        data: 'starter_kit'
-                    }, {
-                        data: 'deadline_on'
-                    }, {
-                        data: 'starter_kit_acc'
-                    },
-                    {
-                        data: 'contract_signature'
-                    },
-                    {
-                        data: 'deadline_post'
-                    }, {
-                        data: 'bpjskes'
-                    }, {
-                        data: 'bpjstk'
-                    }, {
-                        data: 'greatday'
-                    }, {
-                        data: 'eslip'
-                    }
-                    //  {
-                    //     data: 'status'
-                    // }
+                    data: 'department'
+                }, {
+                    data: 'position'
+                }, {
+                    data: 'start_date'
+                }, {
+                    data: 'status'
+                }, {
+                    data: 'deadline_pre'
+                }, {
+                    data: 'create_employee'
+                }, {
+                    data: 'employment_data'
+                }, {
+                    data: 'starter_kit'
+                }, {
+                    data: 'deadline_on'
+                }, {
+                    data: 'starter_kit_acc'
+                },
+                {
+                    data: 'contract_signature'
+                },
+                {
+                    data: 'deadline_post'
+                }, {
+                    data: 'bpjskes'
+                }, {
+                    data: 'bpjstk'
+                }, {
+                    data: 'greatday'
+                }, {
+                    data: 'eslip'
+                }
+                //  {
+                //     data: 'status'
+                // }
                 ],
             };
 

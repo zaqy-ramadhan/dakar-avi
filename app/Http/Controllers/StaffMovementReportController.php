@@ -220,6 +220,30 @@ class StaffMovementReportController extends Controller
         };
     }
 
+    // public function newEmployeeTetap(Request $request)
+    // {
+    //     $date = $request->input('date')
+    //         ? Carbon::parse($request->input('date'))->startOfMonth()
+    //         : Carbon::now()->startOfMonth();
+
+    //     $endDate = $date->copy()->endOfMonth();
+
+    //     $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
+    //         ->where('notes', 'New Employee Tetap')
+    //         ->whereHas('user')
+    //         ->whereBetween('start_date', [$date, $endDate]);
+
+    //     return DataTables::of($query)
+    //         ->addIndexColumn()
+    //         ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
+    //         ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
+    //         ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
+    //         ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
+    //         ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
+    //         ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
+    //         ->make(true);
+    // }
+
     public function newEmployeeTetap(Request $request)
     {
         $date = $request->input('date')
@@ -228,23 +252,88 @@ class StaffMovementReportController extends Controller
 
         $endDate = $date->copy()->endOfMonth();
 
-        $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
-            ->where('notes', 'New Employee Tetap')
-            ->whereHas('user')
+        $query = User::whereHas('employeeJob', function ($q) use ($date, $endDate) {
+            $q->where('notes', 'New Employee Tetap')
             ->whereBetween('start_date', [$date, $endDate]);
+        })
+        ->with(['employeeJob.department', 'employeeJob.position']);
 
-        return DataTables::of($query)
+        $interns = $query->get();
+
+        $interns = $interns->transform(function ($user) use ($date, $endDate) {
+            $job = $user->employeeJob
+            ->where('notes', 'New Employee Tetap')
+            ->whereBetween('start_date', [$date, $endDate])
+            ->first();; 
+            
+            return [
+                'npk' => $user->npk,
+                'fullname' => $user->fullname,
+                'department' => $job->department?->department_name ?? 'N/A',
+                'section' => $job->section?->section_name ?? 'N/A',
+                'position' => $job->position?->position_name ?? 'N/A',
+                'start_date' => $job->start_date ? Carbon::parse($job->start_date)->isoFormat('D MMMM Y') : 'N/A',
+                // 'end_date' => $job->end_date ? Carbon::parse($job->end_date)->isoFormat('D MMMM Y') : 'N/A',
+                'duration' => $job->duration() ?? 'N/A',
+                'notes' => $job->notes ?? 'N/A',
+            ];
+        });
+
+        return DataTables::of($interns)
             ->addIndexColumn()
-            ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
-            ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
-            ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
-            ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
-            ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
-            ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
             ->make(true);
     }
 
 
+    // public function newEmployeeKontrak(Request $request)
+    // {
+    //     $date = $request->input('date')
+    //         ? Carbon::parse($request->input('date'))->startOfMonth()
+    //         : Carbon::now()->startOfMonth();
+
+    //     $endDate = $date->copy()->endOfMonth();
+
+    //     $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
+    //         ->where('notes', 'New Employee Kontrak')
+    //         ->whereHas('user')
+    //         ->whereBetween('start_date', [$date, $endDate]);
+
+    //     return DataTables::of($query)
+    //         ->addIndexColumn()
+    //         ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
+    //         ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
+    //         ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
+    //         ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
+    //         ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
+    //         ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
+    //         ->make(true);
+    // }
+
+    // public function newEmployeePemagangan(Request $request)
+    // {
+    //     $date = $request->input('date')
+    //         ? Carbon::parse($request->input('date'))->startOfMonth()
+    //         : Carbon::now()->startOfMonth();
+
+    //     $endDate = $date->copy()->endOfMonth();
+
+    //     $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
+    //         ->where('notes', 'New Employee Pemagangan')
+    //         ->whereHas('user')
+    //         ->whereBetween('start_date', [$date, $endDate]);
+
+    //     return DataTables::of($query)
+    //         ->addIndexColumn()
+    //         ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
+    //         ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
+    //         ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
+    //         ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
+    //         ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
+    //         ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
+    //         ->make(true);
+    // }
+
+    
     public function newEmployeeKontrak(Request $request)
     {
         $date = $request->input('date')
@@ -253,21 +342,37 @@ class StaffMovementReportController extends Controller
 
         $endDate = $date->copy()->endOfMonth();
 
-        $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
-            ->where('notes', 'New Employee Kontrak')
-            ->whereHas('user')
+        $query = User::whereHas('employeeJob', function ($q) use ($date, $endDate) {
+            $q->where('notes', 'New Employee Kontrak')
             ->whereBetween('start_date', [$date, $endDate]);
+        })->with(['employeeJob.department', 'employeeJob.position']);
 
-        return DataTables::of($query)
+        $interns = $query->get();
+
+        $interns = $interns->transform(function ($user) use ($date, $endDate) {
+            $job = $user->employeeJob
+            ->where('notes', 'New Employee Kontrak')
+            ->whereBetween('start_date', [$date, $endDate])
+            ->first();; 
+            
+            return [
+                'npk' => $user->npk,
+                'fullname' => $user->fullname,
+                'department' => $job->department?->department_name ?? 'N/A',
+                'section' => $job->section?->section_name ?? 'N/A',
+                'position' => $job->position?->position_name ?? 'N/A',
+                'start_date' => $job->start_date ? Carbon::parse($job->start_date)->isoFormat('D MMMM Y') : 'N/A',
+                'end_date' => $job->end_date ? Carbon::parse($job->end_date)->isoFormat('D MMMM Y') : 'N/A',
+                'duration' => $job->duration() ?? 'N/A',
+                'notes' => $job->notes ?? 'N/A',
+            ];
+        });
+
+        return DataTables::of($interns)
             ->addIndexColumn()
-            ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
-            ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
-            ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
-            ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
-            ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
-            ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
             ->make(true);
     }
+
 
     public function newEmployeePemagangan(Request $request)
     {
@@ -277,19 +382,34 @@ class StaffMovementReportController extends Controller
 
         $endDate = $date->copy()->endOfMonth();
 
-        $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
-            ->where('notes', 'New Employee Pemagangan')
-            ->whereHas('user')
+        $query = User::whereHas('employeeJob', function ($q) use ($date, $endDate) {
+            $q->where('notes', 'New Employee Pemagangan')
             ->whereBetween('start_date', [$date, $endDate]);
+        })->with(['employeeJob.department', 'employeeJob.position']);
 
-        return DataTables::of($query)
+        $interns = $query->get();
+
+        $interns = $interns->transform(function ($user) use ($date, $endDate) {
+            $job = $user->employeeJob
+            ->where('notes', 'New Employee Pemagangan')
+            ->whereBetween('start_date', [$date, $endDate])
+            ->first();; 
+            
+            return [
+                'npk' => $user->npk,
+                'fullname' => $user->fullname,
+                'department' => $job->department?->department_name ?? 'N/A',
+                'section' => $job->section?->section_name ?? 'N/A',
+                'position' => $job->position?->position_name ?? 'N/A',
+                'start_date' => $job->start_date ? Carbon::parse($job->start_date)->isoFormat('D MMMM Y') : 'N/A',
+                'end_date' => $job->end_date ? Carbon::parse($job->end_date)->isoFormat('D MMMM Y') : 'N/A',
+                'duration' => $job->duration() ?? 'N/A',
+                'notes' => $job->notes ?? 'N/A',
+            ];
+        });
+
+        return DataTables::of($interns)
             ->addIndexColumn()
-            ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
-            ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
-            ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
-            ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
-            ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
-            ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
             ->make(true);
     }
 
@@ -301,20 +421,58 @@ class StaffMovementReportController extends Controller
 
         $endDate = $date->copy()->endOfMonth();
 
-        $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
-            ->where('notes', 'New Employee Internship')
-            ->whereHas('user')
+        $query = User::whereHas('employeeJob', function ($q) use ($date, $endDate) {
+            $q->where('notes', 'New Employee Internship')
             ->whereBetween('start_date', [$date, $endDate]);
+        })->with(['employeeJob.department', 'employeeJob.position']);
 
-        return DataTables::of($query)
+        $interns = $query->get();
+
+         $interns = $interns->transform(function ($user) use ($date, $endDate) {
+            $job = $user->employeeJob
+            ->where('notes', 'New Employee Internship')
+            ->whereBetween('start_date', [$date, $endDate])
+            ->first();; 
+            
+            return [
+                'npk' => $user->npk,
+                'fullname' => $user->fullname,
+                'department' => $job->department?->department_name ?? 'N/A',
+                'position' => $job->position?->position_name ?? 'N/A',
+                'start_date' => $job->start_date ? Carbon::parse($job->start_date)->isoFormat('D MMMM Y') : 'N/A',
+                'end_date' => $job->end_date ? Carbon::parse($job->end_date)->isoFormat('D MMMM Y') : 'N/A',
+                'duration' => $job->duration() ?? 'N/A',
+                'notes' => $job->notes ?? 'N/A',
+            ];
+        });
+
+        return DataTables::of($interns)
             ->addIndexColumn()
-            ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
-            ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
-            ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
-            ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
-            ->addColumn('duration', fn($job) => $job->duration() ?? 'N/A')
             ->make(true);
     }
+
+    // public function newEmployeeIntern(Request $request)
+    // {
+    //     $date = $request->input('date')
+    //         ? Carbon::parse($request->input('date'))->startOfMonth()
+    //         : Carbon::now()->startOfMonth();
+
+    //     $endDate = $date->copy()->endOfMonth();
+
+    //     $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
+    //         ->where('notes', 'New Employee Internship')
+    //         ->whereHas('user')
+    //         ->whereBetween('start_date', [$date, $endDate]);
+
+    //     return DataTables::of($query)
+    //         ->addIndexColumn()
+    //         ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
+    //         ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
+    //         ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
+    //         ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
+    //         ->addColumn('duration', fn($job) => $job->duration() ?? 'N/A')
+    //         ->make(true);
+    // }
 
     public function EmployeeContractExtension(Request $request)
     {
@@ -612,6 +770,204 @@ class StaffMovementReportController extends Controller
             ->make(true);
     }
 
+    // public function onboardingReport(Request $request)
+    // {
+    //     $date = $request->input('date')
+    //         ? Carbon::parse($request->input('date'))->startOfMonth()
+    //         : Carbon::now()->startOfMonth();
+
+    //     $endDate = $date->copy()->endOfMonth();
+
+    //     $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
+    //         ->whereIn('notes', [
+    //             'New Employee Kontrak',
+    //             'New Employee Tetap',
+    //             'New Employee Pemagangan',
+    //             'New Employee Internship'
+    //         ])
+    //         ->whereHas('user')
+    //         ->whereBetween('start_date', [$date, $endDate]);
+
+    //     return DataTables::of($query)
+    //         ->addIndexColumn()
+    //         ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
+    //         ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
+    //         ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
+    //         ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
+    //         ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
+    //         ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
+    //         ->addColumn('status', fn($job) => $job->contract ?? 'N/A')
+    //         ->addColumn('deadline_pre', function ($job) {
+    //             $user = $job->user;
+    //             $job = $user->firstEmployeeJob;
+    //             if (!$job || !$job->start_date) {
+    //                 return 'N/A';
+    //             }
+    //             $startDate = Carbon::parse($job->start_date)->endOfDay();
+    //             $deadline = $startDate->copy()->subDay();
+    //             return $deadline->isoFormat('D MMMM YYYY') ?? 'N/A';
+    //         })
+
+    //         // STEP: Create Employee
+    //         ->addColumn('create_employee', function ($job) {
+    //             return $this->checkStepStatus($job, fn($user, $job) => $user->created_at, '-1 day');
+    //         })
+    //         ->addColumn('create_employee_overdue_days', function ($job) {
+    //             return $this->getOverdueDays($job, fn($user, $job) => $user->created_at, '-1 day');
+    //         })
+    //         ->addColumn('create_employee_completion_date', function ($job) {
+    //             $user = $job->user;
+    //             return optional($user->created_at)?->format('Y-m-d') ?? '-';
+    //         })
+
+    //         // STEP: Employment Data
+    //         ->addColumn('employment_data', function ($job) {
+    //             return $this->checkStepStatus($job, fn($user, $job) => $user->progressOnboardingAdmin()['progress'] >= 17 ? $job->created_at : null, '-1 day');
+    //         })
+    //         ->addColumn('employment_data_overdue_days', function ($job) {
+    //             return $this->getOverdueDays($job, fn($user, $job) => $user->progressOnboardingAdmin()['progress'] >= 17 ? $job->created_at : null, '-1 day');
+    //         })
+    //         ->addColumn('employment_data_completion_date', function ($job) {
+    //             $user = $job->user;
+    //             return $user->progressOnboardingAdmin()['progress'] >= 17 && $job->created_at ? $job->created_at->format('Y-m-d') : '-';
+    //         })
+
+    //         // STEP: Starter Kit
+    //         ->addColumn('starter_kit', function ($job) {
+    //             return $this->checkStepStatus($job, function ($user, $job) {
+    //                 return optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
+    //             }, '-1 day');
+    //         })
+    //         ->addColumn('starter_kit_overdue_days', function ($job) {
+    //             return $this->getOverdueDays($job, function ($user, $job) {
+    //                 return optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
+    //             }, '-1 day');
+    //         })
+    //         ->addColumn('starter_kit_completion_date', function ($job) {
+    //             $user = $job->user;
+    //             $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
+    //             return $completionDate ? $completionDate->format('Y-m-d') : '-';
+    //         })
+
+    //         ->addColumn('deadline_on', function ($job) {
+    //             $user = $job->user;
+    //             $job = $user->firstEmployeeJob;
+    //             if (!$job || !$job->start_date) return 'N/A';
+    //             return $job->start_date->isoFormat('D MMMM YYYY') ?? 'N/A';
+    //         })
+
+    //         ->addColumn('starter_kit_acc', function ($job) {
+    //             return $this->checkStepStatus($job, function ($user, $job) {
+    //                 return optional($job?->inventory)->where('employee_job_id', $job?->id)?->where('status', 'Diterima')?->last()?->updated_at;
+    //             }, '0 day');
+    //         })
+
+    //          ->addColumn('starter_kit_acc_overdue_days', function ($job) {
+    //             return $this->getOverdueDays($job, function ($user, $job) {
+    //                 return optional($job?->inventory)->where('employee_job_id', $job?->id)?->where('status', 'Diterima')?->last()?->created_at;
+    //             }, '0 day');
+    //         })
+    //         ->addColumn('starter_kit_acc_completion_date', function ($job) {
+    //             $user = $job->user;
+    //             $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)?->where('status', 'Diterima')?->last()?->created_at;
+    //             return $completionDate ? $completionDate->format('Y-m-d') : '-';
+    //         })
+
+    //         ->addColumn('contract_signature', function ($job) {
+    //             return $this->checkStepStatus($job, function ($user, $job) {
+    //                 return optional($job?->jobDoc)
+    //                     ->where('employee_job_id', $job?->id)
+    //                     ->where('type', 'contract')
+    //                     ->whereNotNull('first_party_signature')
+    //                     ?->last()?->updated_at;
+    //             }, '0 day');
+    //         })
+    //         ->addColumn('contract_signature_completion_date', function ($job) {
+    //             $completionDate = optional($job?->jobDoc)
+    //                 ->where('employee_job_id', $job?->id)
+    //                 ->where('type', 'contract')
+    //                 ->whereNotNull('first_party_signature')
+    //                 ?->last()?->updated_at;
+    //             return $completionDate ? $completionDate->format('Y-m-d') : '-';
+    //         })
+    //         ->addColumn('contract_signature_overdue_days', function ($job) {
+    //             return $this->getOverdueDays($job, function ($user, $job) {
+    //                 return optional($job?->jobDoc)
+    //                     ->where('employee_job_id', $job?->id)
+    //                     ->where('type', 'contract')
+    //                     ->whereNotNull('first_party_signature')
+    //                     ?->last()?->updated_at;
+    //             }, '0 day');
+    //         })
+
+    //         ->addColumn('deadline_post', function ($job) {
+    //             $user = $job->user;
+    //             $isKaryawan = $user->dakarRole->contains(function ($role) {
+    //                 return strtolower($role->role_name) === 'karyawan';
+    //             });
+    //             if (!$isKaryawan) return 'N/A';
+
+    //             $job = $user->firstEmployeeJob;
+    //             if (!$job || !$job->start_date) {
+    //                 return 'N/A';
+    //             }
+    //             $startDate = Carbon::parse($job->start_date)->addMonth();
+    //             $deadline = $startDate->copy()->subDay();
+    //             return $deadline->isoFormat('D MMMM YYYY') ?? 'N/A';
+    //         })
+
+    //         // STEP: Greatday
+    //         ->addColumn('greatday', function ($job) {
+    //             return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account Great Day'), '30 day', true);
+    //         })
+    //         ->addColumn('greatday_overdue_days', function ($job) {
+    //             return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account Great Day'), '30 day', true);
+    //         })
+    //         ->addColumn('greatday_completion_date', function ($job) {
+    //             $completion = $this->getItemCompletion($job->user, 'User Account Great Day');
+    //             return $completion ? $completion->format('Y-m-d') : '-';
+    //         })
+
+    //         // STEP: E-Slip
+    //         ->addColumn('eslip', function ($job) {
+    //             return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account E-Slip'), '30 day', true);
+    //         })
+    //         ->addColumn('eslip_overdue_days', function ($job) {
+    //             return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account E-Slip'), '30 day', true);
+    //         })
+    //         ->addColumn('eslip_completion_date', function ($job) {
+    //             $completion = $this->getItemCompletion($job->user, 'User Account E-Slip');
+    //             return $completion ? $completion->format('Y-m-d') : '-';
+    //         })
+
+    //         // STEP: BPJS Kesehatan
+    //         ->addColumn('bpjskes', function ($job) {
+    //             return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS Kesehatan'), '30 day', true);
+    //         })
+    //         ->addColumn('bpjskes_overdue_days', function ($job) {
+    //             return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS Kesehatan'), '30 day', true);
+    //         })
+    //         ->addColumn('bpjskes_completion_date', function ($job) {
+    //             $completion = $this->getItemCompletion($job->user, 'BPJS Kesehatan');
+    //             return $completion ? $completion->format('Y-m-d') : '-';
+    //         })
+
+    //         // STEP: BPJS TK
+    //         ->addColumn('bpjstk', function ($job) {
+    //             return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS TK'), '30 day', true);
+    //         })
+    //         ->addColumn('bpjstk_overdue_days', function ($job) {
+    //             return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS TK'), '30 day', true);
+    //         })
+    //         ->addColumn('bpjstk_completion_date', function ($job) {
+    //             $completion = $this->getItemCompletion($job->user, 'BPJS TK');
+    //             return $completion ? $completion->format('Y-m-d') : '-';
+    //         })
+
+    //         ->rawColumns(['create_employee', 'employment_data', 'starter_kit', 'greatday', 'eslip', 'bpjskes', 'bpjstk', 'starter_kit_acc', 'contract_signature'])
+    //         ->make(true);
+    // }
+
     public function onboardingReport(Request $request)
     {
         $date = $request->input('date')
@@ -620,192 +976,86 @@ class StaffMovementReportController extends Controller
 
         $endDate = $date->copy()->endOfMonth();
 
-        $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
-            ->whereIn('notes', [
+        $query = User::whereHas('employeeJob', function ($q) use ($date, $endDate) {
+            $q->whereIn('notes', [
                 'New Employee Kontrak',
                 'New Employee Tetap',
                 'New Employee Pemagangan',
                 'New Employee Internship'
             ])
-            ->whereHas('user')
             ->whereBetween('start_date', [$date, $endDate]);
+        })->with([
+            'employeeJob.department', 
+            'employeeJob.section', 
+            'employeeJob.position',
+            'employeeJob.inventory',
+            'employeeJob.jobDoc',
+            'dakarRole'
+        ]);
 
-        return DataTables::of($query)
+        $users = $query->get();
+
+        $report = $users->transform(function ($user) use ($date, $endDate) {
+            $job = $user->employeeJob
+                ->whereIn('notes', [
+                    'New Employee Kontrak',
+                    'New Employee Tetap',
+                    'New Employee Pemagangan',
+                    'New Employee Internship'
+                ])
+                ->whereBetween('start_date', [$date, $endDate])
+                ->first();
+
+            $startDate = $job->start_date ? Carbon::parse($job->start_date) : null;
+            $deadlinePreText = $startDate ? $startDate->copy()->subDay()->isoFormat('D MMMM YYYY') : 'N/A';
+            
+            $isKaryawan = $user->dakarRole->contains(fn($role) => strtolower($role->role_name) === 'karyawan');
+            $deadlinePostText = ($isKaryawan && $startDate) ? $startDate->copy()->addMonth()->subDay()->isoFormat('D MMMM YYYY') : 'N/A';
+
+            return [
+                'npk' => $user->npk,
+                'fullname' => $user->fullname,
+                'department' => $job->department?->department_name ?? 'N/A',
+                'section' => $job->section?->section_name ?? 'N/A',
+                'position' => $job->position?->position_name ?? 'N/A',
+                'start_date' => $startDate ? $startDate->isoFormat('D MMM Y') : 'N/A',
+                'status' => $job->contract ?? 'N/A',
+                
+                'deadline_pre' => $deadlinePreText,
+                'deadline_on' => $startDate ? $startDate->isoFormat('D MMMM YYYY') : 'N/A',
+                'deadline_post' => $deadlinePostText,
+
+                'create_employee' => $this->checkStepStatus($job, fn($u, $j) => $u->created_at, '-1 day'),
+                'create_employee_overdue_days' => $this->getOverdueDays($job, fn($u, $j) => $u->created_at, '-1 day'),
+                'create_employee_completion_date' => optional($user->created_at)->format('Y-m-d') ?? '-',
+
+                'employment_data' => $this->checkStepStatus($job, fn($u, $j) => $u->progressOnboardingAdmin()['progress'] >= 17 ? $j->created_at : null, '-1 day'),
+                'employment_data_completion_date' => ($user->progressOnboardingAdmin()['progress'] >= 17 && $job->created_at) ? $job->created_at->format('Y-m-d') : '-',
+
+                'starter_kit' => $this->checkStepStatus($job, function ($u, $j) {
+                    return $j->inventory->where('employee_job_id', $j->id)->last()?->created_at;
+                }, '-1 day'),
+                
+                'starter_kit_acc' => $this->checkStepStatus($job, function ($u, $j) {
+                    return $j->inventory->where('employee_job_id', $j->id)->where('status', 'Diterima')->last()?->updated_at;
+                }, '0 day'),
+
+                'contract_signature' => $this->checkStepStatus($job, function ($u, $j) {
+                    return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'contract')->whereNotNull('first_party_signature')->last()?->updated_at;
+                }, '0 day'),
+
+                'greatday' => $this->checkStepStatus($job, fn($u, $j) => $this->getItemCompletion($u, 'User Account Great Day'), '30 day', true),
+                'eslip'    => $this->checkStepStatus($job, fn($u, $j) => $this->getItemCompletion($u, 'User Account E-Slip'), '30 day', true),
+                'bpjskes'  => $this->checkStepStatus($job, fn($u, $j) => $this->getItemCompletion($u, 'BPJS Kesehatan'), '30 day', true),
+                'bpjstk'   => $this->checkStepStatus($job, fn($u, $j) => $this->getItemCompletion($u, 'BPJS TK'), '30 day', true),
+                
+                'greatday_completion_date' => $this->getItemCompletion($user, 'User Account Great Day')?->format('Y-m-d') ?? '-',
+                'bpjskes_completion_date'  => $this->getItemCompletion($user, 'BPJS Kesehatan')?->format('Y-m-d') ?? '-',
+            ];
+        });
+
+        return DataTables::of($report)
             ->addIndexColumn()
-            ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
-            ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
-            ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
-            ->addColumn('section', fn($job) => $job->section->section_name ?? 'N/A')
-            ->addColumn('position', fn($job) => $job->position->position_name ?? 'N/A')
-            ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
-            ->addColumn('status', fn($job) => $job->contract ?? 'N/A')
-            ->addColumn('deadline_pre', function ($job) {
-                $user = $job->user;
-                $job = $user->firstEmployeeJob;
-                if (!$job || !$job->start_date) {
-                    return 'N/A';
-                }
-                $startDate = Carbon::parse($job->start_date)->endOfDay();
-                $deadline = $startDate->copy()->subDay();
-                return $deadline->isoFormat('D MMMM YYYY') ?? 'N/A';
-            })
-
-            // STEP: Create Employee
-            ->addColumn('create_employee', function ($job) {
-                return $this->checkStepStatus($job, fn($user, $job) => $user->created_at, '-1 day');
-            })
-            ->addColumn('create_employee_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, fn($user, $job) => $user->created_at, '-1 day');
-            })
-            ->addColumn('create_employee_completion_date', function ($job) {
-                $user = $job->user;
-                return optional($user->created_at)?->format('Y-m-d') ?? '-';
-            })
-
-            // STEP: Employment Data
-            ->addColumn('employment_data', function ($job) {
-                return $this->checkStepStatus($job, fn($user, $job) => $user->progressOnboardingAdmin()['progress'] >= 17 ? $job->created_at : null, '-1 day');
-            })
-            ->addColumn('employment_data_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, fn($user, $job) => $user->progressOnboardingAdmin()['progress'] >= 17 ? $job->created_at : null, '-1 day');
-            })
-            ->addColumn('employment_data_completion_date', function ($job) {
-                $user = $job->user;
-                return $user->progressOnboardingAdmin()['progress'] >= 17 && $job->created_at ? $job->created_at->format('Y-m-d') : '-';
-            })
-
-            // STEP: Starter Kit
-            ->addColumn('starter_kit', function ($job) {
-                return $this->checkStepStatus($job, function ($user, $job) {
-                    return optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
-                }, '-1 day');
-            })
-            ->addColumn('starter_kit_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, function ($user, $job) {
-                    return optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
-                }, '-1 day');
-            })
-            ->addColumn('starter_kit_completion_date', function ($job) {
-                $user = $job->user;
-                $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)?->last()?->created_at;
-                return $completionDate ? $completionDate->format('Y-m-d') : '-';
-            })
-
-            ->addColumn('deadline_on', function ($job) {
-                $user = $job->user;
-                $job = $user->firstEmployeeJob;
-                if (!$job || !$job->start_date) return 'N/A';
-                return $job->start_date->isoFormat('D MMMM YYYY') ?? 'N/A';
-            })
-
-            ->addColumn('starter_kit_acc', function ($job) {
-                return $this->checkStepStatus($job, function ($user, $job) {
-                    return optional($job?->inventory)->where('employee_job_id', $job?->id)?->where('status', 'Diterima')?->last()?->updated_at;
-                }, '0 day');
-            })
-
-             ->addColumn('starter_kit_acc_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, function ($user, $job) {
-                    return optional($job?->inventory)->where('employee_job_id', $job?->id)?->where('status', 'Diterima')?->last()?->created_at;
-                }, '0 day');
-            })
-            ->addColumn('starter_kit_acc_completion_date', function ($job) {
-                $user = $job->user;
-                $completionDate = optional($job?->inventory)->where('employee_job_id', $job?->id)?->where('status', 'Diterima')?->last()?->created_at;
-                return $completionDate ? $completionDate->format('Y-m-d') : '-';
-            })
-
-            ->addColumn('contract_signature', function ($job) {
-                return $this->checkStepStatus($job, function ($user, $job) {
-                    return optional($job?->jobDoc)
-                        ->where('employee_job_id', $job?->id)
-                        ->where('type', 'contract')
-                        ->whereNotNull('first_party_signature')
-                        ?->last()?->updated_at;
-                }, '0 day');
-            })
-            ->addColumn('contract_signature_completion_date', function ($job) {
-                $completionDate = optional($job?->jobDoc)
-                    ->where('employee_job_id', $job?->id)
-                    ->where('type', 'contract')
-                    ->whereNotNull('first_party_signature')
-                    ?->last()?->updated_at;
-                return $completionDate ? $completionDate->format('Y-m-d') : '-';
-            })
-            ->addColumn('contract_signature_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, function ($user, $job) {
-                    return optional($job?->jobDoc)
-                        ->where('employee_job_id', $job?->id)
-                        ->where('type', 'contract')
-                        ->whereNotNull('first_party_signature')
-                        ?->last()?->updated_at;
-                }, '0 day');
-            })
-
-            ->addColumn('deadline_post', function ($job) {
-                $user = $job->user;
-                $isKaryawan = $user->dakarRole->contains(function ($role) {
-                    return strtolower($role->role_name) === 'karyawan';
-                });
-                if (!$isKaryawan) return 'N/A';
-
-                $job = $user->firstEmployeeJob;
-                if (!$job || !$job->start_date) {
-                    return 'N/A';
-                }
-                $startDate = Carbon::parse($job->start_date)->addMonth();
-                $deadline = $startDate->copy()->subDay();
-                return $deadline->isoFormat('D MMMM YYYY') ?? 'N/A';
-            })
-
-            // STEP: Greatday
-            ->addColumn('greatday', function ($job) {
-                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account Great Day'), '30 day', true);
-            })
-            ->addColumn('greatday_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account Great Day'), '30 day', true);
-            })
-            ->addColumn('greatday_completion_date', function ($job) {
-                $completion = $this->getItemCompletion($job->user, 'User Account Great Day');
-                return $completion ? $completion->format('Y-m-d') : '-';
-            })
-
-            // STEP: E-Slip
-            ->addColumn('eslip', function ($job) {
-                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account E-Slip'), '30 day', true);
-            })
-            ->addColumn('eslip_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'User Account E-Slip'), '30 day', true);
-            })
-            ->addColumn('eslip_completion_date', function ($job) {
-                $completion = $this->getItemCompletion($job->user, 'User Account E-Slip');
-                return $completion ? $completion->format('Y-m-d') : '-';
-            })
-
-            // STEP: BPJS Kesehatan
-            ->addColumn('bpjskes', function ($job) {
-                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS Kesehatan'), '30 day', true);
-            })
-            ->addColumn('bpjskes_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS Kesehatan'), '30 day', true);
-            })
-            ->addColumn('bpjskes_completion_date', function ($job) {
-                $completion = $this->getItemCompletion($job->user, 'BPJS Kesehatan');
-                return $completion ? $completion->format('Y-m-d') : '-';
-            })
-
-            // STEP: BPJS TK
-            ->addColumn('bpjstk', function ($job) {
-                return $this->checkStepStatus($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS TK'), '30 day', true);
-            })
-            ->addColumn('bpjstk_overdue_days', function ($job) {
-                return $this->getOverdueDays($job, fn($user, $job) => $this->getItemCompletion($user, 'BPJS TK'), '30 day', true);
-            })
-            ->addColumn('bpjstk_completion_date', function ($job) {
-                $completion = $this->getItemCompletion($job->user, 'BPJS TK');
-                return $completion ? $completion->format('Y-m-d') : '-';
-            })
-
             ->rawColumns(['create_employee', 'employment_data', 'starter_kit', 'greatday', 'eslip', 'bpjskes', 'bpjstk', 'starter_kit_acc', 'contract_signature'])
             ->make(true);
     }

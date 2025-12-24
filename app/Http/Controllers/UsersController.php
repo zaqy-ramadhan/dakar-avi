@@ -31,6 +31,7 @@ use App\Models\JobType;
 use App\Models\JobWageAllowance;
 use App\Models\Level;
 use App\Models\Line;
+use App\Models\Offboarding;
 use App\Models\OffboardingReason;
 use App\Models\Position;
 use App\Models\User;
@@ -1660,6 +1661,14 @@ class UsersController extends Controller
                 $user->dakarRole()->sync($request->employment_status);
                 $user->npk = $request->npk;
                 $user->save();
+            }
+
+            if($lastJob->user_dakar_role == 'pemagangan' && $job->user_dakar_role == 'karyawan' && $notes == 'New Employee Kontrak'){
+                $offboarding = Offboarding::create([
+                    "user_id" => $user->id,
+                    "resign_date" => $lastJob->resign_date ?? $request->start_date,
+                    "reason" => 'Join AVI'
+                ]);
             }
 
             if ($lastJob) {

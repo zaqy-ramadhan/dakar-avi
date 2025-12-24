@@ -41,6 +41,19 @@ class UserOffboardingDataTables extends DataTable
                 );
                 // optional($user->offboarding)->resign_date ?? 'No resign date';
             })
+            ->addColumn('reason', function ($user) {
+                return optional($user->offboarding)->reason ?? 'No resign reason';
+            })
+             ->orderColumn('reason', function ($user, $direction) {
+                $user->orderBy(
+                    Offboarding::select('reason')
+                        ->whereColumn('user_id', 'users.id')
+                        ->latest('reason')
+                        ->limit(1),
+                    $direction
+                );
+                // optional($user->offboarding)->resign_date ?? 'No resign date';
+            })
             ->addColumn('actions', function ($row) {
                 $offboardingUrl = route('users.index.offboarding.detail', $row->id);
                 $buttons = '<a title="Detail Offboarding" href="' . $offboardingUrl . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-briefcase-off fs-6"></i></a>';
@@ -57,7 +70,11 @@ class UserOffboardingDataTables extends DataTable
             ->whereDoesntHave('dakarRole', function ($q) {
                 $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3']);
             })
-            ->whereHas('latestEmployeeJob', function ($query) {
+            // ->whereHas('latestEmployeeJob', function ($query) {
+            //     $query->where('employment_status', false);
+            // })
+            ->whereHas('offboarding')
+            ->orWhereHas('latestEmployeeJob', function ($query) {
                 $query->where('employment_status', false);
             })
             ->select('users.*');
@@ -101,6 +118,10 @@ class UserOffboardingDataTables extends DataTable
                 ->orderable(),
             Column::make('resign_date')
                 ->title('Termination Date')
+                ->searchable()
+                ->orderable(),
+            Column::make('reason')
+                ->title('Termination Reason')
                 ->searchable()
                 ->orderable(),
             Column::computed('actions')

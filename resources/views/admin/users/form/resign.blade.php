@@ -9,7 +9,7 @@ method="post">
 <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
     <label for="" class="form-label">Termination date</label>
     <input type="date" class="form-control" id="resign_date" name="resign_date"
-         @if($user->latestEmployeeJob?->employment_status == false) value="{{ \Carbon\Carbon::parse($user->offboarding?->resign_date ?? null)->format('Y-m-d') }}" @endif
+        value="{{ \Carbon\Carbon::parse($user->offboarding?->resign_date ?? null)->format('Y-m-d') }}"
         @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])) readonly @endif>
     @error('resign_date')
         <div class="text-danger">{{ $message }}</div>
@@ -22,7 +22,7 @@ method="post">
         <option value="">-- Select reason --</option>
         @foreach($reason as $item)
             <option value="{{ $item->reason }}"
-                @if(($user->latestEmployeeJob?->employment_status == false) && ($user->offboarding?->reason == $item->reason)) selected @endif>
+                @if(($user->offboarding?->reason == $item->reason)) selected @endif>
                 {{ $item->reason }}
             </option>
         @endforeach
