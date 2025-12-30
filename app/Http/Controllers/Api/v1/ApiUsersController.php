@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Item;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -31,22 +32,28 @@ class ApiUsersController extends Controller
                 return response()->json(['error' => 'Unauthorized. Invalid API key.'], 401);
             }
 
+            $id_email_avi = Item::where('item_name', 'Email AVI')->first()?->id;
+
             $users = User::whereHas('employeeJob', function ($q) {
                 $q->where('employment_status', true);
             })
                 ->whereHas('dakarRole', function ($q) {
                     $q->whereNotIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4', 'pemagangan', 'internship']);
                 })
-                ->with(['latestEmployeeJob', 'firstEmployeeJob'])
+                ->with(['latestEmployeeJob', 'firstEmployeeJob','employeeInventoryNumber'])
                 ->get();
 
-            $data = $users->map(function ($user) {
+            $data = $users->map(function ($user) use ($id_email_avi) {
                 $job = $user->latestEmployeeJob;
+                $email_avi = $user->employeeInventoryNumber->filter(function($q)use($id_email_avi){
+                    return $q->item_id == $id_email_avi;
+                })->first();
                 return [
+                    // 'ytes' => $email_avi,
                     'id' => $user->id,
                     'npk' => $user->npk,
                     'fullname' => $user->fullname,
-                    'email' => $user->email,
+                    'email' => $email_avi ? $email_avi->number : $user->email,
                     'position' => $job->position->position_name ?? null,
                     'section' => $job->section->section_name ?? null,
                     'department' => $job->department->department_name ?? null,
