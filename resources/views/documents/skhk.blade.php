@@ -132,35 +132,43 @@
     <style>
         .signature-wrapper {
             width: 100%;
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
-        /* Menggunakan table-layout agar lebih stabil saat dikonversi ke PDF */
         .signature-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed; /* Memastikan kolom benar-benar bagi dua */
         }
 
         .signature-table td {
-            width: 50%; /* Membagi dua area sama rata */
-            text-align: left;
             vertical-align: top;
+            text-align: left;
         }
 
-        /* Khusus untuk Pihak II agar menjorok ke kanan atau rata tengah di areanya */
-        .pihak-dua {
-            padding-left: 100px; /* Menyesuaikan jarak agar terlihat seperti di gambar */
-        }
-
-        .signature-space {
-            height: 70px; /* Ruang untuk tanda tangan */
-            margin: 5px 0;
+        /* Container tanda tangan agar gambar punya ruang dan tidak menimpa teks */
+        .signature-box {
+            min-height: 80px; /* Memberikan ruang minimum agar nama tidak naik */
+            margin: 10px 0;
+            display: block;
         }
 
         .signature-img {
-            height: 60px;
+            max-height: 70px; /* Batasi tinggi gambar */
             width: auto;
+            display: block; /* Memastikan gambar mengambil baris sendiri */
+            margin-bottom: 5px; /* Jarak antara gambar dan nama */
+        }
+
+        .name-label {
+            /* font-weight: bold;
+            text-decoration: underline; */
             display: block;
+            margin-top: 5px;
+        }
+
+        .pihak-dua {
+            padding-left: 10%; /* Mengatur jarak agar Pihak II lebih ke kanan */
         }
     </style>
 </head>
@@ -310,24 +318,27 @@
         <table class="signature-table">
             <tr>
                 <td>
-                    <div>Pihak I</div>
-                    <div class="signature-space">
+                    <div>Pihak I,</div>
+                    <div class="signature-box">
                         @if(optional($jobDoc)->first_party_signature)
                             <img src="{{ public_path('storage/' . $jobDoc->first_party_signature) }}" class="signature-img">
-                        @endif
+                        @else
+                            <div style="height: 70px;"></div> @endif
                     </div>
-                    <div>{{ $hr?->fullname }}</div>
+                    <div class="name-label" >{{ $hr?->fullname }}</div>
                     <div>HRGA & EHS Dept. Head</div>
                 </td>
 
                 <td class="pihak-dua">
-                    <div>Pihak II</div>
-                    <div class="signature-space">
+                    <div>Pihak II,</div>
+                    <div class="signature-box">
                         @if(optional($jobDoc)->second_party_signature)
                             <img src="{{ public_path('storage/' . $jobDoc->second_party_signature) }}" class="signature-img">
-                        @endif
+                        @else
+                            <div style="height: 70px;"></div> @endif
                     </div>
-                    <div>{{ $kontrak->user->fullname }}</div>
+                    <div class="name-label">{{ $kontrak->user->fullname }}</div>
+                    <div>Karyawan</div>
                 </td>
             </tr>
         </table>
