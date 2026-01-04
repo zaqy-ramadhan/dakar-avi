@@ -205,9 +205,10 @@ class DocumentController extends Controller
                 'XII'
             ];
 
-            $month = date('n', strtotime($kontrak->start_date));
+            $date = $kontrak->resign_date ?? $kontrak->end_date ?? $kontrak->start_date;
+            $month = date('n', strtotime($date));
             $romanMonth = $romanMonths[$month - 1];
-            $year = date('y', strtotime($kontrak->start_date));
+            $year = date('y', strtotime($date));
             $kontrak->nomor = ($kontrak->npk ?? $kontrak->npk) . '/HRD/AVI/' . $romanMonth . '/' . $year;
 
             if ($is_admin && !$jobDoc?->first_party_signature && Auth::user()->getRole() === 'admin') {
@@ -258,9 +259,10 @@ class DocumentController extends Controller
                 'XII'
             ];
 
-            $month = date('n', strtotime($kontrak->start_date));
+            $date = $kontrak->resign_date ?? $kontrak->end_date ?? $kontrak->start_date;
+            $month = date('n', strtotime($date));
             $romanMonth = $romanMonths[$month - 1];
-            $year = date('y', strtotime($kontrak->start_date));
+            $year = date('y', strtotime($date));
             $kontrak->nomor = ($kontrak->npk ?? $kontrak->npk) . '/HRD/AVI/' . $romanMonth . '/' . $year;
 
             $pdf = PDF::loadView('documents.paklaring', compact('kontrak', 'hr', 'jobDoc', 'offboarding', 'bpjstk'))
