@@ -167,7 +167,7 @@
                             ? \Carbon\Carbon::parse($kontrak->user->employeeDetail->birth_date)->isoFormat('D MMMM Y')
                             : '-';
                 @endphp
-                <td>{{ $birthPlace }}, {{ $birthDate }}</td>
+                <td>{{ strtoupper($birthPlace) }}, {{ $birthDate }}</td>
             </tr>
             <tr>
                 <td class="italic">Place and date of birth</td>
