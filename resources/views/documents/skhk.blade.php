@@ -157,10 +157,17 @@
             margin: 5px 0;
         }
 
-        .signature-img {
+        /* .signature-img {
             height: 60px;
             width: auto;
             display: block;
+        } */
+        .signature-img {
+            height: 90%; /* Beri ruang yang cukup */
+            width: auto;
+            display: block;
+            overflow: visible; /* Mencegah pemotongan visual */
+            margin-bottom: -20px; /* Jika ingin sedikit menumpuk secara estetis tanpa menutupi teks */
         }
     </style>
 </head>
