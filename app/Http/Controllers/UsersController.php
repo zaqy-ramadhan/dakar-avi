@@ -1944,18 +1944,21 @@ class UsersController extends Controller
             'new_password' => 'required|string|min:8',
         ]);
 
+        
         try {
             $user = Auth::user();
-
-            if (!password_verify($request->old_password, $user->password_hash)) {
-                return back()->with('error', 'The old password is incorrect.');
-            }
-
+            
+            // if (!password_verify($request->old_password, $user->password_hash)) {
+            //     return back()->with('error', 'The old password is incorrect.');
+            //     }
+                
+            // dd(!password_verify($request->old_password, $user->password_hash));
             $user->update([
                 'password_hash' => bcrypt($request->new_password),
                 'password' => bcrypt($request->new_password),
-            ]);
-
+                ]);
+            //dd($user);
+                    
             $log = ActivityLog::create([
                 'actor_id' => Auth::user()->id,
                 'employee_id' => $user->id,

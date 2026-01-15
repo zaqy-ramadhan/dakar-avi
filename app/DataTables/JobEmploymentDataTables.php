@@ -158,14 +158,6 @@ class JobEmploymentDataTables extends DataTable
                     '<a title="Sertif ' . ucfirst($job->user_dakar_role) . '" target="_blank" href="' . route('sertif.pdf', $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-certificate fs-6"></i> Sertifikat</a>'
                     : '';
 
-                $checklatest = (bool)($job->id == $job->user->latestEmployeeJob->id);
-                $checkOffboard = (bool)($job->employment_status == false && $job->user->offboarding != null);
-                $paklaring_item_id = Item::where('item_name', 'LIKE', 'paklaring')->first()?->id;
-                $checkInventory = $paklaring_item_id ? (bool)($job->user->inventory->where('item_id', $paklaring_item_id)->first()) : false;
-
-                $paklaringButton = $checklatest && $checkOffboard && $checkInventory
-                   ? '<a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-6"></i>Paklaring</a>' : '';
-
                 // Access control for wage & contract button
                 $subGolongan = $job->subGolongan->sub_golongan_name ?? '';
                 $userRole = Auth::user()->getRole();
@@ -253,6 +245,15 @@ class JobEmploymentDataTables extends DataTable
                         <button type="submit" class="btn btn-sm btn-outline-danger m-1" onclick="return confirm(\'Are you sure?\')"><i class="ti ti-trash fs-6"></i> Delete</button>
                         </form>';
                 }
+
+                //check for palaring
+                $checklatest = (bool)($job->id == $job->user->latestEmployeeJob->id);
+                $checkOffboard = (bool)($job->employment_status == false && $job->user->offboarding != null);
+                $paklaring_item_id = Item::where('item_name', 'LIKE', 'paklaring')->first()?->id;
+                $checkInventory = $paklaring_item_id ? (bool)($job->user->inventory->where('item_id', $paklaring_item_id)->first()) : false;
+                $paklaringButton = $checklatest && $checkOffboard && $checkInventory
+                ? '<a title="Paklaring" href="' . route("user.paklaring-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-circle-off fs-6"></i>Paklaring</a>' : '';
+
 
                 // if(Auth::user()->getRole() === 'admin'){
                      $deleteButton = '

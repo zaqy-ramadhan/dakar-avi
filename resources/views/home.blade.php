@@ -208,7 +208,8 @@
                             </a>
 
                             <!-- Step 3 -->
-                            <a href="{{ route('users.index.onboarding') }}">
+                            {{-- <a href="{{ route('users.index.onboarding') }}"> --}}
+                            <a href="{{ route('user.kontrak-pdf', $user->firstemployeeJob->id) }}">
                                 <div class="step-vertical d-flex">
                                     <div class="circle-vertical-container">
                                         <div class="circle-vertical @if ($contract_status) active @endif"><i
@@ -225,7 +226,8 @@
                                 </div>
                             </a>
 
-                            <a href="{{ route('users.index.onboarding') }}">
+                            {{-- <a href="{{ route('users.index.onboarding') }}"> --}}
+                            <a href="{{ route('user.kerahasiaan-pdf', $user->firstemployeeJob->id)}}"">
                                 <div class="step-vertical d-flex">
                                     <div class="circle-vertical-container">
                                         <div class="circle-vertical @if ($spk_status) active @endif"><i

@@ -38,9 +38,10 @@ class HomeController extends Controller
             $adminRoles = ['admin', 'admin 2', 'admin 3', 'admin 4'];
             $authRole = Auth::user()->getRole();
             $user = Auth::user();
-            // dd($authRole);
+            //dd($authRole);
             // dd(in_array($authRole, $adminRoles));
             // dd($user->password);
+            //dd($user && Hash::check('Avi123!', $user->password_hash ?? $user->password));
             if ($user && Hash::check('Avi123!', $user->password_hash ?? $user->password)) {
                 // dd('true');
                 return redirect('/update-password');
