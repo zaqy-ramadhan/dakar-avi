@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ApiUsersController extends Controller
@@ -71,6 +72,8 @@ class ApiUsersController extends Controller
                     'start_date' => $job->start_date ? $job->start_date->format('Y-m-d') : null,
                     'end_date' => $job->end_date ? $job->end_date->format('Y-m-d') : null,
                     'contract' => $job->contract ?? null,
+                    'gender' => $user->employeeDetail?->gender === null ? null : ($user->employeeDetail->gender === '0' ? 'Laki-laki' : 'Perempuan'),
+                    'age' => $user->employeeDetail?->birth_date ? \Carbon\Carbon::parse($user->employeeDetail->birth_date)->age : null,
                 ];
             });
 
