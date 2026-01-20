@@ -162,7 +162,7 @@
                         @include('admin.users.form.document')
 
                         <button type="submit" id="submitBtn" class="btn btn-primary"
-                            @if ($user->id != Auth::user()->id) hidden @endif>Update Data</button>
+                            @if ($user->id != Auth::user()->id && Auth::user()->getRole() != 'admin') hidden @endif>Update Data</button>
                     </div>
 
                 </div>
@@ -185,22 +185,28 @@
                 var employeeDetail = @json($employeeDetail ?? null);
                 var employeeFamily = @json($employeeFamily ?? null);
                 var currentUserId = @json(Auth::id());
+                var currentUserRole = @json(Auth::user()->getRole());
+                console.log(currentUserRole);
                 //  console.log(currentUserId);
                 //  console.log(userData.id);
 
                 if (userData && employeeDetail && employeeFamily) {
                     formElement.find('input, textarea').prop('readonly', true);
                     formElement.find('select').prop('disabled', true);
-                    if (userData.id === currentUserId) {
+                    console.log('masuk 0')
+                    if (userData.id === currentUserId || currentUserRole === 'admin') {
                         formElement.find('input, textarea').prop('readonly', false);
                         formElement.find('select').prop('disabled', false);
+                        console.log('masuk 1')
 
 
                     }
-                } else if (userData.id !== currentUserId) {
+                } else if (userData.id !== currentUserId || currentUserRole !== 'admin') {
                     formElement.find('input, textarea').prop('readonly', true);
                     formElement.find('select').prop('disabled', true);
+                    console.log('masuk 2')
                 }
+                console.log('gamasuk')
             } else {
                 console.error("Element with ID 'employeeForm' not found.");
             }
