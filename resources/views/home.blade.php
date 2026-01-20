@@ -160,7 +160,7 @@
                     <div class="card-body">
                         @if (Auth::user()->firstEmployeeJob?->start_date)
                             <p class="fw-bolder mb-0">Your first day is on
-                                {{ \Carbon\Carbon::parse(Auth::user()->firstEmployeeJob->start_date)->isoFormat('D MMMM YYYY') }}
+                                {{ \Carbon\Carbon::parse(Auth::user()->firstEmployeeJob?->start_date)->isoFormat('D MMMM YYYY') }}
                             </p>
                         @else
                             <p class="fw-bolder mb-0">Your first day is on -</p>
@@ -209,7 +209,8 @@
 
                             <!-- Step 3 -->
                             {{-- <a href="{{ route('users.index.onboarding') }}"> --}}
-                            <a href="{{ route('user.kontrak-pdf', $user->firstemployeeJob->id) }}">
+                            @if($user->firstEmployeeJob)
+                            <a href="{{ route('user.kontrak-pdf', $user->firstemployeeJob?->id) }}">
                                 <div class="step-vertical d-flex">
                                     <div class="circle-vertical-container">
                                         <div class="circle-vertical @if ($contract_status) active @endif"><i
@@ -227,7 +228,7 @@
                             </a>
 
                             {{-- <a href="{{ route('users.index.onboarding') }}"> --}}
-                            <a href="{{ route('user.kerahasiaan-pdf', $user->firstemployeeJob->id)}}"">
+                            <a href="{{ route('user.kerahasiaan-pdf', $user->firstemployeeJob->id)}}">
                                 <div class="step-vertical d-flex">
                                     <div class="circle-vertical-container">
                                         <div class="circle-vertical @if ($spk_status) active @endif"><i
@@ -243,7 +244,7 @@
                                     </div>
                                 </div>
                             </a>
-
+                            @endif
 
                             <!-- Step 4 -->
                             <a href="{{ route('users.index.onboarding') }}">

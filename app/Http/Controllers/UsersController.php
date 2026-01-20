@@ -1601,17 +1601,18 @@ class UsersController extends Controller
             'employee_transfer' => 'nullable|string',
         ]);
 
+
         try {
             DB::beginTransaction();
 
             $user_role = DakarRole::findOrFail($request->employment_status)->role_name;
+            // dd($user_role);
 
 
             $lastJob = EmployeeJob::where('user_id', $id)
                 // ->where('employment_status', true)
                 ->latest()
                 ->first();
-
             $notes = $this->determineJobNotes($lastJob, $user_role, $request, (!$lastJob));
             $user = User::findOrFail($id);
             // dd($request);
@@ -1663,15 +1664,15 @@ class UsersController extends Controller
                 $user->save();
             }
 
-            if($lastJob->user_dakar_role == 'pemagangan' && $job->user_dakar_role == 'karyawan' && $notes == 'New Employee Kontrak'){
-                $offboarding = Offboarding::create([
-                    "user_id" => $user->id,
-                    "resign_date" => $lastJob->resign_date ?? $request->start_date,
-                    "reason" => 'Join AVI'
-                ]);
-            }
-
             if ($lastJob) {
+                if($lastJob->user_dakar_role == 'pemagangan' && $job->user_dakar_role == 'karyawan' && $notes == 'New Employee Kontrak'){
+                    $offboarding = Offboarding::create([
+                        "user_id" => $user->id,
+                        "resign_date" => $lastJob->resign_date ?? $request->start_date,
+                        "reason" => 'Join AVI'
+                    ]);
+                }
+
                 $lastJob->update([
                     'employment_status' => false,
                     'resign_date' => $lastJob->resign_date ?? $request->start_date
