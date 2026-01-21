@@ -1109,18 +1109,17 @@ class StaffMovementReportController extends Controller
 
                 'starter_kit_date' => $job->inventory->where('employee_job_id', $job->id)->where('status', '!=', 'Diterima')->first()?->updated_at?->format('d M Y') ?? '-',
 
-                'sksmk_signature_1' => $this->checkStepStatusOff($job, function ($u, $j) {
-                    // dd($j->id, $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()?->first_party_signature_date);
+                'sksmk_signature_1' => $job->user_dakar_role === 'internship' ? '-' : $this->checkStepStatusOff($job, function ($u, $j) {
                     return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()?->first_party_signature_date;
                 }, '2 day'),
 
-                'signature_1_date' => $job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first() ? Carbon::parse($job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()->first_party_signature_date)->format('d M Y') : '-',
+                'signature_1_date' => $job->user_dakar_role === 'internship' ? '-' : ($job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first() ? Carbon::parse($job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()->first_party_signature_date)->format('d M Y') : '-'),
 
-                'sksmk_signature_2' => $this->checkStepStatusOff($job, function ($u, $j) {
+                'sksmk_signature_2' => $job->user_dakar_role === 'internship' ? '-' : $this->checkStepStatusOff($job, function ($u, $j) {
                     return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'sksmk')->whereNotNull('second_party_signature')->first()?->second_party_signature_date;
                 }, '2 day'),
 
-                'signature_2_date' => $job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('second_party_signature')->first() ? Carbon::parse($job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('second_party_signature')->first()->second_party_signature_date)->format('d M Y') : '-',
+                'signature_2_date' => $job->user_dakar_role === 'internship' ? '-' : ($job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('second_party_signature')->first() ? Carbon::parse($job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('second_party_signature')->first()->second_party_signature_date)->format('d M Y') : '-'),
 
             ];
         });
