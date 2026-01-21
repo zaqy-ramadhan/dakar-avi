@@ -30,7 +30,8 @@ class StaffMovementReportController extends Controller
         'One Year Service',
         'Termination',
         'Expired Contract',
-        'Onboarding Report'
+        'Onboarding Report',
+        'Offboarding Report'
     ];
 
     public function index(Request $request)
@@ -60,6 +61,7 @@ class StaffMovementReportController extends Controller
                 'Termination' => $this->termination($request)->getData(true),
                 'Expired Contract' => $this->expiredContract($request)->getData(true),
                 'Onboarding Report' => $this->onboardingReport($request)->getData(true),
+                'Offboarding Report' => $this->offboardingReport($request)->getData(true),
                 default => collect(),
             };
 
@@ -196,6 +198,20 @@ class StaffMovementReportController extends Controller
                     'BPJS TK Date' => $item['bpjstk_completion_date'],
                 ]),
 
+                'Offboarding Report' =>
+                collect($employees['data'])->map(fn($item) => [
+                    'NPK' => $item['npk'],
+                    'Fullname' => $item['fullname'],
+                    'Department' => $item['department'],
+                    'Position' => $item['position'],
+                    'Status' => $item['status'],
+                    'SKSMK First Party Signature' => $item['sksmk_signature_1'],
+                    'SKSMK Second Party Signature' => $item['sksmk_signature_2'],
+                    'Starter Kit Return' => $item['starter_kit_return'],
+                    'Exit Interview' => $item['exit_interview'],
+
+                ]),
+
                 default => collect($employees['data']),
             };
 
@@ -216,6 +232,7 @@ class StaffMovementReportController extends Controller
             'Termination' => $this->termination($request),
             'Expired Contract' => $this->expiredContract($request),
             'Onboarding Report' => $this->onboardingReport($request),
+            'Offboarding Report' => $this->offboardingReport($request),
             default => response()->json([]),
         };
     }
@@ -450,29 +467,6 @@ class StaffMovementReportController extends Controller
             ->addIndexColumn()
             ->make(true);
     }
-
-    // public function newEmployeeIntern(Request $request)
-    // {
-    //     $date = $request->input('date')
-    //         ? Carbon::parse($request->input('date'))->startOfMonth()
-    //         : Carbon::now()->startOfMonth();
-
-    //     $endDate = $date->copy()->endOfMonth();
-
-    //     $query = EmployeeJob::with(['user', 'position', 'department', 'section'])
-    //         ->where('notes', 'New Employee Internship')
-    //         ->whereHas('user')
-    //         ->whereBetween('start_date', [$date, $endDate]);
-
-    //     return DataTables::of($query)
-    //         ->addIndexColumn()
-    //         ->addColumn('fullname', fn($job) => $job->user->fullname ?? 'N/A')
-    //         ->addColumn('npk', fn($job) => $job->user->npk ?? 'N/A')
-    //         ->addColumn('department', fn($job) => $job->department->department_name ?? 'N/A')
-    //         ->addColumn('start_date', fn($job) => Carbon::parse($job->start_date)->isoFormat('D MMM Y'))
-    //         ->addColumn('duration', fn($job) => $job->duration() ?? 'N/A')
-    //         ->make(true);
-    // }
 
     public function EmployeeContractExtension(Request $request)
     {
@@ -1060,6 +1054,71 @@ class StaffMovementReportController extends Controller
             ->make(true);
     }
 
+    public function offboardingReport(Request $request)
+    {
+        $date = $request->input('date')
+            ? Carbon::parse($request->input('date'))->startOfMonth()
+            : Carbon::now()->startOfMonth();
+
+        $endDate = $date->copy()->endOfMonth();
+
+        $query = User::whereHas('latestEmployeeJob')->whereHas('offboarding', function($q) use ($date, $endDate){
+            $q->whereBetween('resign_date', [$date, $endDate]);
+        })
+        ->with([
+            'latestEmployeeJob.department', 
+            'latestEmployeeJob.section', 
+            'latestEmployeeJob.position',
+            'latestEmployeeJob.inventory',
+            'latestEmployeeJob.jobDoc',
+            'dakarRole',
+            'offboarding',
+        ]);
+
+        $users = $query->get();
+
+        $report = $users->transform(function ($user) use ($date, $endDate) {
+            $job = $user->latestEmployeeJob;
+            $offboard = $user->offboarding->first();
+            $deadline = $offboard?->resign_date ? Carbon::parse($offboard->resign_date)->addDays(2) : null;            
+            //$isKaryawan = $user->dakarRole->contains(fn($role) => strtolower($role->role_name) === 'karyawan');
+            //$exitIntv = $user->offboarding->where('exit_interview', true)->first();
+
+            return [
+                'npk' => $user->npk,
+                'fullname' => $user->fullname,
+                'department' => $job->department?->department_name ?? 'N/A',
+                'section' => $job->section?->section_name ?? 'N/A',
+                'position' => $job->position?->position_name ?? 'N/A',
+                'status' => $job->contract ?? 'N/A',
+                'reason' => $offboard->reason,
+                'deadline' => $deadline,
+
+                'exit_interview' => $this->checkStepStatusOff($job, function ($u, $j) {
+                    return $j->user->offboarding->where('exit_interview', true)->first()?->updated_at;
+                }, '2 day'),
+                
+                'starter_kit_return' => $this->checkStepStatusOff($job, function ($u, $j) {
+                    return $j->inventory->where('employee_job_id', $j->id)->where('status', '!=', 'Diterima')->first()?->updated_at;
+                }, '2 day'),
+
+                'sksmk_signature_1' => $this->checkStepStatusOff($job, function ($u, $j) {
+                    return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()?->updated_at;
+                }, '2 day'),
+
+                'sksmk_signature_2' => $this->checkStepStatusOff($job, function ($u, $j) {
+                    return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'sksmk')->whereNotNull('second_party_signature')->first()?->updated_at;
+                }, '2 day'),
+
+            ];
+        });
+
+        return DataTables::of($report)
+            ->addIndexColumn()
+            ->rawColumns(['exit_interview', 'starter_kit_return', 'sksmk_signature_1', 'sksmk_signature_2'])
+            ->make(true);
+    }
+
     private function checkStepStatus($job, $completionCallback, $deadlineDiff, $onlyKaryawan = false)
     {
         $user = $job->user;
@@ -1071,6 +1130,41 @@ class StaffMovementReportController extends Controller
         if (!$job || !$job->start_date) return 'N/A';
 
         $deadline = Carbon::parse($job->start_date)->add($deadlineDiff);
+        $completionDate = $completionCallback($user, $job);
+
+        if ($completionDate) {
+            $completion = Carbon::parse($completionDate)->startOfDay();
+            if ($completion->lte($deadline)) {
+                return '<span class="badge bg-success">On Time</span><br><small>' . $completion->format('d M Y') . '</small>';
+            } else {
+                $overdueDays = $deadline->diffInDays($completion);
+                return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small>' . $completion->format('d M Y') . '</small>';
+            }
+        } else {
+            $now = Carbon::now()->startOfDay();
+            if ($now->lte($deadline)) {
+                return '<span class="badge bg-warning">Deadline : ' . $deadline->format('d M Y') . '</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+            } else {
+                $overdueDays = $deadline->diffInDays($now);
+                return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari</span><br><small> Today : ' . $now->format('d M Y') . '</small>';
+            }
+        }
+    }
+
+    private function checkStepStatusOff($job, $completionCallback, $deadlineDiff, $onlyKaryawan = false)
+    {
+        $user = $job->user;
+        if ($onlyKaryawan && !$user->dakarRole->contains(fn($role) => strtolower($role->role_name) === 'karyawan')) {
+            return 'N/A';
+        }
+
+        $job = $user->latestEmployeeJob;
+        if (!$job || !$job->start_date) return 'N/A';
+
+        $offboard = $user->offboarding->first();
+        $deadline = $offboard?->resign_date ? Carbon::parse($offboard->resign_date)->addDays(2) : null;
+
+        // $deadline = Carbon::parse($job->start_date)->add($deadlineDiff);
         $completionDate = $completionCallback($user, $job);
 
         if ($completionDate) {
@@ -1115,7 +1209,7 @@ class StaffMovementReportController extends Controller
             return $deadline->diffInDays($now);
         }
     }
-
+    
     private function getItemCompletion($user, $itemName)
     {
         $itemId = Item::where('item_name', $itemName)->value('id');
@@ -1126,7 +1220,6 @@ class StaffMovementReportController extends Controller
 
         return $record ? Carbon::parse($record->created_at) : null;
     }
-
 
 
 

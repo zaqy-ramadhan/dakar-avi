@@ -21,6 +21,7 @@
                         'Employee Promotion',
                         'One Year Service',
                         'Onboarding Report',
+                        'Offboarding Report',
                     ];
                 @endphp
 
@@ -217,6 +218,16 @@
                         <th>BPJS TK</th>
                         <th>Greatday</th>
                         <th>Eslip</th>
+                        `;
+                    break;
+                 case 'Offboarding Report':
+                    extra = `<th>Department</th>
+                        <th>Position</th>
+                        <th>Status</th>
+                        <th>SKSMK TTD Pihak 1</th>
+                        <th>SKSMK TTD Pihak 2</th>
+                        <th>Starter Kit</th>
+                        <th>Exit Interviiew</th>
                         `;
                     break;
             }
@@ -420,11 +431,22 @@
                     data: 'greatday'
                 }, {
                     data: 'eslip'
-                }
-                //  {
-                //     data: 'status'
-                // }
-                ],
+                }],
+                'Offboarding Report': [{
+                    data: 'department'
+                }, {
+                    data: 'position'
+                }, {
+                    data: 'status'
+                }, {
+                    data: 'sksmk_signature_1'
+                }, {
+                    data: 'sksmk_signature_2'
+                }, {
+                    data: 'starter_kit_return'
+                }, {
+                    data: 'exit_interview'
+                }],
             };
 
             return base.concat(columnsByNote[note] || []);
