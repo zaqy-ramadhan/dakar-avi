@@ -205,10 +205,12 @@ class StaffMovementReportController extends Controller
                     'Department' => $item['department'],
                     'Position' => $item['position'],
                     'Status' => $item['status'],
-                    'SKSMK First Party Signature' => $item['sksmk_signature_1'],
-                    'SKSMK Second Party Signature' => $item['sksmk_signature_2'],
-                    'Starter Kit Return' => $item['starter_kit_return'],
-                    'Exit Interview' => $item['exit_interview'],
+                    'Resign Date' => $item['resign_date'],
+                    'Reason' => $item['reason'],
+                    'SKSMK First Party Signature' => $item['signature_1_date'],
+                    'SKSMK Second Party Signature' => $item['signature_2_date'],
+                    'Starter Kit Return' => $item['starter_kit_date'],
+                    'Exit Interview' => $item['exit_interview_date'],
 
                 ]),
 
@@ -1091,24 +1093,34 @@ class StaffMovementReportController extends Controller
                 'section' => $job->section?->section_name ?? 'N/A',
                 'position' => $job->position?->position_name ?? 'N/A',
                 'status' => $job->contract ?? 'N/A',
+                'resign_date' => $offboard->resign_date ? Carbon::parse($offboard->resign_date)->isoFormat('D MMMM YYYY') : 'N/A',
                 'reason' => $offboard->reason,
                 'deadline' => $deadline,
 
                 'exit_interview' => $this->checkStepStatusOff($job, function ($u, $j) {
                     return $j->user->offboarding->where('exit_interview', true)->first()?->updated_at;
                 }, '2 day'),
+
+                'exit_interview_date' => $job->user->offboarding->where('exit_interview', true)->first()?->updated_at?->format('d M Y') ?? '-',
                 
                 'starter_kit_return' => $this->checkStepStatusOff($job, function ($u, $j) {
                     return $j->inventory->where('employee_job_id', $j->id)->where('status', '!=', 'Diterima')->first()?->updated_at;
                 }, '2 day'),
 
+                'starter_kit_date' => $job->inventory->where('employee_job_id', $job->id)->where('status', '!=', 'Diterima')->first()?->updated_at?->format('d M Y') ?? '-',
+
                 'sksmk_signature_1' => $this->checkStepStatusOff($job, function ($u, $j) {
-                    return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()?->updated_at;
+                    // dd($j->id, $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()?->first_party_signature_date);
+                    return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()?->first_party_signature_date;
                 }, '2 day'),
 
+                'signature_1_date' => $job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first() ? Carbon::parse($job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()->first_party_signature_date)->format('d M Y') : '-',
+
                 'sksmk_signature_2' => $this->checkStepStatusOff($job, function ($u, $j) {
-                    return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'sksmk')->whereNotNull('second_party_signature')->first()?->updated_at;
+                    return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'sksmk')->whereNotNull('second_party_signature')->first()?->second_party_signature_date;
                 }, '2 day'),
+
+                'signature_2_date' => $job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('second_party_signature')->first() ? Carbon::parse($job->jobDoc->where('employee_job_id', $job->id)->where('type', 'sksmk')->whereNotNull('second_party_signature')->first()->second_party_signature_date)->format('d M Y') : '-',
 
             ];
         });
@@ -1209,7 +1221,7 @@ class StaffMovementReportController extends Controller
             return $deadline->diffInDays($now);
         }
     }
-    
+
     private function getItemCompletion($user, $itemName)
     {
         $itemId = Item::where('item_name', $itemName)->value('id');

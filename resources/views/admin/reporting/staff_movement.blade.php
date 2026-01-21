@@ -224,6 +224,8 @@
                     extra = `<th>Department</th>
                         <th>Position</th>
                         <th>Status</th>
+                        <th>Resign Date</th>
+                        <th>Reason</th>
                         <th>SKSMK TTD Pihak 1</th>
                         <th>SKSMK TTD Pihak 2</th>
                         <th>Starter Kit</th>
@@ -438,6 +440,10 @@
                     data: 'position'
                 }, {
                     data: 'status'
+                }, {
+                    data: 'resign_date'
+                }, {
+                    data: 'reason'
                 }, {
                     data: 'sksmk_signature_1'
                 }, {

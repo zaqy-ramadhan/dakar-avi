@@ -639,9 +639,11 @@ class DocumentController extends Controller
             if (Auth::user()->id == (int) $employeeJob->user_id) {
                 $filePath = "documents/second_party_signature/{$fileName}";
                 $jobDoc->second_party_signature = $filePath;
+                $jobDoc->second_party_signature_date = Carbon::now();
             } else {
                 $filePath = "documents/first_party_signature/{$fileName}";
                 $jobDoc->first_party_signature = $filePath;
+                $jobDoc->first_party_signature_date = Carbon::now();
             }
 
             // Simpan file SVG
