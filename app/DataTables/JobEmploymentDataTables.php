@@ -152,7 +152,7 @@ class JobEmploymentDataTables extends DataTable
                 // $skhkButton = $previousJob || ($job->user_dakar_role === 'karyawan' && $job->employment_status == false)
                 //     ? '<a title="SKSMK" href="' . route("user.skhk-pdf", $previousJob->id ?? $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-hourglass-off fs-6"></i> SKSMK</a>'
                 //     : '';
-                $skhkButton = $job->user_dakar_role !== 'internship' ? '<a title="SKSMK" href="' . route("user.skhk-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-hourglass-off fs-6"></i> SKSMK</a>' : '';
+                $skhkButton = $job->user_dakar_role !== 'internship' && $job->employment_status == false ? '<a title="SKSMK" href="' . route("user.skhk-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-hourglass-off fs-6"></i> SKSMK</a>' : '';
 
                 $sertifButton = in_array($job->user_dakar_role, ['pemagangan', 'internship']) && $job->employment_status == false ?
                     '<a title="Sertif ' . ucfirst($job->user_dakar_role) . '" target="_blank" href="' . route('sertif.pdf', $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-certificate fs-6"></i> Sertifikat</a>'
