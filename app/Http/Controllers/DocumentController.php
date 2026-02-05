@@ -737,6 +737,7 @@ class DocumentController extends Controller
             {
                 $filePath = "documents/permission_signature/{$fileName}";
                 $user->permission_signature = $filePath;
+                $user->permission_signature_date = Carbon::now();
 
             }
 

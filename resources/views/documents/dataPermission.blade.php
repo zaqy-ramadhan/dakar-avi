@@ -294,8 +294,15 @@
 
         <br>
         <div class="signature" style="margin-right: 240px">
-            <div style="margin-bottom: 5px" >Bogor, {{ Carbon\Carbon::parse($user->created_at)->isoFormat('D MMMM Y') ?? now()->isoFormat('D MMMM Y') }}</div>
-            <div>Hormat saya,</div>
+        @php
+           $tanggalTtd = !$user->permission_signature 
+            ? now() 
+            : ($user->permission_signature_date ?? $user->updated_at ?? now());
+        @endphp
+        <div style="margin-bottom: 5px">
+            Bogor, {{ \Carbon\Carbon::parse($tanggalTtd)->isoFormat('D MMMM Y') }}
+        </div>            
+        <div>Hormat saya,</div>
             <img src="{{ public_path('storage/' . optional($user)->permission_signature) }}" alt=" "
                 style="width: 60px; height: 30px; object-fit:cover; margin-bottom: 50px; margin-top: 30px">
             <div>{{ $user->fullname ?? 'Employee' }}</div>

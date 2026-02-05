@@ -34,7 +34,8 @@ class User extends Authenticatable
         'password',
         'password_hash',
         'user_status',
-        'permission_signature'
+        'permission_signature',
+        'permission_signature_date'
     ];
 
     /**

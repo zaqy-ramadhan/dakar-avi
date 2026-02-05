@@ -220,7 +220,7 @@ class JobEmploymentDataTables extends DataTable
 
                 $kompensasiButton = '';
                 if ($showKompensasiButton) {
-                    if($job->user_dakar_role === 'karyawan'){
+                    if($job->user_dakar_role === 'karyawan' && $job->id === $job->user->firstEmployeeJob->id){
                         $kompensasiButton = '<a title="Kompensasi" href="' . route("user.kompensasi-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-presentation-analytics fs-6"></i> Kompensasi</a>';
                     }else{
                         $kompensasiButton = '';
