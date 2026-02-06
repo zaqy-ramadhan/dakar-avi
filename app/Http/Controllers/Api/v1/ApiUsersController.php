@@ -35,7 +35,17 @@ class ApiUsersController extends Controller
 
             $id_email_avi = Item::where('item_name', 'Email AVI')->first()?->id;
 
-            $users = User::whereHas('employeeJob', function ($q) {
+            $query = User::query();
+
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('npk', 'like', "%{$search}%")
+                    ->orWhere('fullname', 'like', "%{$search}%");
+                });
+            }
+
+            $users = $query->whereHas('employeeJob', function ($q) {
                 $q->where('employment_status', true);
             })
                 ->whereHas('dakarRole', function ($q) {
