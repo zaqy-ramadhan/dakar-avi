@@ -227,7 +227,7 @@ class JobEmploymentDataTables extends DataTable
                     }
                 }
 
-                $kerahasiaanButton =  $job->id === $job->user->firstEmployeeJob->id
+                $kerahasiaanButton =  $job->id === $job->user->actualfirstEmployeeJob->id
                         ? '
                         <a title="Pernyataan Kerahasiaan" href="' . route("user.kerahasiaan-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-lock fs-6"></i> SPK</a>
                         '

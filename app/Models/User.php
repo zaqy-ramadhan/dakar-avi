@@ -311,6 +311,11 @@ class User extends Authenticatable
         return $this->hasOne(EmployeeJob::class)->where('job_sequence', 1)->orderByDesc('created_at');
     }
 
+     public function actualfirstEmployeeJob()
+    {
+        return $this->hasOne(EmployeeJob::class)->orderBy('start_date');
+    }
+
     public function firstEmployeeJobIncomplete()
     {
         return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->where('job_sequence', 1);
