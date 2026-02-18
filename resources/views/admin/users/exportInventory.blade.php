@@ -38,7 +38,8 @@
                 element.select2({
                     theme: 'bootstrap-5',
                     width: '100%',
-                    placeholder: 'Select an option'
+                    placeholder: 'Select an option',
+                    allowClear: true,
                 });
             }
 
