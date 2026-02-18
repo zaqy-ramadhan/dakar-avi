@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="card">
-        <div class="card-header">Export Inventory Karyawan</div>
+        <div class="card-header">Export Starter Kit Karyawan</div>
         <div class="card-body">
             <form action="{{ route('inventory.export') }}" method="GET">
                 <div class="row">
