@@ -71,6 +71,17 @@
                             </a>
                         </li>
                         <ul id="sidebarnav">
+                        
+                        @if (in_array(Auth::user()->getRole(), ['admin']))
+                            {{-- <li class="sidebar-item">
+                                <a class="sidebar-link" href="{{ route('password') }}" aria-expanded="false">
+                                    <span>
+                                        <i class="ti ti-user-check"></i>
+                                    </span>
+                                    <span class="hide-menu">Manage Admin</span>
+                                </a>
+                            </li> --}}
+                        @endif
 
                             <li class="nav-small-cap">
                                 <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -229,6 +240,15 @@
                                     </a>
                                 </li>
                                 @endif
+                                 <li class="sidebar-item">
+                                    <a class="sidebar-link {{ Request::is('*inventory.export.view') ? 'active' : '' }}"
+                                        href="/admin/inventory/export" aria-expanded="false">
+                                        <span>
+                                            <i class="ti ti-hanger-2"></i>
+                                        </span>
+                                        <span class="hide-menu">Starter Kit Report</span>
+                                    </a>
+                                </li>
                             </ul>
                             <ul id="sidebarnav">
                                 <li class="nav-small-cap">

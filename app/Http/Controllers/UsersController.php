@@ -2302,4 +2302,14 @@ class UsersController extends Controller
             return response()->json(['error' => 'Failed to validate files.'], 500);
         }
     }
+
+    public function adminIndex()
+    {
+        return view('');
+    }
+
+    public function getDataAdmin()
+    {
+        
+    }
 }

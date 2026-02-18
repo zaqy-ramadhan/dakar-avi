@@ -704,12 +704,27 @@ class StaffMovementReportController extends Controller
 
         $endDate = $date->copy()->endOfMonth();
 
+        // $expiredContracts = EmployeeJob::with(['user', 'department', 'position'])
+        //     ->whereBetween('end_date', [$date, $endDate])
+        //     // ->whereNull('resign_date')
+        //     //->where('employment_status', true)
+        //     ->whereHas('user')
+        //     ->get();
+
         $expiredContracts = EmployeeJob::with(['user', 'department', 'position'])
-            ->whereBetween('end_date', [$date, $endDate])
-            // ->whereNull('resign_date')
-            // ->where('employment_status', true)
-            ->whereHas('user')
-            ->get();
+        ->where(function ($query) use ($date, $endDate) {
+            $query->where(function ($q) use ($date, $endDate) {
+                $q->whereNotNull('resign_date')
+                ->whereBetween('resign_date', [$date, $endDate]);
+            })
+            ->orWhere(function ($q) use ($date, $endDate) {
+                $q->whereNull('resign_date')
+                ->whereBetween('end_date', [$date, $endDate]);
+            });
+        })
+        ->whereHas('user')
+        ->get();
+
         // dd($expiredContracts);
 
         $transformedContracts = $expiredContracts->transform(function ($job) {

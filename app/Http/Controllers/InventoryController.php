@@ -10,6 +10,16 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+
 class InventoryController extends Controller
 {
     public function store(Request $request, $id)
@@ -193,6 +203,163 @@ class InventoryController extends Controller
     
         return redirect()->back()->with('success', 'Inventaris berhasil diperbarui.');
     }
+
+    public function exportView()
+    {   
+        $allUsers = User::whereHas('latestEmployeeJob', function($q){
+            $q->where('employment_status', true);
+        })->get();
+        return view('admin.users.exportInventory', compact('allUsers'));
+    }
+
+    public function exportKit(Request $request)
+    {
+        $query = User::with(['inventory.item', 'latestEmployeeJob.department']);
+        if ($request->filled('id')) {
+            $query->where('id', $request->input('id'));
+        }
+        $users = $query->get();
+
+        return Excel::download(new class($users) implements WithEvents {
+            private $users;
+
+            public function __construct($users) {
+                $this->users = $users;
+            }
+
+            public function registerEvents(): array {
+                return [
+                    AfterSheet::class => function(AfterSheet $event) {
+                        $sheet = $event->sheet->getDelegate();
+                        $currentRow = 1;
+
+                        foreach ($this->users as $user) {
+                            $sheet->setCellValue("A{$currentRow}", "Nama");
+                            $sheet->setCellValue("B{$currentRow}", ": " . $user->fullname);
+                            $currentRow++;
+
+                            $sheet->setCellValue("A{$currentRow}", "NPK");
+                            $sheet->setCellValue("B{$currentRow}", ": " . $user->npk);
+                            $currentRow++;
+
+                            $sheet->setCellValue("A{$currentRow}", "Department");
+                            $sheet->setCellValue("B{$currentRow}", ": " . ($user->latestEmployeeJob?->department?->department_name ?? '-'));
+                            $currentRow += 2; 
+
+                            $tableHeaderRow = $currentRow;
+                            $headers = ['No', 'Item Name', 'Size', 'Status', 'Acc Date', 'Return Date', 'Return Notes'];
+                            foreach ($headers as $key => $title) {
+                                $col = chr(65 + $key); 
+                                $sheet->setCellValue("{$col}{$tableHeaderRow}", $title);
+                            }
+                            
+                            $sheet->getStyle("A{$tableHeaderRow}:G{$tableHeaderRow}")->applyFromArray([
+                                'font' => ['bold' => true],
+                                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
+                            ]);
+                            $currentRow++;
+
+                            $startDataRow = $currentRow;
+                            $no = 1;
+                            foreach ($user->inventory as $item) {
+                                $sheet->setCellValue("A{$currentRow}", $no++);
+                                $sheet->setCellValue("B{$currentRow}", $item->item->item_name ?? '-');
+                                $sheet->setCellValue("C{$currentRow}", $item->size);
+                                $sheet->setCellValue("D{$currentRow}", $item->status);
+                                $sheet->setCellValue("E{$currentRow}", $item->acc_date);
+                                $sheet->setCellValue("F{$currentRow}", $item->return_date);
+                                $sheet->setCellValue("G{$currentRow}", $item->return_notes);
+                                $currentRow++;
+                            }
+
+                            $lastDataRow = ($no > 1) ? $currentRow - 1 : $currentRow;
+                            if($no == 1) $currentRow++; 
+
+                            $sheet->getStyle("A{$tableHeaderRow}:G{$lastDataRow}")->applyFromArray([
+                                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
+                            ]);
+
+                            $currentRow += 3; 
+                        }
+
+                        foreach (range('A', 'G') as $col) {
+                            $sheet->getColumnDimension($col)->setAutoSize(true);
+                        }
+                    },
+                ];
+            }
+        }, 'Starter_Kit_Report' . now()->format('Ymd') . '.xlsx');
+    }
+
+    // public function exportKit(Request $request)
+    // {
+    //     $query = User::with(['inventory.item', 'latestEmployeeJob.department']);
+    //     if ($request->filled('id')) {
+    //         $query->where('id', $request->input('id'));
+    //     }
+    //     $users = $query->get();
+
+    //     // dd($users);
+
+    //     $exportData = collect();
+    //     $boundaries = [];
+    //     $currentRow = 2; 
+
+    //     foreach ($users as $user) {
+    //         foreach ($user->inventory as $item) {
+    //             $exportData->push([
+    //                 'NPK'           => $user->npk,
+    //                 'NAME'          => $user->fullname,
+    //                 'DEPARTMENT'    => $user->latestEmployeeJob?->department?->department_name ?? '-',
+    //                 'ITEM'          => $item->item->item_name ?? '-',
+    //                 'SIZE'          => $item->size,
+    //                 'STATUS'        => $item->status,
+    //                 //'DUE_DATE'      => $item->due_date,
+    //                 'ACC_DATE'      => $item->acc_date,
+    //                 'RETURN_DATE'   => $item->return_date,
+    //                 'RETURN_NOTES'  => $item->return_notes,
+    //             ]);
+    //             $currentRow++;
+    //         }
+    //         if ($user->inventory->count() > 0) {
+    //             $boundaries[] = $currentRow - 1;
+    //         }
+    //     }
+
+    //     return Excel::download(new class($exportData, $boundaries) implements FromCollection, WithHeadings, WithStyles {
+    //         private $data;
+    //         private $boundaries;
+
+    //         public function __construct($data, $boundaries) {
+    //             $this->data = $data;
+    //             $this->boundaries = $boundaries;
+    //         }
+
+    //         public function collection() {
+    //             return $this->data;
+    //         }
+
+    //         public function headings(): array {
+    //             return ['NPK', 'Nama Karyawan', 'Departemen', 'Nama Barang', 'Size', 'Status', 'Due Date', 'Acc Date'];
+    //         }
+
+    //         public function styles(Worksheet $sheet) {
+    //             $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+    //             $sheet->getStyle('A1:H1')->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM);
+
+    //             foreach ($this->boundaries as $rowNum) {
+    //                 $sheet->getStyle("A{$rowNum}:H{$rowNum}")->getBorders()->getBottom()->applyFromArray([
+    //                     'borderStyle' => Border::BORDER_THICK,
+    //                     'color' => ['rgb' => '000000'],
+    //                 ]);
+    //             }
+
+    //             foreach (range('A', 'H') as $columnID) {
+    //                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    //             }
+    //         }
+    //     }, 'Inventory_Karyawan_' . now()->format('Ymd') . '.xlsx');
+    // }
 
     // public function update(Request $request, $id)
     // {

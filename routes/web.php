@@ -113,6 +113,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/reporting/staff-movement', [StaffMovementReportController::class, 'index'])->name('staff-movement.index');
         Route::get('/admin/reporting/staff-movement/data', [StaffMovementReportController::class, 'getData'])->name('staff-movement.data');
 
+        //manage admin
+        Route::get('/admin/list', [UsersController::class, 'adminIndex'])->name('admin.index');
+        Route::get('/admin/data', [UsersController::class, 'getDataAdmin'])->name('admin.data');
+
 
         //master data
         Route::prefix('admin')->group(function () {
@@ -185,6 +189,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/admin/inventory/{id}/store', [InventoryController::class, 'store'])->name('inventory.store');
     Route::post('/admin/inventory/{id}/update', [InventoryController::class, 'update'])->name('inventory.update');
+    Route::get('/admin/inventory/exportExcel', [InventoryController::class, 'exportKit'])->name('inventory.export');
+    Route::get('/admin/inventory/export', [InventoryController::class, 'exportView'])->name('inventory.export.view');
+
 
     Route::get('/admin/users/{id}/details/update', [UsersController::class, 'updateDetails'])->name('users.details.update');
 
