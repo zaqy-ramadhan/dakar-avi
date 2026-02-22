@@ -71,11 +71,11 @@ class EmployeeDetailReportController extends Controller
                 fn($q, $val) =>
                 $q->whereHas('employeeJob.subGolongan', fn($qq) => $qq->where('sub_golongan_name', $val))
             )
-            ->when(
-                request('job_status'),
-                fn($q, $val) =>
-                $q->whereHas('employeeJob', fn($qq) => $qq->where('job_status', $val))
-            )
+            // ->when(
+            //     request('job_status'),
+            //     fn($q, $val) =>
+            //     $q->whereHas('employeeJob', fn($qq) => $qq->where('job_status', $val))
+            // )
             ->when(
                 request('job_type'),
                 fn($q, $val) =>
@@ -114,7 +114,9 @@ class EmployeeDetailReportController extends Controller
             $detail = $employee->employeeDetail;
             $firstJob = $employee->firstEmployeeJob;
             // $job = $employee->currentEmployeeJob($date) ?? $employee->latestEmployeeJob;
-            $job = $employee->rangeEmployeeJob($startOfMonth, $endOfMonth) ?? $employee->latestEmployeeJob;
+            $job = $employee->rangeEmployeeJob($startOfMonth, $endOfMonth) 
+            ?? $employee->latestEmployeeJob
+            ;
             $latestEducation = $employee->latestEducation();
 
             return [
@@ -138,7 +140,56 @@ class EmployeeDetailReportController extends Controller
                 'gol' => $job?->golongan?->golongan_name ?? 'N/A',
                 'status' => $job?->is_active_range($startOfMonth, $endOfMonth) ?? 'inactive',
             ];
-        });
+        })
+    //    ->filter(function ($item) {
+    //         if (request()->filled('status')) {
+    //             return $item['status'] === request('status');
+    //         }
+    //         return true;
+    //     })
+    //     ->filter(function ($item) {
+    //         if (request()->filled('employment_status')) {
+    //             return strtolower($item['employment_status']) === strtolower(request('employment_status'));
+    //         }
+    //         return true;
+    //     })
+    //     ->values();
+        ->filter(function ($item) {
+            // 1. Filter Status (Active/Inactive)
+            if (request()->filled('status')) {
+                if ($item['status'] !== request('status')) return false;
+            }
+
+            // 2. Filter Department
+            if (request()->filled('department')) {
+                if ($item['department'] !== request('department')) return false;
+            }
+
+            // 3. Filter Employment Status (misal: Pemagangan)
+            if (request()->filled('employment_status')) {
+                if (strtolower($item['employment_status']) !== strtolower(request('employment_status'))) return false;
+            }
+
+            // 4. Filter Gender
+            if (!is_null(request('gender'))) {
+                $genderReq = request('gender') == 1 ? 'P' : 'L';
+                if ($item['gender'] !== $genderReq) return false;
+            }
+
+            // 5. Filter Job Type
+            if (request()->filled('job_type')) {
+                if ($item['job_type'] !== request('job_type')) return false;
+            }
+
+            // 6. Filter Pendidikan Terakhir
+            if (request()->filled('latestEducation')) {
+                if ($item['education'] !== request('latestEducation')) return false;
+            }
+
+            return true;
+        })
+        ->values()
+        ;
 
         if (request()->has('export') && request('export') == 'excel') {
             return Excel::download(new EmployeeExport($employees), 'employee-report-' . $startOfMonth->isoFormat('MMMM Y') . '-' . $endOfMonth->isoFormat('MMMM Y') . '.xlsx');
