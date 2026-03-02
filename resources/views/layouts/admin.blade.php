@@ -73,14 +73,14 @@
                         <ul id="sidebarnav">
                         
                         @if (in_array(Auth::user()->getRole(), ['admin']))
-                            {{-- <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ route('password') }}" aria-expanded="false">
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{{ route('admin.index') }}" aria-expanded="false">
                                     <span>
                                         <i class="ti ti-user-check"></i>
                                     </span>
                                     <span class="hide-menu">Manage Admin</span>
                                 </a>
-                            </li> --}}
+                            </li>
                         @endif
 
                             <li class="nav-small-cap">

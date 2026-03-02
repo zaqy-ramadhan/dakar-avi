@@ -116,6 +116,7 @@ Route::middleware(['auth'])->group(function () {
         //manage admin
         Route::get('/admin/list', [UsersController::class, 'adminIndex'])->name('admin.index');
         Route::get('/admin/data', [UsersController::class, 'getDataAdmin'])->name('admin.data');
+        Route::get('/activity-logs/{id}', [UsersController::class, 'getActivityLogs']);
 
 
         //master data

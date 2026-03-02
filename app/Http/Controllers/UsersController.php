@@ -42,6 +42,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Yajra\DataTables\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -2305,11 +2308,68 @@ class UsersController extends Controller
 
     public function adminIndex()
     {
-        return view('');
+        return view('admin.administrator.index');
     }
 
-    public function getDataAdmin()
+    public function getDataAdmin(Request $request)
     {
-        
+        $users = User::with('dakarRole')
+            ->whereHas('dakarRole', function ($q) {
+                $q->whereIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4']);
+            })
+            ->get();
+
+        $users = $users->transform(function ($user) {
+
+            $roles = $user->dakarRole
+                ->pluck('role_name')
+                ->implode(', ');
+
+            $resetButton = '';
+            $activityButton = '';
+
+            if (Auth::user()->getRole() == 'admin') {
+                $resetpass = route('reset.password', $user->id);
+
+                $resetButton = '
+                    <a href="' . $resetpass . '"
+                        class="btn btn-sm btn-outline-warning m-1"
+                        title="Reset Password"
+                        onclick="return confirm(`Apakah Anda yakin ingin mereset password user ini?`)">
+                        <i class="ti ti-lock fs-6"></i>
+                    </a>
+                ';
+
+                $activityButton = '
+                    <button type="button"
+                        class="btn btn-sm btn-light-secondary m-1 btn-activity"
+                        data-id="' . $user->id . '"
+                        data-name="' . $user->fullname . '"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalActivityLogs">
+                        <i class="ti ti-history"></i>
+                    </button>
+                ';
+            }
+
+            return [
+                'npk'       => $user->npk ?? 'N/A',
+                'fullname'  => $user->fullname ?? 'N/A',
+                'role'      => $roles ?: 'N/A',
+                'action'    => $activityButton . $resetButton,
+            ];
+        });
+
+        return DataTables::of($users)
+            ->addIndexColumn()
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function getActivityLogs($id)
+    {
+        $user = User::findOrFail($id);
+
+        return response()->json($user->activityLogs());
     }
 }
