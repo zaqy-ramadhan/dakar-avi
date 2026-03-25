@@ -90,6 +90,7 @@ class ApiUsersController extends Controller
                     'contract' => $job->contract ?? null,
                     'gender' => $user->employeeDetail?->gender === null ? null : ($user->employeeDetail->gender === '0' ? 'Laki-laki' : 'Perempuan'),
                     'age' => $user->employeeDetail?->birth_date ? \Carbon\Carbon::parse($user->employeeDetail->birth_date)->age : null,
+                    'no_telp' => $user->employeeDetail?->no_phone ?? null,
                 ];
             });
 
