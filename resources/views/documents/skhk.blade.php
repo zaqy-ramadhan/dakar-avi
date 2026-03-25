@@ -296,7 +296,8 @@
             <img src="{{ public_path('storage/' . optional($jobDoc)->first_party_signature) }}"
                 alt="Tanda Tangan Pihak Pertama"style="width: auto; height: 30px; margin-bottom: 50px; margin-top: 30px;">
             <div>{{$hr?->fullname ?? '-'}}</div>
-            <div>HR Legal Sect. Head</div>
+            {{-- <div>{{ $hr?->latestEmployeeJob?->position?->position_name ?? '' }}</div> --}}
+            <div>HRGA & EHS Dept. Head</div>
         </div>
         <div class="signature">
             <div>Pihak II</div>
