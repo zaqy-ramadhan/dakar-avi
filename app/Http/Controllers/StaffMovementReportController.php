@@ -1155,7 +1155,7 @@ class StaffMovementReportController extends Controller
 
         // 2. Query Utama
         $users = User::whereHas('latestEmployeeJob')
-            ->whereHas('offboarding', function($q) use ($startDateString, $endDateString) {
+            ->whereHas('offboardingMany', function($q) use ($startDateString, $endDateString) {
                 // Gunakan string mentah agar tidak ada mutasi objek
                 $q->whereBetween('resign_date', [$startDateString, $endDateString]);
             })
@@ -1166,7 +1166,7 @@ class StaffMovementReportController extends Controller
                 'latestEmployeeJob.inventory',
                 'latestEmployeeJob.jobDoc',
                 'dakarRole',
-                'offboarding' => function($q) use ($startDateString, $endDateString) {
+                'offboardingMany' => function($q) use ($startDateString, $endDateString) {
                     // Paksa ambil yang sesuai range dan urutkan yang terbaru di atas
                     $q->whereBetween('resign_date', [$startDateString, $endDateString])
                     ->orderBy('resign_date', 'desc');
@@ -1178,14 +1178,14 @@ class StaffMovementReportController extends Controller
         $report = $users->map(function ($user) use ($startDateString, $endDateString) {
             $job = $user->latestEmployeeJob;
             
-            // Cari offboarding yang masuk dalam range bulan ini saja dari koleksi yang sudah di-load
-            $offboard = $user->offboarding
+            // Cari offboardingMany yang masuk dalam range bulan ini saja dari koleksi yang sudah di-load
+            $offboard = $user->offboardingMany
                 ->whereBetween('resign_date', [$startDateString, $endDateString])
                 ->first();
 
             // Jika offboard null karena alasan teknis, ambil yang paling pertama tersedia
             if (!$offboard) {
-                $offboard = $user->offboarding->first();
+                $offboard = $user->offboardingMany->first();
             }
 
             return [
@@ -1208,10 +1208,10 @@ class StaffMovementReportController extends Controller
                                         : '-',
 
                 'exit_interview'    => $this->checkStepStatusOff($job, function ($u, $j) {
-                    return $j->user->offboarding->where('exit_interview', true)->first()?->updated_at;
+                    return $j->user->offboardingMany->where('exit_interview', true)->first()?->updated_at;
                 }, '2 day'),
 
-                'exit_interview_date' => $user->offboarding->where('exit_interview', true)->first()?->updated_at?->format('d M Y') ?? '-',
+                'exit_interview_date' => $user->offboardingMany->where('exit_interview', true)->first()?->updated_at?->format('d M Y') ?? '-',
                 
                 'starter_kit_return' => $this->checkStepStatusOff($job, function ($u, $j) {
                     return $j->inventory->where('status', '!=', 'Diterima')->first()?->updated_at;

@@ -188,6 +188,11 @@ class User extends Authenticatable
         return $this->hasOne(Offboarding::class);
     }
 
+    public function offboardingMany()
+    {
+        return $this->hasMany(Offboarding::class);
+    }
+
     public function latestEmployeeJob()
     {
         return $this->hasOne(EmployeeJob::class)->latestOfMany('start_date');
