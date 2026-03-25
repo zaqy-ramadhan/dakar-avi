@@ -1165,7 +1165,9 @@ class StaffMovementReportController extends Controller
                 'latestEmployeeJob.position',
                 'latestEmployeeJob.inventory',
                 'latestEmployeeJob.jobDoc',
-                'dakarRole',
+                'dakarRole' => function($q) {
+                    $q->whereIn('role_name', ['karyawan']);
+                },
                 'offboardingMany' => function($q) use ($startDateString, $endDateString) {
                     // Paksa ambil yang sesuai range dan urutkan yang terbaru di atas
                     $q->whereBetween('resign_date', [$startDateString, $endDateString])
