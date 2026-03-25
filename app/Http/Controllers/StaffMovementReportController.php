@@ -1197,6 +1197,7 @@ class StaffMovementReportController extends Controller
                 'status'            => $job->contract ?? 'N/A',
                 
                 // Tampilkan Tanggal Resign
+                'offboard_id'       => $offboard?->id ?? '-',
                 'resign_date'       => $offboard && $offboard->resign_date 
                                         ? Carbon::parse($offboard->resign_date)->isoFormat('D MMMM YYYY') 
                                         : 'N/A',
