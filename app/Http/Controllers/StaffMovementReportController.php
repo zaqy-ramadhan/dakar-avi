@@ -1159,17 +1159,17 @@ class StaffMovementReportController extends Controller
                 // Gunakan string mentah agar tidak ada mutasi objek
                 $q->whereBetween('resign_date', [$startDateString, $endDateString]);
             })
+            // ->whereHas('dakarRole', function($q){
+            //     $q->where('role_name', 'karyawan');
+            // })
             ->with([
                 'latestEmployeeJob.department', 
                 'latestEmployeeJob.section', 
                 'latestEmployeeJob.position',
                 'latestEmployeeJob.inventory',
                 'latestEmployeeJob.jobDoc',
-                'dakarRole' => function($q) {
-                    $q->whereIn('role_name', ['karyawan']);
-                },
+                'dakarRole',
                 'offboardingMany' => function($q) use ($startDateString, $endDateString) {
-                    // Paksa ambil yang sesuai range dan urutkan yang terbaru di atas
                     $q->whereBetween('resign_date', [$startDateString, $endDateString])
                     ->orderBy('resign_date', 'desc');
                 },

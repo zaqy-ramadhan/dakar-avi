@@ -344,8 +344,7 @@
                     yang sah selama 3 (tiga) hari kerja berturut-turut atau 5 (lima) hari kerja tidak berturut-turut
                     dalam 1 bulan dan kemudian dianggap telah mengundurkan diri dari Program Magang, atau
                 </li>
-                <li>Bentuk pelanggaran tingkat V dan VI sebagaimana diatur dalam Perjanjian Kerja Bersama PT Astra
-                    Visteon Indonesia yang berlaku.
+                <li>Bentuk pelanggaran tata tertib dan Peraturan Perusahaan PT. Astra Visteon Indonesia yang berlaku.
                 </li>
             </ol>
             <li>Pihak Kedua gagal dalam evaluasi penilaian Program Magang yang berlangsung baik di tengah berjalannya
