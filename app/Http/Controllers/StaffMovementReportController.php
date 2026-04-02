@@ -744,6 +744,7 @@ class StaffMovementReportController extends Controller
 
         return DataTables::of($transformedContracts)
             ->addIndexColumn()
+            ->rawColumns(['department', 'position'])
             ->make(true);
     }
 
