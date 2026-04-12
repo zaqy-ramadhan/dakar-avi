@@ -113,4 +113,19 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Contract Expiry Reminder Recipients
+    |--------------------------------------------------------------------------
+    |
+    | Email addresses to receive contract expiry reminder notifications.
+    | Can be using a single email or comma-separated emails.
+    |
+    */
+
+    'contract_expiry_recipients' => [
+        'buddy.service@astra-visteon.com',
+        'hr@astra-visteon.com',
+    ],
+
 ];
