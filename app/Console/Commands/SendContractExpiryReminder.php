@@ -59,7 +59,8 @@ class SendContractExpiryReminder extends Command
                     $job = $employee->employeeJob->first();
                     
                     if ($job) {
-                        $employee->remaining_days = $job->end_date->diffInDays(now());
+                        // Calculate remaining days - from now until end date
+                        $employee->remaining_days = abs(now()->diffInDays($job->end_date));
                         $employee->npk = $employee->npk ?? $employee->id;
                         $employee->employment_status = $job->employment_status ?? 'Kontrak';
                         $employee->current_job = $job;
