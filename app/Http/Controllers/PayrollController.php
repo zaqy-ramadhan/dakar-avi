@@ -428,14 +428,29 @@ class PayrollController extends Controller
         $start = Carbon::parse($request->start_date);
         $end   = Carbon::parse($request->end_date);
 
+        // $employee = User::whereHas('employeeJob', function ($q) use ($start, $end) {
+        //     $q->where('user_dakar_role', '!=', 'karyawan')
+        //         ->where(function ($sub) use ($start, $end) {
+        //             $sub->whereDate('start_date', '<=', $end)
+        //                 ->where(function ($inner) use ($start) {
+        //                     $inner->whereNull('resign_date')
+        //                         ->orWhereDate('resign_date', '>=', $start);
+        //                 });
+        //         });
+        // })
         $employee = User::whereHas('employeeJob', function ($q) use ($start, $end) {
             $q->where('user_dakar_role', '!=', 'karyawan')
-                ->where(function ($sub) use ($start, $end) {
-                    $sub->whereDate('start_date', '<=', $end)
-                        ->where(function ($inner) use ($start) {
-                            $inner->whereNull('resign_date')
-                                ->orWhereDate('resign_date', '>=', $start);
-                        });
+                ->whereDate('start_date', '<=', $end) 
+                ->where(function ($sub) use ($start) {
+                    $sub->where(function ($query) use ($start) {
+                        // 2. Belum resign, atau resign-nya masih di dalam/setelah periode start
+                        $query->whereNull('resign_date')
+                            ->orWhereDate('resign_date', '>=', $start);
+                    })
+                    ->where(function ($query) use ($start) {
+                        $query->whereNull('end_date') 
+                            ->orWhereDate('end_date', '>=', $start);
+                    });
                 });
         })
             ->with([
