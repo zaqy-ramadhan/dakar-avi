@@ -74,7 +74,7 @@
                                         </td>
                                         <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
                                             <span style="background-color: #d9534f; color: white; padding: 4px 8px; border-radius: 3px; font-weight: bold;">
-                                                {{ $employee->remaining_days ?? '-' }} hari
+                                                {{ (int)($employee->remaining_days ?? 0) }} hari
                                             </span>
                                         </td>
                                     </tr>

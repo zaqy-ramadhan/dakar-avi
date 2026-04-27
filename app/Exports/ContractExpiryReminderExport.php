@@ -27,14 +27,13 @@ class ContractExpiryReminderExport implements FromCollection, WithHeadings, With
             
             return [
                 'NPK' => $employee->npk ?? '-',
-                'Nama' => $employee->name ?? '-',
-                'Posisi' => $job?->position?->name ?? '-',
-                'Departemen' => $job?->department?->name ?? '-',
-                'Divisi' => $job?->division?->name ?? '-',
+                'Nama' => $employee->fullname ?? '-',
+                'Posisi' => $employee->position_name ?? $job?->position?->position_name ?? '-',
+                'Departemen' => $employee->department_name ?? $job?->department?->department_name ?? '-',
+                'Divisi' => $employee->division_name ?? $job?->division?->division_name ?? '-',
                 'Tanggal Mulai Kontrak' => $job?->start_date?->format('d/m/Y') ?? '-',
                 'Tanggal Akhir Kontrak' => $job?->end_date?->format('d/m/Y') ?? '-',
-                'Sisa Hari' => $employee->remaining_days ?? '-',
-                'Status' => $employee->employment_status ?? '-',
+                'Sisa Hari' => (int)($employee->remaining_days ?? 0),
             ];
         });
     }
@@ -50,7 +49,6 @@ class ContractExpiryReminderExport implements FromCollection, WithHeadings, With
             'Tanggal Mulai Kontrak',
             'Tanggal Akhir Kontrak',
             'Sisa Hari',
-            'Status',
         ];
     }
 
@@ -65,7 +63,6 @@ class ContractExpiryReminderExport implements FromCollection, WithHeadings, With
             'F' => 18,
             'G' => 18,
             'H' => 12,
-            'I' => 15,
         ];
     }
 
@@ -74,7 +71,7 @@ class ContractExpiryReminderExport implements FromCollection, WithHeadings, With
         $lastRow = count($this->employees) + 1;
 
         // Header styling
-        $sheet->getStyle('A1:I1')->applyFromArray([
+        $sheet->getStyle('A1:H1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['rgb' => 'FFFFFF'],
@@ -97,7 +94,7 @@ class ContractExpiryReminderExport implements FromCollection, WithHeadings, With
         ]);
 
         // Data rows styling
-        $sheet->getStyle("A2:I{$lastRow}")->applyFromArray([
+        $sheet->getStyle("A2:H{$lastRow}")->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_THIN,
@@ -112,7 +109,7 @@ class ContractExpiryReminderExport implements FromCollection, WithHeadings, With
         // Alternating row colors
         for ($i = 2; $i <= $lastRow; $i++) {
             if ($i % 2 == 0) {
-                $sheet->getStyle("A{$i}:I{$i}")->applyFromArray([
+                $sheet->getStyle("A{$i}:H{$i}")->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => ['rgb' => 'F5F5F5'],
@@ -123,7 +120,7 @@ class ContractExpiryReminderExport implements FromCollection, WithHeadings, With
 
         // Center alignment for specific columns
         $sheet->getStyle("A2:A{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle("F2:I{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("F2:H{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         return [];
     }
