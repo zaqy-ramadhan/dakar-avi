@@ -52,7 +52,7 @@
                                 <div class="d-grid gap-2 mb-3">
                                     <a href="{{ route('password.request') }}" class="btn btn-outline-secondary btn-sm rounded-2 fw-semibold">
                                         <i class="ti ti-lock-question me-2"></i>
-                                        Lupa Password?
+                                        Forget Password?
                                     </a>
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">
