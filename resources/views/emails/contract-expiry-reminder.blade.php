@@ -53,6 +53,7 @@
                                 <tr style="background-color: #1F4788; color: white;">
                                     <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">NPK</th>
                                     <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Nama Karyawan</th>
+                                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Jabatan</th>
                                     <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Departemen</th>
                                     <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Tanggal Akhir Kontrak</th>
                                     <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Sisa Hari</th>
@@ -65,8 +66,9 @@
                                     @endphp
                                     <tr style="background-color: {{ $loop->iteration % 2 == 0 ? '#f5f5f5' : 'white' }}; border-bottom: 1px solid #ddd;">
                                         <td style="padding: 10px; border: 1px solid #ddd;">{{ $employee->npk ?? '-' }}</td>
-                                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>{{ $employee->name }}</strong></td>
-                                        <td style="padding: 10px; border: 1px solid #ddd;">{{ $job?->department?->name ?? '-' }}</td>
+                                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>{{ $employee->fullname ?? $employee->name ?? '-' }}</strong></td>
+                                        <td style="padding: 10px; border: 1px solid #ddd;">{{ $employee->position_name ?? $job?->position?->name ?? '-' }}</td>
+                                        <td style="padding: 10px; border: 1px solid #ddd;">{{ $employee->department_name ?? $job?->department?->name ?? '-' }}</td>
                                         <td style="padding: 10px; text-align: center; border: 1px solid #ddd; color: #d9534f; font-weight: bold;">
                                             {{ $job?->end_date?->format('d/m/Y') ?? '-' }}
                                         </td>

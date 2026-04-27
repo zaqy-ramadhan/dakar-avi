@@ -49,10 +49,11 @@ class SendContractExpiryReminder extends Command
                             ->where('job_status', 'kontrak')
                             ->orderBy('end_date', 'asc');
                     },
-                    'employeeJob.position',
-                    'employeeJob.department',
-                    'employeeJob.division',
+                    'employeeJob.position:id,position_name',
+                    'employeeJob.department:id,department_name',
+                    'employeeJob.division:id,division_name',
                 ])
+                ->select('id', 'fullname', 'email', 'npk')
                 ->get()
                 ->map(function ($employee) {
                     // Get the first (nearest expiry) employeeJob
@@ -60,9 +61,12 @@ class SendContractExpiryReminder extends Command
                     
                     if ($job) {
                         // Calculate remaining days - from now until end date
-                        $employee->remaining_days = abs(now()->diffInDays($job->end_date));
+                        $employee->remaining_days = $job->end_date ? now()->diffInDays($job->end_date) : 0;
                         $employee->npk = $employee->npk ?? $employee->id;
                         $employee->employment_status = $job->employment_status ?? 'Kontrak';
+                        $employee->position_name = $job->position?->position_name ?? '-';
+                        $employee->department_name = $job->department?->department_name ?? '-';
+                        $employee->division_name = $job->division?->division_name ?? '-';
                         $employee->current_job = $job;
                     }
                     
