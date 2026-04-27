@@ -89,6 +89,15 @@ class User extends Authenticatable
         return $this->password_hash;
     }
 
+    /**
+     * Get the name of the "remember me" / "stay logged in" token.
+     * Override to prevent remember_token from being saved.
+     */
+    public function getRememberTokenName()
+    {
+        return null;  // Disable remember_token functionality
+    }
+
     public function department()
     {
         return $this->belongsTo(Department::class, 'depart_id', 'id');

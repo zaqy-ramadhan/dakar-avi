@@ -29,6 +29,10 @@ class LoginController extends Controller
         $npk_key = env('NPK_ENCRYPTION_KEY');
         $pass_key = env('PASS_ENCRIPTION_KEY');
         $public_key = env('PUBLIC_KEY');
+        
+        // Regenerate CSRF token untuk mencegah token expired
+        session()->regenerateToken();
+        
         return view('auth.login', compact('npk_key', 'pass_key', 'public_key'));
     }
 
@@ -77,6 +81,18 @@ class LoginController extends Controller
     public function username()
     {
         return 'npk';
+    }
+
+    /**
+     * Attempt to log the user into the application.
+     * Override to disable remember_token.
+     */
+    protected function attemptLogin(Request $request)
+    {
+        return $this->guard()->attempt(
+            $this->credentials($request),
+            false  // remember = false, tidak update remember_token
+        );
     }
 
     /**
