@@ -119,6 +119,10 @@ class EmployeeDetailReportController extends Controller
             ;
             $latestEducation = $employee->latestEducation();
 
+            $joinDateParsed = $employee->join_date
+                ? Carbon::parse($employee->join_date)
+                : Carbon::parse($firstJob->start_date);
+            
             return [
                 'npk' => $employee->npk,
                 'fullname' => $employee->fullname,
@@ -126,11 +130,12 @@ class EmployeeDetailReportController extends Controller
                 'age' => $detail?->age($endOfMonth) ?? 'N/A',
                 'education' => $latestEducation?->education_level ?? 'N/A',
                 'blood_type' => $detail?->blood_type ?? 'N/A',
-                'join_date' => $employee->join_date
-                    ? Carbon::parse($employee->join_date)->isoFormat('D MMMM Y')
-                    : Carbon::parse($firstJob->start_date)->isoFormat('D MMMM Y'),
-                'start_date' => $job?->start_date?->isoFormat('D MMMM Y') ?? 'N/A',
-                'end_date' => $job?->end_date?->isoFormat('D MMMM Y') ?? 'N/A',
+                'join_date' => $joinDateParsed->getTimestamp(),
+                'join_date_display' => $joinDateParsed->isoFormat('D MMMM Y'),
+                'start_date' => $job?->start_date ? $job->start_date->getTimestamp() : 0,
+                'start_date_display' => $job?->start_date?->isoFormat('D MMMM Y') ?? 'N/A',
+                'end_date' => $job?->end_date ? $job->end_date->getTimestamp() : 0,
+                'end_date_display' => $job?->end_date?->isoFormat('D MMMM Y') ?? 'N/A',
                 'duration' => $job?->duration() ?? 'N/A',
                 'LOS' => $employee->LOS($endOfMonth),
                 'department' => $job?->department?->department_name ?? 'N/A',

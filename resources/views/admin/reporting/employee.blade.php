@@ -220,6 +220,41 @@
                         data: 'is_active',
                         name: 'is_active'
                     }
+                ],
+                columnDefs: [
+                    {
+                        targets: 7,
+                        data: 'join_date',
+                        type: 'num',
+                        render: function(data, type, row) {
+                            if (type === 'display') {
+                                return row.join_date_display;
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        targets: 8,
+                        data: 'start_date',
+                        type: 'num',
+                        render: function(data, type, row) {
+                            if (type === 'display') {
+                                return row.start_date_display;
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        targets: 9,
+                        data: 'end_date',
+                        type: 'num',
+                        render: function(data, type, row) {
+                            if (type === 'display') {
+                                return row.end_date_display;
+                            }
+                            return data;
+                        }
+                    }
                 ]
             });
 
