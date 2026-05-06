@@ -184,7 +184,9 @@
                 <td>Masa kerja</td>
                 <td class="space">:</td>
                 <td>
-                    {{ $kontrak->user->firstEmployeeJob->start_date ? \Carbon\Carbon::parse($kontrak->user->firstEmployeeJob->start_date)->isoFormat('D MMMM Y') : '-' }} -                    
+                    {{-- {{ $kontrak->user->firstEmployeeJob->start_date ? \Carbon\Carbon::parse($kontrak->user->firstEmployeeJob->start_date)->isoFormat('D MMMM Y') : '-' }}  --}}
+                    {{ $kontrak->user->firstPkwt->start_date ? \Carbon\Carbon::parse($kontrak->user->firstPkwt->start_date)->isoFormat('D MMMM Y') : '-' }}                
+                    -                    
                     {{-- {{ $kontrak->start_date ? \Carbon\Carbon::parse($kontrak->start_date)->isoFormat('D MMMM Y') : '-' }} - --}}
                     @php
                         $endDate = $kontrak->resign_date ?? $kontrak->end_date;

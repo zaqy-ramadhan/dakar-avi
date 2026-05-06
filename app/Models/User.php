@@ -340,6 +340,11 @@ class User extends Authenticatable
         return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->where('notes', 'New Employee Kontrak');
     }
 
+    public function firstPkwt()
+    {
+        return $this->hasOne(EmployeeJob::class)->where('notes', 'New Employee Kontrak');
+    }
+
 
     public function progressOnboarding()
     {
