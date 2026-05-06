@@ -185,7 +185,11 @@
                 <td class="space">:</td>
                 <td>
                     {{-- {{ $kontrak->user->firstEmployeeJob->start_date ? \Carbon\Carbon::parse($kontrak->user->firstEmployeeJob->start_date)->isoFormat('D MMMM Y') : '-' }}  --}}
-                    {{ $kontrak->user->firstPkwt->start_date ? \Carbon\Carbon::parse($kontrak->user->firstPkwt->start_date)->isoFormat('D MMMM Y') : '-' }}                
+                    @if($kontrak->user_dakar_role === 'karyawan')
+                    {{ $kontrak->user->firstPkwt?->start_date ? \Carbon\Carbon::parse($kontrak->user->firstPkwt?->start_date)->isoFormat('D MMMM Y') : '-' }} 
+                    @else
+                    {{ $kontrak->user->firstEmployeeJob->start_date ? \Carbon\Carbon::parse($kontrak->user->firstEmployeeJob->start_date)->isoFormat('D MMMM Y') : '-' }} 
+                    @endif
                     -                    
                     {{-- {{ $kontrak->start_date ? \Carbon\Carbon::parse($kontrak->start_date)->isoFormat('D MMMM Y') : '-' }} - --}}
                     @php
