@@ -360,7 +360,7 @@ class DocumentController extends Controller
                     $query->where('position_name', 'HR & Legal Section Head');
                 })->first();
                 $kontrak->nomor = ($kontrak->npk ?? $kontrak->npk) . '/HRD/AVI/' . $romanMonth . '/' . $year;
-                $wage = $wages->where('type', 'Uang Saku')->first();
+                $wage = $wages->where('type', 'Uang Saku')->first() ?? $wages->where('type', 'Gaji Pokok')->first();
                 $pdf = PDF::loadView('documents.kontrakPemagangan', compact('kontrak', 'hr', 'disnaker', 'jobDoc', 'wage'))
                     ->setPaper('a4', 'portrait');
                 $filename = 'kontrak_pemagangan_' . str_replace(' ', '_', $kontrak->user->fullname) . '.pdf';
