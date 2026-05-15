@@ -124,8 +124,25 @@ return [
     */
 
     'contract_expiry_recipients' => [
-        'buddy.service@astra-visteon.com',
-        'hr@astra-visteon.com',
+        // 'buddy.service@astra-visteon.com',
+        // 'hr@astra-visteon.com',
+        'nasghifarz619@gmail.com',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Log Recipients
+    |--------------------------------------------------------------------------
+    |
+    | Email addresses to receive real-time activity log notifications.
+    | Every activity log will trigger an email to these recipients.
+    |
+    */
+
+    'activity_log_recipients' => [
+        // 'buddy.service@astra-visteon.com',
+        // 'hr@astra-visteon.com',
+        'nasghifarz619@gmail.com',
     ],
 
 ];
