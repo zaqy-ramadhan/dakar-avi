@@ -1233,7 +1233,7 @@ class StaffMovementReportController extends Controller
             }
 
             return [
-                'npk'               => $user->npk,
+                'npk'               => $job->npk,
                 'fullname'          => $user->fullname,
                 'department'        => $job->department?->department_name ?? 'N/A',
                 'section'           => $job->section?->section_name ?? 'N/A',
