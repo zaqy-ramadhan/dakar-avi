@@ -1156,7 +1156,7 @@ class StaffMovementReportController extends Controller
         $startDateString = $requestedDate->copy()->startOfMonth()->toDateString(); // Contoh: 2026-03-01
         $endDateString = $requestedDate->copy()->endOfMonth()->toDateString();   // Contoh: 2026-03-31
 
-        // 2. Query Utama
+        // 2. Query Utama - Load semua employeeJob bukan hanya latestEmployeeJob
         $users = User::whereHas('latestEmployeeJob')
             ->whereHas('offboardingMany', function($q) use ($startDateString, $endDateString) {
                 // Gunakan string mentah agar tidak ada mutasi objek
@@ -1166,11 +1166,11 @@ class StaffMovementReportController extends Controller
             //     $q->where('role_name', 'karyawan');
             // })
             ->with([
-                'latestEmployeeJob.department', 
-                'latestEmployeeJob.section', 
-                'latestEmployeeJob.position',
-                'latestEmployeeJob.inventory',
-                'latestEmployeeJob.jobDoc',
+                'employeeJob.department', 
+                'employeeJob.section', 
+                'employeeJob.position',
+                'employeeJob.inventory',
+                'employeeJob.jobDoc',
                 'dakarRole',
                 'offboardingMany' => function($q) use ($startDateString, $endDateString) {
                     $q->whereBetween('resign_date', [$startDateString, $endDateString])
@@ -1181,8 +1181,6 @@ class StaffMovementReportController extends Controller
 
         // 3. Transformasi
         $report = $users->map(function ($user) use ($startDateString, $endDateString) {
-            $job = $user->latestEmployeeJob;
-            
             // Cari offboardingMany yang masuk dalam range bulan ini saja dari koleksi yang sudah di-load
             $offboard = $user->offboardingMany
                 ->whereBetween('resign_date', [$startDateString, $endDateString])
@@ -1191,6 +1189,37 @@ class StaffMovementReportController extends Controller
             // Jika offboard null karena alasan teknis, ambil yang paling pertama tersedia
             if (!$offboard) {
                 $offboard = $user->offboardingMany->first();
+            }
+
+            // PERBAIKAN: Cari job yang sesuai dengan resign_date dari offboarding, bukan latestEmployeeJob
+            // Ini mengatasi kasus: karyawan offboarding dari pemagangan lalu naik kontrak
+            $job = null;
+            
+            if ($offboard && $offboard->resign_date) {
+                // Cari job yang memiliki resign_date yang sama
+                $job = $user->employeeJob
+                    ->where('resign_date', Carbon::parse($offboard->resign_date)->toDateString())
+                    ->first();
+                
+                // Jika tidak ada job dengan resign_date yang sama, cari job yang aktif saat resign_date
+                if (!$job) {
+                    $resignDate = Carbon::parse($offboard->resign_date)->toDateString();
+                    $job = $user->employeeJob
+                        ->filter(function ($j) use ($resignDate) {
+                            $start = Carbon::parse($j->start_date)->toDateString();
+                            $end = $j->end_date ? Carbon::parse($j->end_date)->toDateString() : null;
+                            
+                            // Job aktif jika: start_date <= resign_date dan (end_date tidak ada atau end_date >= resign_date)
+                            return $start <= $resignDate && (!$end || $end >= $resignDate);
+                        })
+                        ->sortByDesc('start_date')
+                        ->first();
+                }
+            }
+            
+            // Fallback ke latestEmployeeJob jika tidak menemukan job yang sesuai
+            if (!$job) {
+                $job = $user->latestEmployeeJob ?? $user->employeeJob->last();
             }
 
             return [
