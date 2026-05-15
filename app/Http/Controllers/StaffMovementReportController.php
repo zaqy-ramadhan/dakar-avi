@@ -1196,21 +1196,31 @@ class StaffMovementReportController extends Controller
             $job = null;
             
             if ($offboard && $offboard->resign_date) {
-                // Cari job yang memiliki resign_date yang sama
+                $resignDate = Carbon::parse($offboard->resign_date);
+                $resignDateString = $resignDate->toDateString();
+                
+                // Prioritas 1: Cari job dengan employment_status = false (sudah offboard)
+                // dan resign_date dekat dengan offboarding (toleransi 1 hari untuk handle perbedaan tanggal)
                 $job = $user->employeeJob
-                    ->where('resign_date', Carbon::parse($offboard->resign_date)->toDateString())
+                    ->where('employment_status', false)
+                    ->filter(function ($j) use ($resignDate) {
+                        if (!$j->resign_date) return false;
+                        $jobResignDate = Carbon::parse($j->resign_date);
+                        // Toleransi 1 hari untuk handle kasus resign_date yang sedikit berbeda
+                        return $jobResignDate->diffInDays($resignDate) <= 1;
+                    })
+                    ->sortByDesc('start_date')
                     ->first();
                 
-                // Jika tidak ada job dengan resign_date yang sama, cari job yang aktif saat resign_date
+                // Prioritas 2: Jika tidak ada, cari berdasarkan start_date <= resign_date (job yang aktif saat resign)
                 if (!$job) {
-                    $resignDate = Carbon::parse($offboard->resign_date)->toDateString();
                     $job = $user->employeeJob
-                        ->filter(function ($j) use ($resignDate) {
+                        ->filter(function ($j) use ($resignDateString) {
                             $start = Carbon::parse($j->start_date)->toDateString();
                             $end = $j->end_date ? Carbon::parse($j->end_date)->toDateString() : null;
                             
-                            // Job aktif jika: start_date <= resign_date dan (end_date tidak ada atau end_date >= resign_date)
-                            return $start <= $resignDate && (!$end || $end >= $resignDate);
+                            // Job aktif saat resign jika: start_date <= resign_date dan (end_date tidak ada atau end_date >= resign_date)
+                            return $start <= $resignDateString && (!$end || $end >= $resignDateString);
                         })
                         ->sortByDesc('start_date')
                         ->first();
