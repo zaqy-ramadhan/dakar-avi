@@ -45,7 +45,7 @@
         <div style="background-color: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #2196F3;">
             <small style="color: #666;">
                 <strong>Log ID:</strong> {{ $activityLog->id }}<br>
-                <strong>System:</strong> Dakar HR Management System
+                <strong>System:</strong> AVI Workforce & Onboarding Record Keeper
             </small>
         </div>
     </div>
