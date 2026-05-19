@@ -49,19 +49,17 @@ class UserDataTables extends DataTable
                 return optional($firstJob)->start_date ? $firstJob->start_date->isoFormat('D MMMM YYYY') : '';
             })
             ->orderColumn('join_date', function ($query, $order) {
-                $query->orderBy('join_date', $order);
+                $query->orderByRaw(
+                    "CAST((SELECT MIN(start_date) FROM dakar_employee_job WHERE user_id = users.id) AS DATE) " . $order
+                );
             })
             ->addColumn('latest_end_date', function ($user) {
                 $latestJob = $user->latestEmployeeJob;
                 return optional($latestJob)->end_date ? $latestJob->end_date->isoFormat('D MMMM YYYY') : '';
             })
             ->orderColumn('latest_end_date', function ($query, $direction) {
-                $query->orderBy(
-                    EmployeeJob::select('end_date')
-                        ->whereColumn('user_id', 'users.id')
-                        ->latest('start_date')
-                        ->limit(1),
-                    $direction
+                $query->orderByRaw(
+                    "COALESCE(CAST((SELECT TOP 1 end_date FROM dakar_employee_job WHERE user_id = users.id ORDER BY start_date DESC) AS DATE), '9999-12-31') " . $direction
                 );
             })
             ->addColumn('type', function ($user) {
