@@ -28,8 +28,11 @@ class ActivityLogNotification extends Mailable
      */
     public function envelope(): Envelope
     {
+        $actor = $this->activityLog->actor;
+        $actorName = $actor ? $actor->fullname . ' (' . $actor->npk . ')' : 'System';
+        
         return new Envelope(
-            subject: '📋 Activity Log: ' . $this->activityLog->note,
+            subject: $actorName . ' ' . $this->activityLog->note,
         );
     }
 

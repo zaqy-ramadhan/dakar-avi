@@ -1,6 +1,8 @@
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
     <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
-        <h2 style="color: #333; margin-top: 0;">📋 New Activity Log</h2>
+        <h2 style="color: #333; margin-top: 0;">
+            {{ $actor ? $actor->fullname . ' (' . $actor->npk . ') ' : 'System ' }}{{ $activityLog->note }}
+        </h2>
         
         <div style="background-color: white; padding: 20px; border-radius: 8px; margin-top: 20px;">
             <table style="width: 100%; border-collapse: collapse;">
