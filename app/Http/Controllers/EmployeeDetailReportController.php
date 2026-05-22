@@ -128,6 +128,7 @@ class EmployeeDetailReportController extends Controller
                 'fullname' => $employee->fullname,
                 'gender' => in_array($detail?->gender, [1, '1'], true) ? 'P' : (in_array($detail?->gender, [0, '0'], true) ? 'L' : 'N/A'),
                 'age' => $detail?->age($endOfMonth) ?? 'N/A',
+                'email' => $employee->email ?? 'N/A',
                 'education' => $latestEducation?->education_level ?? 'N/A',
                 'blood_type' => $detail?->blood_type ?? 'N/A',
                 'join_date' => $joinDateParsed->getTimestamp(),
