@@ -36,6 +36,12 @@
                     </div>
                 </div>
 
+                <div class="row mb-4">
+                    <div class="mt-2">
+                            <strong>Total Karyawan: <span id="employee-count">0</span></strong>
+                    </div>
+                </div>
+
                 <!-- Tabel Detail Payroll -->
                 <div class="mb-3 mt-3">
                     <div class="table-responsive">
@@ -45,6 +51,7 @@
                                      <th>No</th>
                                     <th>NPK</th>
                                     <th>Employee</th>
+                                    <th>Position</th>
                                     <th>Work Days</th>
                                     <th>Attendance</th>
                                     <th>Basic Salary</th>
@@ -209,7 +216,8 @@
                                 value="${emp.id}" 
                                 ${String(selectedId) === String(emp.id) ? 'selected' : ''}
                                 data-npk="${emp.npk}" 
-                                data-basic_salary="${basicSalary}">
+                                data-basic_salary="${basicSalary}"
+                                data-position="${emp.position || '-'}">
                                 ${emp.name}
                             </option>
                         `;
@@ -219,7 +227,6 @@
                 select += `</select>`;
                 return select;
             }
-
 
             // addItem: tambahkan baris. data bisa berisi prefilled fields (untuk edit/view)
             function addItem(selectedId = null, data = {}) {
@@ -240,6 +247,7 @@
                  <td class="row-number">${rowNumber}</td>
                 <td><input type="text" name="npk[]" class="form-control npk" value="${data.npk ?? ''}" readonly></td>
                 <td>${createEmpDropdown(selectedId, isView)}</td>
+                <td><input type="text" name="position[]" class="form-control position" value="${data.position ?? ''}" readonly></td>
                 <td><input type="number" name="work_days[]" class="form-control workdays" ${isView ? 'readonly' : ''} min="0" value="${data.work_days ?? ''}"></td>
                 <td><input type="number" name="attendance[]" class="form-control attendance" ${isView ? 'readonly' : ''} min="0" value="${data.total_attend ?? ''}"></td>
                 <td>
@@ -262,6 +270,9 @@
                     selectedEmployees.push(parseInt(selectedId));
                     refreshAllDropdowns();
                 }
+
+                // update total employee count
+                updateEmployeeCount();
             }
 
             $('#add-item').click(function() {
@@ -330,6 +341,9 @@
                 // set NPK
                 row.find('.npk').val(emp.npk || '');
 
+                // set position
+                row.find('.position').val(emp.position || '-');
+
                 // set basic salary if available; otherwise leave editable
                 let basicSalary = parseInt(emp.basic_salary) || 0;
                 if (basicSalary > 0) {
@@ -347,6 +361,9 @@
                     if (v) selectedEmployees.push(parseInt(v));
                 });
                 refreshAllDropdowns();
+
+                // update total employee count
+                updateEmployeeCount();
 
                 calculateTotal(row);
             });
@@ -371,7 +388,14 @@
                 }
                 row.remove();
                 refreshAllDropdowns();
+                updateEmployeeCount();
             });
+
+            // update total employee count
+            function updateEmployeeCount() {
+                let count = $('#items-container tr').length;
+                $('#employee-count').text(count);
+            }
 
             // --- initialization: separate flows for create vs edit/view ---
 
@@ -379,9 +403,17 @@
                 // if payroll present, populate rows from payroll.payroll_detail
                 if (payroll && Array.isArray(payroll.payroll_detail)) {
                     payroll.payroll_detail.forEach(detail => {
+                        // Find position from employees array
+                        let empPosition = '-';
+                        let emp = employees.find(e => e.id === detail.user_id);
+                        if (emp) {
+                            empPosition = emp.position || '-';
+                        }
+                        
                         // use field names from backend: user_id, npk, work_days, total_attend, basic_salary, total_salary, note
                         addItem(detail.user_id, {
                             npk: detail.npk,
+                            position: empPosition,
                             work_days: detail.work_days,
                             total_attend: detail.total_attend,
                             basic_salary: detail.basic_salary,
@@ -395,6 +427,7 @@
                         lastRow.find('.employeeSelect').val(detail.user_id);
                         // set other fields (some already set by addItem via data, but ensure)
                         lastRow.find('.npk').val(detail.npk || '');
+                        lastRow.find('.position').val(empPosition || '-');
                         lastRow.find('.workdays').val(detail.work_days || detail.work_days === 0 ? detail
                             .work_days : '');
                         lastRow.find('.attendance').val(detail.total_attend || '');

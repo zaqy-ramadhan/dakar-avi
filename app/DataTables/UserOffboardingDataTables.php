@@ -32,12 +32,8 @@ class UserOffboardingDataTables extends DataTable
             })
             // Perbaikan Order Column menggunakan Subquery agar bisa di-sort oleh Database
             ->orderColumn('resign_date', function ($query, $direction) {
-                $query->orderBy(
-                    Offboarding::select('resign_date')
-                        ->whereColumn('user_id', 'users.id')
-                        ->latest('resign_date')
-                        ->limit(1),
-                    $direction
+                $query->orderByRaw(
+                    "COALESCE(CAST((SELECT TOP 1 resign_date FROM dakar_offboarding WHERE user_id = users.id ORDER BY resign_date DESC) AS DATE), '9999-12-31') " . $direction
                 );
             })
             ->addColumn('reason', function ($user) {

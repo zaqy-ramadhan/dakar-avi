@@ -56,12 +56,8 @@ class UserBoardingDataTables extends DataTable
                 });
             })
             ->orderColumn('start_date', function ($query, $direction) {
-                $query->orderBy(
-                    EmployeeJob::select('start_date')
-                        ->whereColumn('user_id', 'users.id')
-                        ->latest('start_date')
-                        ->limit(1),
-                    $direction
+                $query->orderByRaw(
+                    "CAST((SELECT TOP 1 start_date FROM dakar_employee_job WHERE user_id = users.id AND job_sequence = 1) AS DATE) " . $direction
                 );
             })
             ->addColumn('end_date', function ($user) {
@@ -75,12 +71,8 @@ class UserBoardingDataTables extends DataTable
                 });
             })
             ->orderColumn('end_date', function ($query, $direction) {
-                $query->orderBy(
-                    EmployeeJob::select('end_date')
-                        ->whereColumn('user_id', 'users.id')
-                        ->latest('end_date')
-                        ->limit(1),
-                    $direction
+                $query->orderByRaw(
+                    "COALESCE(CAST((SELECT TOP 1 end_date FROM dakar_employee_job WHERE user_id = users.id AND job_sequence = 1) AS DATE), '9999-12-31') " . $direction
                 );
             })
 
