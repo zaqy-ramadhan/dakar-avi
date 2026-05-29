@@ -89,7 +89,9 @@ class PayrollController extends Controller
             ->with([
                 'latestEmployeeJob.jobWageAllowance' => function ($q) {
                     $q->where('type', 'Uang Saku');
-                }
+                },
+                'latestEmployeeJob.position',
+                'latestEmployeeJob.department',
             ])
             ->get()
             ->sortBy(function ($user) {
@@ -120,14 +122,24 @@ class PayrollController extends Controller
     public function edit($id)
     {
         $payroll = Payroll::with('payrollDetail')->findOrFail($id);
-        $employee = User::whereHas('latestEmployeeJob', function ($q) {
-            $q->where('employment_status', true)
-                ->where('user_dakar_role', '!=', 'karyawan');
-        })
+        
+        // Get user_ids dari payroll_detail yang sudah ada
+        $payrollUserIds = $payroll->payrollDetail->pluck('user_id')->unique()->toArray();
+        
+        // Load employees yang aktif ATAU yang ada di payroll detail
+        $employee = User::where(function ($q) use ($payrollUserIds) {
+                $q->whereHas('latestEmployeeJob', function ($sub) {
+                    $sub->where('employment_status', true)
+                        ->where('user_dakar_role', '!=', 'karyawan');
+                })
+                ->orWhereIn('id', $payrollUserIds);
+            })
             ->with([
                 'latestEmployeeJob.jobWageAllowance' => function ($q) {
                     $q->where('type', 'Uang Saku');
-                }
+                },
+                'latestEmployeeJob.position',
+                'latestEmployeeJob.department',
             ])
             ->get()
             ->map(function ($user) {
@@ -160,7 +172,9 @@ class PayrollController extends Controller
             ->with([
                 'latestEmployeeJob.jobWageAllowance' => function ($q) {
                     $q->where('type', 'Uang Saku');
-                }
+                },
+                'latestEmployeeJob.position',
+                'latestEmployeeJob.department',
             ])
             ->get()
             ->map(function ($user) {
@@ -438,7 +452,9 @@ class PayrollController extends Controller
         //                 });
         //         });
         // })
-        $employee = User::whereHas('employeeJob', function ($q) use ($start, $end) {
+
+        //29 mei 2026 update ganti employeeJob() ke pemaganganOrInternshipJob()
+        $employee = User::whereHas('pemaganganOrInternshipJob', function ($q) use ($start, $end) {
             $q->where('user_dakar_role', '!=', 'karyawan')
                 ->whereDate('start_date', '<=', $end) 
                 ->where(function ($sub) use ($start) {
@@ -454,17 +470,17 @@ class PayrollController extends Controller
                 });
         })
             ->with([
-                'employeeJob.jobWageAllowance' => function ($q) {
+                'pemaganganOrInternshipJob.jobWageAllowance' => function ($q) {
                     $q->where('type', 'Uang Saku');
                 },
-                'employeeJob.position',
-                'employeeJob.department',
+                'pemaganganOrInternshipJob.position',
+                'pemaganganOrInternshipJob.department',
             ])
             ->get()
             ->map(function ($user) {
-                $wage = $user->employeeJob->first()->jobWageAllowance[0]?->amount ?? 0;
+                $wage = $user->pemaganganOrInternshipJob->first()->jobWageAllowance[0]?->amount ?? 0;
                 $basic_salary = (int) preg_replace('/\D/', '', $wage);
-                $job = $user->employeeJob->first();
+                $job = $user->pemaganganOrInternshipJob->first();
 
                 if ($job->resign_date) {
                     $status = 'Inactive - ' . Carbon::parse($job->resign_date)->format('d M Y');

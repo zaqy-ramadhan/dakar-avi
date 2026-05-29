@@ -178,7 +178,12 @@
                 $('#items-container').empty();
 
                 employees.forEach(emp => {
-                    addItem(emp.id);
+                    // Pass employee data termasuk position saat re-populate
+                    addItem(emp.id, {
+                        npk: emp.npk,
+                        position: emp.position || '-',
+                        basic_salary: emp.basic_salary
+                    });
                     let lastRow = $('#items-container tr').last();
                     lastRow.find('.employeeSelect').val(emp.id).trigger('change');
                 });
@@ -402,13 +407,15 @@
             if (mode === 'edit' || mode === 'view') {
                 // if payroll present, populate rows from payroll.payroll_detail
                 if (payroll && Array.isArray(payroll.payroll_detail)) {
+                    console.log('Edit mode - Employees:', employees);
+                    console.log('Payroll details:', payroll.payroll_detail);
+                    
                     payroll.payroll_detail.forEach(detail => {
-                        // Find position from employees array
-                        let empPosition = '-';
-                        let emp = employees.find(e => e.id === detail.user_id);
-                        if (emp) {
-                            empPosition = emp.position || '-';
-                        }
+                        // Find employee dari array berdasarkan user_id (convert to string untuk safety)
+                        let emp = employees.find(e => String(e.id) === String(detail.user_id));
+                        let empPosition = emp ? (emp.position || '-') : '-';
+                        
+                        console.log(`Detail user_id: ${detail.user_id}, Found emp:`, emp, 'Position:', empPosition);
                         
                         // use field names from backend: user_id, npk, work_days, total_attend, basic_salary, total_salary, note
                         addItem(detail.user_id, {
@@ -456,11 +463,18 @@
                 $('#end_date').val(payroll.end_date ?? '');
             } else {
                 // create mode: add a single empty row (safer than auto-adding all employees)
+                console.log('Create mode - Employees:', employees);
                 employees.forEach(emp => {
-                    addItem(emp.id);
+                    // Pass employee data langsung ke addItem sehingga position muncul dari awal
+                    addItem(emp.id, {
+                        npk: emp.npk,
+                        position: emp.position || '-',
+                        basic_salary: emp.basic_salary
+                    });
                     let lastRow = $('#items-container tr').last();
-                    lastRow.find('.employeeSelect').val(emp.id).trigger('change');
+                    lastRow.find('.employeeSelect').val(emp.id);
                 });
+                console.log('Create mode - Rows populated');
             }
 
             if (mode === 'view') {

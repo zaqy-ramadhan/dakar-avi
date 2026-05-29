@@ -147,6 +147,24 @@ class User extends Authenticatable
         return $this->hasMany(EmployeeJob::class, 'user_id', 'id');
     }
 
+    public function pemaganganJob()
+    {
+        return $this->hasMany(EmployeeJob::class, 'user_id', 'id')
+            ->where('user_dakar_role', 'pemagangan');
+    }
+
+    public function internshipJob()
+    {
+        return $this->hasMany(EmployeeJob::class, 'user_id', 'id')
+            ->where('user_dakar_role', 'internship');
+    }
+
+    public function pemaganganOrInternshipJob()
+    {
+        return $this->hasMany(EmployeeJob::class, 'user_id', 'id')
+            ->whereIn('user_dakar_role', ['pemagangan', 'internship']);
+    }
+
     public function employeeSocmed()
     {
         return $this->hasMany(EmployeeSocmed::class, 'user_id', 'id');
