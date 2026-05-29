@@ -461,7 +461,7 @@
                     <div class="card-header">
                         Menunggu Tanda Tangan Kontrak
                     </div>
-                    <div class="card-body table-responsive">
+                    <div class="card-body table-responsive" style="max-height: 400px; overflow-y: auto;">
                         <table class="table text-nowrap mb-0 align-middle">
                             <thead>
                                 <tr>
@@ -497,7 +497,7 @@
                     <div class="card-header">
                         Menunggu Tanda Tangan Data Kompensasi
                     </div>
-                    <div class="card-body table-responsive">
+                    <div class="card-body table-responsive" style="max-height: 400px; overflow-y: auto;">
                         <table class="table text-nowrap mb-0 align-middle">
                             <thead>
                                 <tr>
