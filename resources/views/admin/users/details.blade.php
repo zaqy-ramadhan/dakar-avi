@@ -123,13 +123,13 @@
                     </div>
 
 
-                    @if (Auth::user()->getRole() != 'internship')
+                    {{-- @if (Auth::user()->getRole() != 'internship') --}}
                         <div class=" tab-pane py-4 px-2 fade" id="family" role="tabpanel" aria-labelledby="family-tab">
 
                             @include('admin.users.form.family')
 
                         </div>
-                    @endif
+                    {{-- @endif --}}
 
                     <div class="tab-pane py-4 px-2 fade" id="socmed" role="tabpanel" aria-labelledby="socmed-tab">
 
