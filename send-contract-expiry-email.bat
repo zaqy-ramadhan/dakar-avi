@@ -10,7 +10,7 @@ echo ====================================================
 echo.
 
 REM Navigasi ke folder project
-cd /d "c:\inetpub\wwwroot\dakar"
+cd /d "c:\inetpub\wwwroot\dakar-avi"
 
 REM Jalankan command artisan untuk mengirim email
 php artisan email:contract-expiry-reminder

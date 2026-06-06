@@ -10,7 +10,7 @@ echo ====================================================
 echo.
 
 REM Navigasi ke folder project
-cd /d "c:\inetpub\wwwroot\dakar"
+cd /d "c:\inetpub\wwwroot\dakar-avi"
 
 REM Tanyakan tanggal kepada user
 set /p tanggal=Masukkan tanggal (format: YYYY-MM-DD) atau tekan Enter untuk kemarin: 

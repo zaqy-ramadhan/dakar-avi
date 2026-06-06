@@ -46,6 +46,7 @@ return [
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
+             'verify_peer' => false,
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
@@ -123,11 +124,11 @@ return [
     |
     */
 
-    'contract_expiry_recipients' => [
-        // 'buddy.service@astra-visteon.com',
-        // 'hr@astra-visteon.com',
-        'nasghifarz619@gmail.com',
-    ],
+    // 'contract_expiry_recipients' => [
+    //     // 'buddy.service@astra-visteon.com',
+    //     // 'hr@astra-visteon.com',
+    //     'nasghifarz619@gmail.com',
+    // ],
 
     /*
     |--------------------------------------------------------------------------
@@ -139,11 +140,11 @@ return [
     |
     */
 
-    'activity_log_recipients' => [
-        // 'buddy.service@astra-visteon.com',
-        // 'hr@astra-visteon.com',
-        'nasghifarz619@gmail.com',
-    ],
+    // 'activity_log_recipients' => [
+    //     // 'buddy.service@astra-visteon.com',
+    //     // 'hr@astra-visteon.com',
+    //     'nasghifarz619@gmail.com',
+    // ],
 
     /*
     |--------------------------------------------------------------------------
@@ -154,11 +155,6 @@ return [
     | Summary is sent once per day with filtered categories only.
     |
     */
-
-    'activity_log_summary_recipients' => [
-        'buddy.service@astra-visteon.com',
-        // Tambahkan email lain sesuai kebutuhan
-    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -180,20 +176,28 @@ return [
     ],
 
     //production
-    //  'contract_expiry_recipients' => [
-    //     'nasghifarz619@gmail.com',
-    //     'fitrimar@gmail.com',
-    //     'sadtu.risdiyati@astra-visteon.com',
-    //     'risyad0210@gmail.com',
-    //     'hr@astra-visteon.com',
-    // ],
+     'contract_expiry_recipients' => [
+        'nasghifarz619@gmail.com',
+        'fitrimar@gmail.com',
+        'sadtu.risdiyati@astra-visteon.com',
+        'risyad0210@gmail.com',
+        'hr@astra-visteon.com',
+    ],
 
-    // 'activity_log_recipients' => [
-    //     'nasghifarz619@gmail.com',
-    //     'safitri@astra-visteon.com',
-    //     // 'sadtu.risdiyati@astra-visteon.com',
-    //     // 'risyad0210@gmail.com',
-    //     'hr@astra-visteon.com',
-    // ],
+    'activity_log_recipients' => [
+        'nasghifarz619@gmail.com',
+        'safitri@astra-visteon.com',
+        // 'sadtu.risdiyati@astra-visteon.com',
+        // 'risyad0210@gmail.com',
+        'hr@astra-visteon.com',
+    ],
+
+     'activity_log_summary_recipients' => [
+        'nasghifarz619@gmail.com',
+        'safitri@astra-visteon.com',
+        // 'sadtu.risdiyati@astra-visteon.com',
+        // 'risyad0210@gmail.com',
+        'hr@astra-visteon.com',
+    ],
 
 ];

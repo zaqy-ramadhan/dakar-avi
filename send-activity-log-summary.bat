@@ -11,7 +11,7 @@ echo ====================================================
 echo.
 
 REM Navigasi ke folder project
-cd /d "c:\inetpub\wwwroot\dakar"
+cd /d "c:\inetpub\wwwroot\dakar-avi"
 
 REM Jalankan command artisan untuk mengirim summary
 echo Mengirimkan rekap aktivitas hari kemarin...
