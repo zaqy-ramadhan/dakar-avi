@@ -63,7 +63,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($logs->take(10) as $log)
+                        @foreach($logs as $log)
                             <tr style="border-bottom: 1px solid #ecf0f1;">
                                 <td style="padding: 8px; font-size: 12px;">
                                     {{ $log->created_at->format('H:i:s') }}
@@ -86,13 +86,13 @@
                             </tr>
                         @endforeach
 
-                        @if($logs->count() > 10)
+                        {{-- @if($logs->count() > 10)
                             <tr style="background-color: #ecf0f1; border-top: 2px solid #bdc3c7;">
                                 <td colspan="4" style="padding: 8px; text-align: center; font-size: 12px; color: #7f8c8d;">
                                     ... dan {{ $logs->count() - 10 }} aktivitas lainnya
                                 </td>
                             </tr>
-                        @endif
+                        @endif --}}
                     </tbody>
                 </table>
             </div>
