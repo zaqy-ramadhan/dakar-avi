@@ -1251,9 +1251,9 @@ class StaffMovementReportController extends Controller
                                         ? Carbon::parse($offboard->resign_date)->addDays(2)->format('d M Y') 
                                         : '-',
 
-                'exit_interview'    => $this->checkStepStatusOff($job, function ($u, $j) {
+                'exit_interview'    => ($offboard?->reason === 'Join AVI') ? $this->checkStepStatusOff($job, function ($u, $j) {
                     return $j->user->offboardingMany->where('exit_interview', true)->first()?->updated_at;
-                }, '2 day'),
+                }, '2 day') : '-',
 
                 'exit_interview_date' => $user->offboardingMany->where('exit_interview', true)->first()?->updated_at?->format('d M Y') ?? '-',
                 

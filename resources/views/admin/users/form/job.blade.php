@@ -233,7 +233,7 @@
                 </li>
             @endif
         @elseif (Request::is('*offboarding*'))
-            <li class="nav-item" role="presentation">
+            <li id="exit-intv-li" class="nav-item" role="presentation">
                 <button class="nav-link" id="exit-intv-tab" data-bs-toggle="tab" data-bs-target="#exit"
                     type="button" role="tab" aria-controls="exit" aria-selected="false">Exit Interview</button>
             </li>
@@ -741,6 +741,34 @@
                         console.error("Error updating status:", error);
                     });
             });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const reasonSelect = document.getElementById('reason');
+            const exitIntvLi = document.getElementById('exit-intv-li');
+
+            // Fungsi untuk menyembunyikan atau menampilkan tab
+            function toggleExitInterview() {
+                if (reasonSelect && exitIntvLi) {
+                    // Cek apakah value yang dipilih adalah "Join AVI"
+                    if (reasonSelect.value === 'Join AVI') {
+                        exitIntvLi.style.display = 'none';
+                    } else {
+                        exitIntvLi.style.display = 'block'; // atau '' untuk kembali ke default
+                    }
+                }
+            }
+
+            // Panggil fungsi saat halaman pertama kali diload
+            // Berguna jika data dari database sudah 'Join AVI'
+            toggleExitInterview();
+
+            // Panggil fungsi setiap kali dropdown berubah (onchange)
+            if (reasonSelect) {
+                reasonSelect.addEventListener('change', toggleExitInterview);
+            }
         });
     </script>
 @endpush
