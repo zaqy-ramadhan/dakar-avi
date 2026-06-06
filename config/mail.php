@@ -145,4 +145,55 @@ return [
         'nasghifarz619@gmail.com',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Log Daily Summary Recipients
+    |--------------------------------------------------------------------------
+    |
+    | Email addresses to receive daily activity log summary.
+    | Summary is sent once per day with filtered categories only.
+    |
+    */
+
+    'activity_log_summary_recipients' => [
+        'buddy.service@astra-visteon.com',
+        // Tambahkan email lain sesuai kebutuhan
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Log Summary Categories Filter
+    |--------------------------------------------------------------------------
+    |
+    | Kategori table_name yang ingin ditampilkan dalam rekap harian.
+    | Hanya aktivitas dari tabel-tabel ini yang akan disertakan dalam email summary.
+    |
+    | Nilai yang tersedia:
+    | - dakar_job_documents (update dokumen karyawan)
+    | - dakar_employee_jobs (update pekerjaan/kontrak karyawan)
+    |
+    */
+
+    'activity_log_summary_categories' => [
+        'dakar_job_documents',
+        'dakar_employee_jobs',
+    ],
+
+    //production
+    //  'contract_expiry_recipients' => [
+    //     'nasghifarz619@gmail.com',
+    //     'fitrimar@gmail.com',
+    //     'sadtu.risdiyati@astra-visteon.com',
+    //     'risyad0210@gmail.com',
+    //     'hr@astra-visteon.com',
+    // ],
+
+    // 'activity_log_recipients' => [
+    //     'nasghifarz619@gmail.com',
+    //     'safitri@astra-visteon.com',
+    //     // 'sadtu.risdiyati@astra-visteon.com',
+    //     // 'risyad0210@gmail.com',
+    //     'hr@astra-visteon.com',
+    // ],
+
 ];
