@@ -211,7 +211,7 @@ class JobEmploymentDataTables extends DataTable
 
                 $kontrakButton = '';
                 if ($showKontrakButton) {
-                    if($job->notes != 'Employee Transfer'){
+                    if($job->notes != 'Employee Transfer' && $job->job_status != 'tetap'){
                         $kontrakButton = '<a title="Kontrak" href="' . route("user.kontrak-pdf", $job->id) . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-script fs-6"></i> Kontrak</a>';
                     }else{
                         $kontrakButton = '';
@@ -246,7 +246,7 @@ class JobEmploymentDataTables extends DataTable
                         </form>';
                 }
 
-                //check for palaring
+                //check for paklaring
                 $checklatest = (bool)($job->id == $job->user->latestEmployeeJob->id);
                 $checkOffboard = (bool)($job->employment_status == false && $job->user->offboarding != null);
                 $paklaring_item_id = Item::where('item_name', 'LIKE', 'paklaring')->first()?->id;

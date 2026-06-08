@@ -61,6 +61,9 @@ Route::middleware('guest')->group(function () {
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home.index');
 
+Route::get('/export/signatures', [App\Http\Controllers\HomeController::class, 'exportSignatures'])->name('export.signatures')->middleware('auth');
+Route::get('/export/compensations', [App\Http\Controllers\HomeController::class, 'exportCompensations'])->name('export.compensations')->middleware('auth');
+
 
 Route::get('kp', function () {
     $pdf = Pdf::loadView('documents.dataPermission')->setPaper('a4', 'potrait');

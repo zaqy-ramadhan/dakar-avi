@@ -8,12 +8,15 @@ use App\Models\EmployeeJob;
 use App\Models\Inventory;
 use App\Models\JobDoc;
 use App\Models\User;
+use App\Exports\SignaturesExport;
+use App\Exports\CompensationsExport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 class HomeController extends Controller
 {
@@ -128,8 +131,20 @@ class HomeController extends Controller
                 //     ->unique('id')
                 //     ->values();
 
-                $signatures = JobDoc::with('employeeJob')->where('type', 'contract')->whereNull('first_party_signature')->get();      
-                $compensations = EmployeeJob::where('employment_status', true)->where('user_dakar_role', 'karyawan')->whereHas('jobdoc', function($q){
+                $signatures = JobDoc::with('employeeJob')
+                    ->whereHas('employeeJob', function($q){
+                        $q->where('job_status', 'kontrak');
+                    })
+                    ->where('type', 'contract')
+                    ->where(function($q) {
+                        $q->whereNull('first_party_signature')
+                          ->orWhere('first_party_signature', '');
+                    })
+                    ->get();
+
+                $compensations = EmployeeJob::where('employment_status', true)
+                ->where('user_dakar_role', 'karyawan')
+                ->whereHas('jobdoc', function($q){
                     $q->where('type', 'contract')
                     ->whereNotNull('first_party_signature');
                 })->whereDoesntHave('jobdoc', function($q2){
@@ -223,5 +238,35 @@ class HomeController extends Controller
             Log::error($e->getMessage());
             return back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
+    }
+
+    public function exportSignatures()
+    {
+        $signatures = JobDoc::with('employeeJob')
+            ->whereHas('employeeJob', function($q){
+                $q->where('job_status', 'kontrak');
+            })
+            ->where('type', 'contract')
+            ->where(function($q) {
+                $q->whereNull('first_party_signature')
+                  ->orWhere('first_party_signature', '');
+            })
+            ->get();
+
+        return Excel::download(new SignaturesExport($signatures), 'signatures_' . now()->format('Y-m-d_His') . '.xlsx');
+    }
+
+    public function exportCompensations()
+    {
+        $compensations = EmployeeJob::where('employment_status', true)
+            ->where('user_dakar_role', 'karyawan')
+            ->whereHas('jobdoc', function($q){
+                $q->where('type', 'contract')
+                ->whereNotNull('first_party_signature');
+            })->whereDoesntHave('jobdoc', function($q2){
+                $q2->where('type', 'kompensasi');
+            })->get();
+
+        return Excel::download(new CompensationsExport($compensations), 'compensations_' . now()->format('Y-m-d_His') . '.xlsx');
     }
 }

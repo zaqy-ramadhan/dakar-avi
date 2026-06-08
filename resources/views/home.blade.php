@@ -458,8 +458,11 @@
 
              <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header">
-                        Menunggu Tanda Tangan Kontrak
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Menunggu Tanda Tangan Kontrak</span>
+                        <a href="{{ route('export.signatures') }}" class="btn btn-sm btn-outline-success" title="Export to Excel">
+                            <i class="ti ti-download"></i> Export
+                        </a>
                     </div>
                     <div class="card-body table-responsive" style="max-height: 400px; overflow-y: auto;">
                         <table class="table text-nowrap mb-0 align-middle">
@@ -494,8 +497,11 @@
 
              <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header">
-                        Menunggu Tanda Tangan Data Kompensasi
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Menunggu Tanda Tangan Data Kompensasi</span>
+                        <a href="{{ route('export.compensations') }}" class="btn btn-sm btn-outline-success" title="Export to Excel">
+                            <i class="ti ti-download"></i> Export
+                        </a>
                     </div>
                     <div class="card-body table-responsive" style="max-height: 400px; overflow-y: auto;">
                         <table class="table text-nowrap mb-0 align-middle">
