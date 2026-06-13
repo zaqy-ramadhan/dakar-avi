@@ -445,7 +445,7 @@
                                     <tr>
                                         <td>{{ $birthday->user->fullname ?? '-' }}</td>
                                         <td>{{ $birthday->user->npk ?? '-' }}</td>
-                                        <td>{{ $birthday->user->department->department_name ?? '-' }}</td>
+                                        <td>{{ $birthday->user->latestemployeejob->department->department_name ?? '-' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($birthday->birth_date)->isoFormat('DD MMMM YYYY') }}
                                         </td>
                                     </tr>
