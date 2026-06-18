@@ -350,12 +350,12 @@ class User extends Authenticatable
 
     public function firstEmployeeJobIncomplete()
     {
-        return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->where('job_sequence', 1);
+        return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->where('job_sequence', 1)->where('onboarding_progress', '<', 100);
     }
 
     public function firstPkwtIncomplete()
     {
-        return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->where('notes', 'New Employee Kontrak');
+        return $this->hasOne(EmployeeJob::class)->where('is_onboarding_completed', false)->where('employment_status', true)->where('notes', 'New Employee Kontrak')->where('onboarding_progress', '<', 100);
     }
 
     public function firstPkwt()
