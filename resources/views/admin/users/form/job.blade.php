@@ -718,30 +718,41 @@
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const checkbox = document.getElementById('exit_gform_checked');
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkbox = document.getElementById('exit_gform_checked');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            checkbox.addEventListener('change', function() {
-                fetch("{{ route('offboarding.exit-interview', $user->id) }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            exit_gform: this.checked ? 1 : 0
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Optional: Tampilkan notifikasi sukses
-                        console.log("Status updated");
-                    })
-                    .catch(error => {
-                        console.error("Error updating status:", error);
-                    });
+        checkbox.addEventListener('change', function() {
+            const isChecked = this.checked ? 1 : 0;
+
+            fetch("{{ route('offboarding.exit-interview', $user->id) }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ exit_gform: isChecked })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                if(data.success) {
+                    console.log("Berhasil:", data.message);
+                } else {
+                    console.error("Gagal:", data.message);
+                    this.checked = !this.checked; // Balikkan posisi checkbox jika gagal
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                this.checked = !this.checked; // Balikkan posisi checkbox jika error koneksi
+                alert("Terjadi kesalahan, pastikan alasan offboarding sudah disubmit");
             });
         });
+    });
     </script>
 
     <script>

@@ -80,9 +80,12 @@ Route::get('api/v1/department/{id}', [ApiDepartmentController::class, 'show']);
 Route::get('api/v1/position', [ApiPositionController::class, 'index']);
 Route::get('api/v1/position/{id}', [ApiPositionController::class, 'show']);
 
-Route::get('/offboarding/exit-interview', [OffboardingController::class, 'exitIntvButton'])->name('offboarding.exit-interview')->middleware('auth');
+// Route::post('/offboarding/exit-interview', [OffboardingController::class, 'exitIntvButton'])->name('offboarding.exit-interview')->middleware('auth');
+Route::post('/offboarding/exit-interview/{id}', [OffboardingController::class, 'exitIntvButton'])
+    ->name('offboarding.exit-interview')
+    ->middleware('auth');
 
-
+    
 Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['role:admin,admin 2,admin 3,admin 4'])->group(function () {

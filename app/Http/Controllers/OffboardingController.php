@@ -172,19 +172,25 @@ class OffboardingController extends Controller
         }
     }
 
-    public function exitIntvButton()
+    public function exitIntvButton(Request $request, $id)
     {
         try {
-            $user = Auth::user();
-            $offboarding = $user->offboarding;
+            \Log::info("Mencoba update offboarding untuk User ID: " . $id);
+            $offboarding = \App\Models\Offboarding::where('user_id', $id)->firstOrFail();
+            
             $offboarding->update([
-                'exit_interview' => true,
+                'exit_interview' => $request->exit_gform
             ]);
 
-            return view('admin.offboarding.exit')->with('success', 'Terima kasih sudah mengisi exit interview.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diupdate'
+            ]);
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan saat memperbarui data.' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
