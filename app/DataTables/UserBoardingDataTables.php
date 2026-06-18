@@ -129,11 +129,19 @@ class UserBoardingDataTables extends DataTable
             //             ->where('is_onboarding_completed', false);
             //         });
             // })
+            //18 juni 2026
+            // ->where(function ($q) {
+            //     $q->doesntHave('employeeJob')
+            //     ->orWhereHas('firstEmployeeJobIncomplete')
+            //     ->orWhereHas('firstPkwtIncomplete');
+            // })
             ->where(function ($q) {
                 $q->doesntHave('employeeJob')
-                ->orWhereHas('firstEmployeeJobIncomplete')
+                ->orWhereHas('firstEmployeeJobIncomplete', function ($qJob) {
+                    $qJob->where('onboarding_progress', '<', 100);
+                })
                 ->orWhereHas('firstPkwtIncomplete');
-            })
+            });
             ;
 
         if ($status = request()->input('statusFilter')) {
