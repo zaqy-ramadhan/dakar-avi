@@ -68,7 +68,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <select name="status" class="form-control">
                         <option value="">Status</option>
                         <option value="active">Active</option>
@@ -90,9 +90,13 @@
                     <button type="button" id="resetFilters" class="btn btn-secondary w-100"><i
                             class="ti ti-reload fs-4"></i> Reset</button>
                 </div>
-                <div class="col-md-2">
-                    <button type="button" id="exportExcel" class="btn btn-success w-100"><i
+                <div class="col-auto d-flex w-auto">
+                    <button type="button" id="exportExcel" class="btn btn-success w-fit"><i
                             class="ti ti-file-spreadsheet fs-4"></i>Export Excel</button>
+                </div>
+                <div class="col-auto d-flex w-auto">
+                    <button type="button" id="exportExcelMin" class="btn btn-primary w-fit"><i
+                            class="ti ti-file-spreadsheet fs-4"></i>Export Excel Min</button>
                 </div>
             </form>
         </div>
@@ -275,6 +279,16 @@
                     params += '&export=excel';
                 } else {
                     params = 'export=excel';
+                }
+                window.location.href = "{{ route('employee-detail') }}" + "?" + params;
+            });
+
+            $('#exportExcelMin').on('click', function() {
+                var params = $('#filterForm').serialize();
+                if (params.length > 0) {
+                    params += '&export_min=excel';
+                } else {
+                    params = 'export_min=excel';
                 }
                 window.location.href = "{{ route('employee-detail') }}" + "?" + params;
             });

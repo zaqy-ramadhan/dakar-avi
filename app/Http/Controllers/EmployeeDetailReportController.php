@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\EmployeeExport;
+use App\Exports\EmployeeExportMin;
 use App\Models\DakarRole;
 use App\Models\Department;
 use App\Models\Golongan;
@@ -145,6 +146,10 @@ class EmployeeDetailReportController extends Controller
                 'job_type' => $job?->jobType?->job_type_name ?? 'N/A',
                 'gol' => $job?->golongan?->golongan_name ?? 'N/A',
                 'status' => $job?->is_active_range($startOfMonth, $endOfMonth) ?? 'inactive',
+
+                //addition
+                'nik' => $detail->no_ktp ?? 'N/A',
+                'no_phone' => $detail->no_phone ?? 'N/A',
             ];
         })
     //    ->filter(function ($item) {
@@ -199,6 +204,10 @@ class EmployeeDetailReportController extends Controller
 
         if (request()->has('export') && request('export') == 'excel') {
             return Excel::download(new EmployeeExport($employees), 'employee-report-' . $startOfMonth->isoFormat('MMMM Y') . '-' . $endOfMonth->isoFormat('MMMM Y') . '.xlsx');
+        }
+
+        if (request()->has('export_min') && request('export_min') == 'excel') {
+            return Excel::download(new EmployeeExportMin($employees), 'employee-report-min-' . $startOfMonth->isoFormat('MMMM Y') . '-' . $endOfMonth->isoFormat('MMMM Y') . '.xlsx');
         }
 
         if (request()->ajax()) {
