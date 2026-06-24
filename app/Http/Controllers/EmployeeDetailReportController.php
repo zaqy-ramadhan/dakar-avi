@@ -148,7 +148,7 @@ class EmployeeDetailReportController extends Controller
                 'status' => $job?->is_active_range($startOfMonth, $endOfMonth) ?? 'inactive',
 
                 //addition
-                'nik' => $detail->no_ktp ?? 'N/A',
+                'nik' => (string)$detail->no_ktp ?? 'N/A',
                 'no_phone' => $detail->no_phone ?? 'N/A',
             ];
         })
