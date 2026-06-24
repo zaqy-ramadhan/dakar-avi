@@ -1322,7 +1322,7 @@ class StaffMovementReportController extends Controller
             return 'N/A';
         }
 
-        $job = $user->latestEmployeeJob;
+        //$job = $user->latestEmployeeJob;
         if (!$job || !$job->start_date) return 'N/A';
 
         $offboard = $user->offboarding->first();
