@@ -1326,8 +1326,9 @@ class StaffMovementReportController extends Controller
         if (!$job || !$job->start_date) return 'N/A';
 
         $offboard = $user->offboarding->first();
-        $deadline = $offboard?->resign_date ? Carbon::parse($offboard->resign_date)->addDays(2) : null;
-
+        //$deadline = $offboard?->resign_date ? Carbon::parse($offboard->resign_date)->addDays(2) : null;
+        $deadline = $job->resign_date ? Carbon::parse($job->resign_date) : Carbon::parse($job->end_date);
+        
         // $deadline = Carbon::parse($job->start_date)->add($deadlineDiff);
         $completionDate = $completionCallback($user, $job);
 
