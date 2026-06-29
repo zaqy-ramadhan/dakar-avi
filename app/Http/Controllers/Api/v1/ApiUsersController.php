@@ -45,11 +45,21 @@ class ApiUsersController extends Controller
                 });
             }
 
-            $users = $query->whereHas('employeeJob', function ($q) {
-                $q->where('employment_status', true);
-            })
+            $showAll = $request->boolean('showAll', false);
+            $filter = $request->filter ?? null;
+
+            $users = $query
+                ->whereHas('employeeJob', function ($q) use ($showAll,$filter) {
+                    if (!$showAll) {
+                        $q->where('employment_status', true);
+                    }
+
+                    if($filter){
+                        $q->where('user_dakar_role', strtolower($filter));
+                    }
+                })
                 ->whereHas('dakarRole', function ($q) {
-                    $q->whereNotIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4', 'pemagangan', 'internship']);
+                    $q->whereNotIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4']);
                 })
                 ->with(['latestEmployeeJob', 'firstEmployeeJob','employeeInventoryNumber'])
                 ->get();
@@ -64,7 +74,8 @@ class ApiUsersController extends Controller
                     'id' => $user->id,
                     'npk' => $user->npk,
                     'fullname' => $user->fullname,
-                    'email' => $email_avi ? $email_avi->number : $user->email,
+                    'email_avi' => $email_avi ? $email_avi->number : null,
+                    'email'=> $user->email ?? null,
                     'position_id' => $job->position->id ?? null,
                     'position' => $job->position->position_name ?? null,
                     'section_id' => $job->section->id ?? null,
@@ -84,6 +95,7 @@ class ApiUsersController extends Controller
                     'level' => $job->level->level_name ?? null,
                     'work_hour' => $job->workHour->work_hour ?? null,
                     'job_status' => $job->job_status ?? null,
+                    'job_role' => $job->user_dakar_role ?? null,
                     'join_date' => $user->join_date ? \Carbon\Carbon::parse($user->join_date)->format('Y-m-d') : ($user->firstEmployeeJob->start_date ? $user->firstEmployeeJob->start_date->format('Y-m-d') : null),
                     'start_date' => $job->start_date ? $job->start_date->format('Y-m-d') : null,
                     'end_date' => $job->end_date ? $job->end_date->format('Y-m-d') : null,
@@ -91,13 +103,14 @@ class ApiUsersController extends Controller
                     'gender' => $user->employeeDetail?->gender === null ? null : ($user->employeeDetail->gender === '0' ? 'Laki-laki' : 'Perempuan'),
                     'age' => $user->employeeDetail?->birth_date ? \Carbon\Carbon::parse($user->employeeDetail->birth_date)->age : null,
                     'no_telp' => $user->employeeDetail?->no_phone ?? null,
+                    'employment_status' => (bool)$job->employment_status
                 ];
             });
 
             return response()->json(
                 [
-                    'data' => $data,
                     'total' => $data->count(),
+                    'data' => $data,
                     'message' => 'Employees fetched successfully.'
                 ],
                 200
