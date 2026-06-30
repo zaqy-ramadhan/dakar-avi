@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\EmployeeExport;
+use App\Exports\EmployeeDataReport;
 use App\Exports\EmployeeExportMin;
 use App\Models\DakarRole;
 use App\Models\Department;
@@ -203,7 +203,7 @@ class EmployeeDetailReportController extends Controller
         ;
 
         if (request()->has('export') && request('export') == 'excel') {
-            return Excel::download(new EmployeeExport($employees), 'employee-report-' . $startOfMonth->isoFormat('MMMM Y') . '-' . $endOfMonth->isoFormat('MMMM Y') . '.xlsx');
+            return Excel::download(new EmployeeDataReport($employees), 'employee-report-' . $startOfMonth->isoFormat('MMMM Y') . '-' . $endOfMonth->isoFormat('MMMM Y') . '.xlsx');
         }
 
         if (request()->has('export_min') && request('export_min') == 'excel') {
