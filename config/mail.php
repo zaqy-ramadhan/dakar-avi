@@ -178,7 +178,7 @@ return [
     //production
      'contract_expiry_recipients' => [
         'nasghifarz619@gmail.com',
-        'fitrimar@gmail.com',
+        'safitri@astra-visteon.com',
         'sadtu.risdiyati@astra-visteon.com',
         'risyad0210@gmail.com',
         'hr@astra-visteon.com',

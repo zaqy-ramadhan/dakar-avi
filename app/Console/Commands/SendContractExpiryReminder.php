@@ -35,43 +35,36 @@ class SendContractExpiryReminder extends Command
         $this->info('🔔 Starting contract expiry reminder email process...');
 
         try {
-            // Get employees with contracts expiring in next 3 months
             $now = Carbon::now();
             $threeMonthsLater = $now->clone()->addMonths(3);
 
-            $employees = User::whereHas('employeeJob', function ($query) use ($now, $threeMonthsLater) {
+            $employees = User::whereHas('latestEmployeeJob', function ($query) use ($now, $threeMonthsLater) {
                 $query->whereBetween('end_date', [$now, $threeMonthsLater])
-                    ->where('job_status', 'kontrak');
+                    ->where('job_status', 'kontrak')
+                    ->where('employment_status', true);
             })
-                ->with([
-                    'employeeJob' => function ($query) {
-                        $query->whereBetween('end_date', [Carbon::now(), Carbon::now()->addMonths(3)])
-                            ->where('job_status', 'kontrak')
-                            ->orderBy('end_date', 'asc');
-                    },
-                    'employeeJob.position:id,position_name',
-                    'employeeJob.department:id,department_name',
-                    'employeeJob.division:id,division_name',
-                ])
-                ->select('id', 'fullname', 'email', 'npk')
-                ->get()
-                ->map(function ($employee) {
-                    // Get the first (nearest expiry) employeeJob
-                    $job = $employee->employeeJob->first();
-                    
-                    if ($job) {
-                        // Calculate remaining days - from now until end date
-                        $employee->remaining_days = $job->end_date ? now()->diffInDays($job->end_date) : 0;
-                        $employee->npk = $employee->npk ?? $employee->id;
-                        $employee->employment_status = $job->employment_status ?? 'Kontrak';
-                        $employee->position_name = $job->position?->position_name ?? '-';
-                        $employee->department_name = $job->department?->department_name ?? '-';
-                        $employee->division_name = $job->division?->division_name ?? '-';
-                        $employee->current_job = $job;
-                    }
-                    
-                    return $employee;
-                });
+            ->with([
+                'latestEmployeeJob' => function ($query) {
+                    $query->with(['position:id,position_name', 'department:id,department_name', 'division:id,division_name']);
+                }
+            ])
+            ->select('id', 'fullname', 'email', 'npk')
+            ->get()
+            ->map(function ($employee) {
+                $job = $employee->latestEmployeeJob; 
+                
+                if ($job) {
+                    $employee->remaining_days = $job->end_date ? now()->diffInDays($job->end_date) : 0;
+                    $employee->npk = $employee->npk ?? $employee->id;
+                    $employee->employment_status = $job->employment_status ?? 'Kontrak';
+                    $employee->position_name = $job->position?->position_name ?? '-';
+                    $employee->department_name = $job->department?->department_name ?? '-';
+                    $employee->division_name = $job->division?->division_name ?? '-';
+                    $employee->current_job = $job;
+                }
+                
+                return $employee;
+            });
 
             if ($employees->isEmpty()) {
                 $this->warn('No employees found with contracts expiring in the next 3 months.');
