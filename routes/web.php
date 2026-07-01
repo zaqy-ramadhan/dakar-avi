@@ -104,6 +104,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/onboarding/{id}/detail', [OnboardingController::class, 'index'])->name('users.index.onboarding.detail');
         Route::get('/admin/employment/{id}/detail', [EmploymentController::class, 'index'])->name('users.index.employment.detail');
         Route::get('/admin/offboarding/{id}/detail', [OffboardingController::class, 'index'])->name('users.index.offboarding.detail');
+        
+        Route::post('/employment/complete-onboarding/{id}/', [EmploymentController::class, 'completeOnboarding'])->name('complete.onboarding');
 
 
         Route::get('/admin/inventory-rules', [InventoryRuleController::class, 'index'])->name('inventory-rules.index');

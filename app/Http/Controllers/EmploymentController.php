@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\JobEmploymentDataTables;
 use App\Models\{
+    EmployeeJob,
     CostCenter,
     DakarRole,
     Department,
@@ -138,5 +139,26 @@ class EmploymentController extends Controller
             Log::error($e->getMessage());
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    public function completeOnboarding($id) 
+    { 
+        try { 
+            $job = EmployeeJob::find($id);
+
+            if (!$job) {
+                return ['success' => false, 'message' => 'Employee job not found.'];
+            }
+
+            $job->update([
+                'is_onboarding_completed' => true,
+                'onboarding_progress'     => 100
+            ]);
+
+            return ['success' => true, 'message' => 'Onboarding successfully completed.'];
+
+        } catch (\Exception $e) { 
+            return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+        } 
     }
 }

@@ -407,7 +407,7 @@
             <li>Pihak Kedua bersedia untuk bekerja sesuai dengan hari kerja dan jam kerja yang diatur dan ditetapkan
                 Perusahaan sebagai berikut :
                 <ul>
-                    <li>Senin sampai dengan Jum’at terbagi dalam shift, pengaturan kerja shift mengikuti aturan dan
+                    <li>Senin sampai dengan {{"Jum'at"}} terbagi dalam shift, pengaturan kerja shift mengikuti aturan dan
                         ketentuan yang diatur secara tersendiri.</li>
                     <li>Hari Sabtu dan Minggu libur.</li>
                 </ul>
