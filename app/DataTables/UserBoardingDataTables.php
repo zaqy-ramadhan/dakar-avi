@@ -14,6 +14,7 @@ use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
+use Illuminate\Support\Facades\Auth;
 
 class UserBoardingDataTables extends DataTable
 {
@@ -89,12 +90,21 @@ class UserBoardingDataTables extends DataTable
                 $onboardingUrl = route('users.index.onboarding.detail', $row->id);
                 $deleteUrl = route('users.destroy', $row->id);
                 $currentRoute = request()->route()->getName();
+                $role = Auth::user()->getRole();
+                $completeOnboardingUrl = route('complete.onboarding', $row->firstEmployeeJob->id ?? 0);
 
                 $buttons = '';
 
                 if ($currentRoute === "users.index.onboarding") {
                     $buttons .= '<a title="Detail Onboarding" href="' . $onboardingUrl . '" class="btn btn-sm btn-outline-primary m-1"><i class="ti ti-briefcase fs-6"></i></a>';
                 }
+
+               if ($role === 'admin') {
+                    $buttons .= '<a href="' . $completeOnboardingUrl . '" class="btn btn-sm btn-outline-primary m-1" title="Complete Onboarding">
+                                    <i class="ti ti-square-check fs-6"></i>
+                                </a>';
+                }
+
 
                 $buttons .=
                     '<form action="' . $deleteUrl . '" method="POST" style="display:inline;">

@@ -148,7 +148,7 @@ class EmploymentController extends Controller
             $job = EmployeeJob::find($id);
 
             if (!$job) {
-                return ['success' => false, 'message' => 'Employee job not found.'];
+                return back()->with('error', 'Employee Job not found');
             }
 
             $job->update([
@@ -156,10 +156,10 @@ class EmploymentController extends Controller
                 'onboarding_progress'     => 100
             ]);
 
-            return ['success' => true, 'message' => 'Onboarding successfully completed.'];
+            return redirect()->back()->with('success', 'Onboarding Completed');
 
         } catch (\Exception $e) { 
-            return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+            return back()->with('error', 'An error occurred while completing onboarding.');
         } 
     }
 
@@ -188,9 +188,10 @@ class EmploymentController extends Controller
     { 
         try { 
             $doc = EmployeeJob::findOrfail($id);
+            dd($id);
 
             if (!$doc) {
-                return back()->with('error', 'Employee job not found.');
+                return back()->with('error', 'Employee job not found. Fill the the employment data first!');
             }
 
             $checkIfJobDocExist = JobDoc::where('employee_job_id', $doc->id)
