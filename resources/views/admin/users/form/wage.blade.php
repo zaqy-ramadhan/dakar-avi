@@ -44,7 +44,7 @@
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                        <div class="col-sm-6 col-md-2 col-lg-2 mb-3">
                             <label for="status_{{ $index }}" class="form-label">Status</label>
                             <select class="form-select" id="status_{{ $index }}" name="status[]"
                                 @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3'])) disabled @endif>
@@ -60,6 +60,13 @@
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="col-sm-6 col-md-2 col-lg-1 mb-3">
+                            <label for="status_{{ $index }}" class="form-label"></label>
+                            <button type="button" class="btn btn-outline-danger w-100" 
+                                    onclick="removeRow(this)">
+                                <i class="ti ti-trash"></i> 
+                            </button>
+                        </div>
                     </div>
                 </div>
             @endforeach
@@ -68,9 +75,9 @@
         {{-- @if (Auth::user()->getRole() === 'admin') --}}
         @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
             {{-- @if(!$is_signed || Auth::user()->getRole() === 'admin') --}}
-                <button type="button" id="remove-wage-allowance" class="btn btn-danger mb-3 me-2"
+                {{-- <button type="button" id="remove-wage-allowance" class="btn btn-danger mb-3 me-2"
                     style="display: none;">Remove
-                    Wage/Allowance</button>
+                    Wage/Allowance</button> --}}
                 <button type="button" id="add-wage-allowance" class="btn btn-primary mb-3">Add Wage/Allowance</button><br>
                 <button type="submit" class="btn btn-success mb-3">Save</button>
             {{-- @endif --}}
@@ -81,6 +88,15 @@
 
 @push('scripts')
     <script>
+        function removeRow(button) {
+            const rows = document.querySelectorAll('.wage-allowance-entry');
+            if (rows.length > 1) {
+                button.closest('.wage-allowance-entry').remove();
+            } else {
+                alert("Minimal harus ada satu baris.");
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             let wageAllowanceCount = {{ $jobWageAllowance->count() }};
             const maxWageAllowance = 10; // Maximum allowed entries
@@ -101,20 +117,20 @@
                     wageAllowanceContainer.appendChild(newEntry);
                     wageAllowanceCount++;
 
-                    document.getElementById("remove-wage-allowance").style.display = "inline-block";
+                    //document.getElementById("remove-wage-allowance").style.display = "inline-block";
                     if (wageAllowanceCount === maxWageAllowance) this.style.display = "none";
                 }
             });
 
-            document.getElementById("remove-wage-allowance").addEventListener("click", function() {
-                if (wageAllowanceCount > 3) {
-                    wageAllowanceContainer.lastChild.remove();
-                    wageAllowanceCount--;
+            // document.getElementById("remove-wage-allowance").addEventListener("click", function() {
+            //     if (wageAllowanceCount > 3) {
+            //         wageAllowanceContainer.lastChild.remove();
+            //         wageAllowanceCount--;
 
-                    document.getElementById("add-wage-allowance").style.display = "inline-block";
-                    if (wageAllowanceCount === 3) this.style.display = "none";
-                }
-            });
+            //         document.getElementById("add-wage-allowance").style.display = "inline-block";
+            //         if (wageAllowanceCount === 3) this.style.display = "none";
+            //     }
+            // });
         });
     </script>
     {{-- <script>
