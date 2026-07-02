@@ -108,7 +108,7 @@ Route::middleware(['auth'])->group(function () {
         
         Route::post('/employment/complete-onboarding/{id}/', [EmploymentController::class, 'completeOnboarding'])->name('complete.onboarding');
         Route::get('/employment/complete-contract-signature/{id}', [EmploymentController::class, 'completeContractSignature'])->name('complete.contract.signature');
-        Route::get('/employment/complete-compensation-signature/{id}', [EmploymentController::class, 'completeCompensationtSignature'])->name('complete.compensation.signature');
+        Route::get('/employment/complete-compensation-signature/{id}', [EmploymentController::class, 'completeCompensationSignature'])->name('complete.compensation.signature');
 
 
         Route::get('/admin/inventory-rules', [InventoryRuleController::class, 'index'])->name('inventory-rules.index');
