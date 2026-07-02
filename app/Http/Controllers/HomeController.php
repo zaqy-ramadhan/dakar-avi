@@ -150,6 +150,7 @@ class HomeController extends Controller
                 })->whereDoesntHave('jobdoc', function($q2){
                     $q2->where('type', 'kompensasi');
                 })->get();
+                
 
                 $birthdays = EmployeeDetail::with(['user.latestEmployeeJob.department'])
                     ->whereMonth('birth_date', Carbon::now()->month)

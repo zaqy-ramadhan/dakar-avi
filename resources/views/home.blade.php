@@ -486,6 +486,9 @@
                                             <a href="{{ route('signature.index', ['id' => $s->employee_job_id, 'type' => 'contract']) }}"
                                                 class="btn btn-sm btn-outline-primary"><i
                                                     class="ti ti-clipboard-list"></i></a>
+                                            <a href="{{ route('complete.contract.signature', $s->id) }}"
+                                                class="btn btn-sm btn-outline-primary"><i
+                                                    class="ti ti-writing"></i></a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -525,6 +528,9 @@
                                             <a href="{{ route('signature.index', ['id' => $c->id, 'type' => 'kompensasi']) }}"
                                                 class="btn btn-sm btn-outline-primary"><i
                                                     class="ti ti-clipboard-list"></i></a>
+                                            <a href="{{ route('complete.compensation.signature', $c->id) }}"
+                                                class="btn btn-sm btn-outline-primary"><i
+                                                    class="ti ti-writing"></i></a>
                                         </td>
                                     </tr>
                                 @endforeach

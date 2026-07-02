@@ -21,7 +21,8 @@ use App\Models\{
     Line,
     Position,
     User,
-    WorkHour
+    WorkHour,
+    JobDoc,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -159,6 +160,60 @@ class EmploymentController extends Controller
 
         } catch (\Exception $e) { 
             return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+        } 
+    }
+
+    public function completeContractSignature($id) 
+    { 
+        try { 
+            $doc = JobDoc::findOrfail($id);
+
+            if (!$doc) {
+                return back()->with('error', 'Job doc not found');
+            }
+
+            $doc->update([
+                'first_party_signature' => "offline",
+            ]);
+
+            //return ['success' => true, 'message' => 'Signature completed.'];
+            return redirect()->back()->with('success', 'Signature Completed');
+
+        } catch (\Exception $e) { 
+            return back()->with('error', 'An error occurred while signing document.');
+        } 
+    }
+
+    public function completeCompensationSignature($id) 
+    { 
+        try { 
+            $doc = EmployeeJob::findOrfail($id);
+
+            if (!$doc) {
+                return back()->with('error', 'Employee job not found.');
+            }
+
+            $checkIfJobDocExist = JobDoc::where('employee_job_id', $doc->id)
+                                    ->where('type', 'kompensasi');
+
+            if ($checkIfJobDocExist->exists())
+            {
+                $checkIfJobDocExist->first()
+                ->update([
+                    'first_party_signature' => "offline",
+                ]);
+            }else{
+                $newJobDoc = JobDoc::create([
+                    'employee_job_id' => $doc->id,
+                    'type' => 'kompensasi',
+                    'first_party_signature' => "offline",
+                ]);
+            }           
+
+            return redirect()->back()->with('success', 'Signature Completed');
+
+        } catch (\Exception $e) { 
+            return back()->with('error', 'An error occurred while signing document.');
         } 
     }
 }
