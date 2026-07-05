@@ -144,6 +144,7 @@ class HomeController extends Controller
 
                 $compensations = EmployeeJob::where('employment_status', true)
                 ->where('user_dakar_role', 'karyawan')
+                ->where('job_sequence', 1)
                 ->whereHas('jobdoc', function($q){
                     $q->where('type', 'contract')
                     ->whereNotNull('first_party_signature');
@@ -261,9 +262,9 @@ class HomeController extends Controller
     {
         $compensations = EmployeeJob::where('employment_status', true)
             ->where('user_dakar_role', 'karyawan')
+            ->where('job_sequence', 1)
             ->whereHas('jobdoc', function($q){
                 $q->where('type', 'contract')
-                ->where('job_sequence', 1)
                 ->whereNotNull('first_party_signature');
             })->whereDoesntHave('jobdoc', function($q2){
                 $q2->where('type', 'kompensasi');
