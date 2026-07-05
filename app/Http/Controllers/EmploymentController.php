@@ -188,11 +188,11 @@ class EmploymentController extends Controller
     { 
         try { 
             $doc = EmployeeJob::findOrfail($id);
-            dd($id);
+            // dd($id);
 
             if (!$doc) {
                 return back()->with('error', 'Employee job not found. Fill the the employment data first!');
-            }
+        }
 
             $checkIfJobDocExist = JobDoc::where('employee_job_id', $doc->id)
                                     ->where('type', 'kompensasi');

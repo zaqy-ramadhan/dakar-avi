@@ -263,6 +263,7 @@ class HomeController extends Controller
             ->where('user_dakar_role', 'karyawan')
             ->whereHas('jobdoc', function($q){
                 $q->where('type', 'contract')
+                ->where('job_sequence', 1)
                 ->whereNotNull('first_party_signature');
             })->whereDoesntHave('jobdoc', function($q2){
                 $q2->where('type', 'kompensasi');

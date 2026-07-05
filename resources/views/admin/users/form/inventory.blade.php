@@ -171,36 +171,79 @@
                     </select>`;
             }
 
-            function createStatusCheckbox(selectedStatus = 'Diterima') {
+            // function createStatusCheckbox(selectedStatus = 'Diterima') {
+            //     return `
+            //         <div class="form-check form-check-inline">
+            //             <input class="form-check-input accept-status" type="checkbox" name="status[]" value="Diterima"
+            //                 ${selectedStatus === 'Diterima' ? 'checked' : ''}>
+            //             <label class="form-check-label">Diterima</label>
+            //         </div>
+            //     `;
+            // }
+
+            // function createReturnCheckbox(selectedStatus = 'Dikembalikan', name = '', returnNote = '') {
+            //     let label = ['Email AVI', 'Email Visteon', 'BPJS TK', 'BPJS Kesehatan', 'User Account Great Day',
+            //             'User Account E-Slip'
+            //         ].includes(name) ?
+            //         'Dinonaktifkan' :
+            //         'Dikembalikan';
+
+            //     const isChecked = selectedStatus === 'Dikembalikan' || selectedStatus === 'Dinonaktifkan';
+
+            //     return `
+            //          <div class="mb-2">
+            //             <div class="form-check form-check-inline">
+            //                 <input class="form-check-input return-status" type="checkbox" name="status[]" value="Dikembalikan"
+            //                     ${isChecked ? 'checked' : ''}>
+            //                 <label class="form-check-label">${label}</label>
+            //             </div>
+            //         </div>
+            //         <div class="return-notes-wrapper mb-2" style="display: ${isChecked ? 'block' : 'none'};">
+            //             <label class="form-label small text-muted">Catatan pengembalian</label>
+            //             <input type="text" name="return_notes[]" class="form-control" value="${returnNote ?? ''}" placeholder="Alasan pengembalian">
+            //         </div>
+            //     `;
+            // }
+
+            // Tambahkan parameter 'name' untuk mendeteksi apakah itu Face ID
+            function createStatusCheckbox(selectedStatus = 'Diterima', name = '') {
+                const isFaceID = (name === 'Face ID');
+                const value = isFaceID ? 'Didaftarkan' : 'Diterima';
+                const label = isFaceID ? 'Didaftarkan' : 'Diterima';
+
                 return `
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input accept-status" type="checkbox" name="status[]" value="Diterima"
-                            ${selectedStatus === 'Diterima' ? 'checked' : ''}>
-                        <label class="form-check-label">Diterima</label>
+                        <input class="form-check-input accept-status" type="checkbox" name="status[]" value="${value}"
+                            ${selectedStatus === value ? 'checked' : ''}>
+                        <label class="form-check-label">${label}</label>
                     </div>
                 `;
             }
 
             function createReturnCheckbox(selectedStatus = 'Dikembalikan', name = '', returnNote = '') {
-                let label = ['Email AVI', 'Email Visteon', 'BPJS TK', 'BPJS Kesehatan', 'User Account Great Day',
-                        'User Account E-Slip'
-                    ].includes(name) ?
-                    'Dinonaktifkan' :
-                    'Dikembalikan';
+                let label = 'Dikembalikan';
+                
+                // Logika penentuan label
+                if (['Email AVI', 'Email Visteon', 'BPJS TK', 'BPJS Kesehatan', 'User Account Great Day', 'User Account E-Slip'].includes(name)) {
+                    label = 'Dinonaktifkan';
+                } else if (name === 'Face ID') {
+                    label = 'Dihapus';
+                }
 
-                const isChecked = selectedStatus === 'Dikembalikan' || selectedStatus === 'Dinonaktifkan';
+                const value = (name === 'Face ID') ? 'Dihapus' : 'Dikembalikan';
+                const isChecked = ['Dikembalikan', 'Dinonaktifkan', 'Dihapus'].includes(selectedStatus);
 
                 return `
-                     <div class="mb-2">
+                    <div class="mb-2">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input return-status" type="checkbox" name="status[]" value="Dikembalikan"
+                            <input class="form-check-input return-status" type="checkbox" name="status[]" value="${value}"
                                 ${isChecked ? 'checked' : ''}>
                             <label class="form-check-label">${label}</label>
                         </div>
                     </div>
                     <div class="return-notes-wrapper mb-2" style="display: ${isChecked ? 'block' : 'none'};">
-                        <label class="form-label small text-muted">Catatan pengembalian</label>
-                        <input type="text" name="return_notes[]" class="form-control" value="${returnNote ?? ''}" placeholder="Alasan pengembalian">
+                        <label class="form-label small text-muted">Catatan ${label.toLowerCase()}</label>
+                        <input type="text" name="return_notes[]" class="form-control" value="${returnNote ?? ''}" placeholder="Alasan ${label.toLowerCase()}">
                     </div>
                 `;
             }
@@ -267,7 +310,7 @@
                         <td>${createItemDropdown(selectedId)}</td>
                         <td>${createSizeDropdown(selectedType, selectedSize)}</td>
                         <td>${contract === '' ? userContract : contract}</td>
-                        <td>${createStatusCheckbox(selectedStatus)}</td>
+                        <td>${createStatusCheckbox(selectedStatus, name)}</td>
                         <td>${createReturnCheckbox(selectedStatus, name, returnNote)}</td>
                         <td hidden>${createHiddenCheckbox(selectedStatus)}</td>
                         <td>${dueDate ? formatDate(dueDate) : '-'}</td>
@@ -288,6 +331,9 @@
                 let selectedType = $(this).find(':selected').data('type');
                 let sizeSelect = $(this).closest('tr').find('.sizeSelect');
                 sizeSelect.replaceWith(createSizeDropdown(selectedType));
+
+                row.find('.accept-status').closest('td').html(createStatusCheckbox('-', itemName));
+                row.find('.return-status').closest('td').html(createReturnCheckbox('-', itemName, ''));
             });
 
             $('#add-item').click(function() {

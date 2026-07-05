@@ -10,21 +10,24 @@
                     value="{{ old('bpjs', $bpjs ? $bpjs->number : '') }}"
                     @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']) || Request::is('*profile*')) disabled @endif>
             </div>
-            <div class="col-sm-6 col-md-6 col-lg-6 mb-3">
+            <div class="col-sm-6 col-md-6 col-lg-8 mb-3">
                 {{-- <label for="eslip" class="form-label">Akun E-Slip</label> --}}
                 <div class="row g-3">
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <label for="username_eslip" class="form-label">Username E-Slip</label>
                         <input placeholder="Username" type="text" class="form-control" id="username_eslip"
                             name="username_eslip" value="{{ old('username_eslip', $eslip ? $eslip->number : '') }}"
                             @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']) || Request::is('*profile*')) disabled @endif>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label for="password_eslip" class="form-label">Password E-Slip</label>
                         <input placeholder="Password" type="text" class="form-control" id="password_eslip"
                             name="password_eslip"
                             value="{{ old('password_eslip', $pass_eslip ? $pass_eslip->number : '') }}"
                             @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']) || Request::is('*profile*')) disabled @endif>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <a class="btn btn-outline-primary w-100" target="_blank" href="http://mail.eslip.component.astra.co.id/src/login.php" >Portal E-Slip</a>
                     </div>
                 </div>
 

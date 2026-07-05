@@ -5,14 +5,12 @@
     <div class="col-sm-4 col-md-4 col-lg-4 mb-3">
         <label for="bank_name" class="form-label">Nama Bank<span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="bank_name" name="bank_name"
-            @if ($user->getRole() === 'karyawan') value = "Bank Permata" readonly
-             @else
-        value="{{ old('bank_name', $employeeBank->bank_name ?? '') }}"> @endif
+        value="{{ old('bank_name', $employeeBank->bank_name ?? '') }}">
             <small class="text-muted">
                 @if($user->getRole() !== 'karyawan')
                 Wajib diisi
                 @else
-                Wajib menggunakan Bank Permata
+                Wajib menggunakan Bank Saqu
                 @endif
             </small>
         @error('bank_name')
