@@ -141,16 +141,24 @@ class ApiUsersController extends Controller
 
             $user = User::with([
                 'latestEmployeeJob',
-                'firstEmployeeJob'
+                'firstEmployeeJob',
+                'employeeInventoryNumber',
+                'employeeDetail'
             ])->where('npk', $id)->firstOrFail();
 
+            $id_email_avi = Item::where('item_name', 'Email AVI')->first()?->id;
+
             $job = $user->latestEmployeeJob;
+            $email_avi = $user->employeeInventoryNumber->filter(function($q)use($id_email_avi){
+                return $q->item_id == $id_email_avi;
+            })->first();
 
             $data =  [
                 'id' => $user->id,
                 'npk' => $user->npk,
                 'fullname' => $user->fullname,
                 'email' => $user->email,
+                'email_avi' => $email_avi ? $email_avi->number : null,
                 'position' => $job->position->position_name ?? null,
                 'section' => $job->section->section_name ?? null,
                 'department' => $job->department->department_name ?? null,
@@ -168,6 +176,7 @@ class ApiUsersController extends Controller
                 'start_date' => $job->start_date ? $job->start_date->format('Y-m-d') : null,
                 'end_date' => $job->end_date ? $job->end_date->format('Y-m-d') : null,
                 'contract' => $job->contract ?? null,
+                'no_telp' => $user->employeeDetail?->no_phone ?? null,
             ];
 
             return response()->json(
