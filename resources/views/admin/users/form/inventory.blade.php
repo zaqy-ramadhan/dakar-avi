@@ -208,13 +208,13 @@
             // Tambahkan parameter 'name' untuk mendeteksi apakah itu Face ID
             function createStatusCheckbox(selectedStatus = 'Diterima', name = '') {
                 const isFaceID = (name === 'Face ID');
-                const value = isFaceID ? 'Didaftarkan' : 'Diterima';
-                const label = isFaceID ? 'Didaftarkan' : 'Diterima';
+                const value = 'Diterima'; // Value tetap 'Diterima' untuk database
+                const label = isFaceID ? 'Didaftarkan' : 'Diterima'; // Label disesuaikan untuk tampilan
 
                 return `
                     <div class="form-check form-check-inline">
                         <input class="form-check-input accept-status" type="checkbox" name="status[]" value="${value}"
-                            ${selectedStatus === value ? 'checked' : ''}>
+                            ${selectedStatus === 'Diterima' ? 'checked' : ''}>
                         <label class="form-check-label">${label}</label>
                     </div>
                 `;
@@ -223,15 +223,15 @@
             function createReturnCheckbox(selectedStatus = 'Dikembalikan', name = '', returnNote = '') {
                 let label = 'Dikembalikan';
                 
-                // Logika penentuan label
+                // Logika penentuan label untuk tampilan
                 if (['Email AVI', 'Email Visteon', 'BPJS TK', 'BPJS Kesehatan', 'User Account Great Day', 'User Account E-Slip'].includes(name)) {
                     label = 'Dinonaktifkan';
                 } else if (name === 'Face ID') {
                     label = 'Dihapus';
                 }
 
-                const value = (name === 'Face ID') ? 'Dihapus' : 'Dikembalikan';
-                const isChecked = ['Dikembalikan', 'Dinonaktifkan', 'Dihapus'].includes(selectedStatus);
+                const value = 'Dikembalikan'; // Value tetap 'Dikembalikan' untuk database
+                const isChecked = selectedStatus === 'Dikembalikan';
 
                 return `
                     <div class="mb-2">
@@ -249,7 +249,7 @@
             }
 
             function createHiddenCheckbox(selectedStatus = '-') {
-                const isChecked = !['Diterima', 'Dikembalikan', 'Dinonaktifkan'].includes(selectedStatus);
+                const isChecked = !['Diterima', 'Dikembalikan'].includes(selectedStatus);
 
                 return `
                     <input type="checkbox" class="status-hidden" name="status[]" value="" ${isChecked ? 'checked' : ''}>
