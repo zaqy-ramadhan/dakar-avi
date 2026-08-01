@@ -825,7 +825,7 @@ class User extends Authenticatable
         // dd($nonSpecific);
         // if ($nonSpecific->isNotEmpty() && $job) {
 
-        if($this->firstEmployeeJob && $this->firstEmployeeJob->flag_wfh === true)
+        if($this->firstEmployeeJob && $this->firstEmployeeJob->flag_wfh == true)
         {
             return ['status' => true, 'date' => $this->firstEmployeeJob->start_date];     
         }
