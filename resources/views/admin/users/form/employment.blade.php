@@ -259,6 +259,16 @@
                     <option @if (optional($user->employeeJob?->last())->employee_transfer == 'kartap') selected @endif value="kartap">Kartap</option>
                 </select>
             </div>
+            <div class="col-sm-6 col-md-2 col-lg-2 mb-3 d-flex align-items-end">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" name="flag_wfh" id="flag_wfh_create" value="1"
+                        @if (optional($user->employeeJob?->last())->flag_wfh) checked @endif
+                        @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
+                    <label class="form-check-label" for="flag_wfh_create">
+                        Flag WFH
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 

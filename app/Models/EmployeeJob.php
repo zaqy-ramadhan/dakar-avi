@@ -39,7 +39,8 @@ class EmployeeJob extends Model
         'onboarding_progress',
         'employee_transfer',
         'npk',
-        'job_sequence'
+        'job_sequence',
+        'flag_wfh'
     ];
 
     protected $casts = [

@@ -1602,6 +1602,7 @@ class UsersController extends Controller
             'npk' => 'required|string|max:20',
             'doc_sk' => 'nullable|file|mimes:pdf|max:2048',
             'employee_transfer' => 'nullable|string',
+            'flag_wfh' => 'nullable|boolean',
         ]);
 
 
@@ -1642,6 +1643,7 @@ class UsersController extends Controller
                 'notes' => $notes ?? null,
                 'npk' => $request->npk,
                 'employee_transfer' => $request->employee_transfer ?? null,
+                'flag_wfh' => $request->boolean('flag_wfh'),
             ]);
 
             // dd($job->npk);
@@ -1728,6 +1730,7 @@ class UsersController extends Controller
             'npk' => 'required|string|max:20',
             'doc_sk' => 'nullable|file|mimes:pdf|max:2048',
             'employee_transfer' => 'nullable|string',
+            'flag_wfh' => 'nullable|boolean',
         ]);
 
         try {
@@ -1764,6 +1767,7 @@ class UsersController extends Controller
                 'employee_transfer' => $request->employee_transfer ?? null,
                 'npk' => $request->npk ?? $user->npk,
                 'employment_status' => $request->status ?? false,
+                'flag_wfh' => $request->boolean('flag_wfh'),
             ]);
             
             // if($request->employment_status == true){

@@ -794,6 +794,12 @@ class User extends Authenticatable
         // $job = $this->firstEmployeeJob;
         // dd($nonSpecific);
         // if ($nonSpecific->isNotEmpty() && $job) {
+
+        if($this->firstEmployeeJob && $this->firstEmployeeJob->flag_wfh == true)
+        {
+            return ['status' => true, 'date' => $this->firstEmployeeJob->start_date];     
+        }
+
         if ($nonSpecific->isNotEmpty()) {
 
             $date = $nonSpecific
@@ -818,6 +824,12 @@ class User extends Authenticatable
         // $job = $this->firstEmployeeJob;
         // dd($nonSpecific);
         // if ($nonSpecific->isNotEmpty() && $job) {
+
+        if($this->firstEmployeeJob && $this->firstEmployeeJob->flag_wfh === true)
+        {
+            return ['status' => true, 'date' => $this->firstEmployeeJob->start_date];     
+        }
+
         if ($nonSpecific->isNotEmpty()) {
 
             $active = $nonSpecific->reject(function ($item) {

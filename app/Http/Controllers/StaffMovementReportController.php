@@ -175,25 +175,25 @@ class StaffMovementReportController extends Controller
                     'Start Date' => $item['start_date'] ?? '-',
                     'Status' => $item['status'] ?? '-',
                     'Deadline Pre' => $item['deadline_pre'] ?? '-',
-                    'Create Employee Overdue' => $item['create_employee_overdue_days'] ?? 0,
+                    'Create Employee Overdue (days)' => $item['create_employee_overdue_days'] ?? 0,
                     'Create Employee Date' => $item['create_employee_completion_date'] ?? '-',
-                    'Employment Data Overdue' => $item['employment_data_overdue_days'] ?? '-',
+                    'Employment Data Overdue (days)' => $item['employment_data_overdue_days'] ?? '-',
                     'Employment Data Date' => $item['employment_data_completion_date'] ?? '-',
-                    'Starter Kit Overdue' => $item['starter_kit_overdue_days'] ?? 0,
+                    'Starter Kit Overdue (days)' => ($item['starter_kit_overdue_days'] ?? 0),
                     'Starter Kit Date' => $item['starter_kit_completion_date'] ?? '-',
                     'Deadline On' => $item['deadline_on'] ?? '-',
-                    'Starter Kit Accepted Overdue' => $item['starter_kit_acc_overdue_days'] ?? 0,
+                    'Starter Kit Accepted Overdue (days)' => $item['starter_kit_acc_overdue_days'] ?? 0,
                     'Starter Kit Accepted Date' => $item['starter_kit_acc_completion_date'] ?? '-',
-                    'Contract Signature Overdue' => $item['contract_signature_overdue_days'] ?? 0,
+                    'Contract Signature Overdue (days)' => $item['contract_signature_overdue_days'] ?? 0,
                     'Contract Signature Date' => $item['contract_signature_completion_date'] ?? '-',
                     'Deadline Post' => $item['deadline_post'] ?? '-',
-                    'Eslip Overdue' => $item['eslip_overdue_days'] ?? 0,
+                    'Eslip Overdue (days)' => $item['eslip_overdue_days'] ?? 0,
                     'Eslip Date' => $item['eslip_completion_date'] ?? '-',
-                    'Greatday Overdue' => $item['greatday_overdue_days'] ?? 0,
+                    'Greatday Overdue (days)' => $item['greatday_overdue_days'] ?? 0,
                     'Greatday Date' => $item['greatday_completion_date'] ?? '-',
-                    'BPJS Kes Overdue' => $item['bpjskes_overdue_days'] ?? 0,
+                    'BPJS Kes Overdue (days)' => $item['bpjskes_overdue_days'] ?? 0,
                     'BPJS Kes Date' => $item['bpjskes_completion_date'] ?? '-',
-                    'BPJS TK Overdue' => $item['bpjstk_overdue_days'] ?? 0,
+                    'BPJS TK Overdue (days)' => $item['bpjstk_overdue_days'] ?? 0,
                     'BPJS TK Date' => $item['bpjstk_completion_date'] ?? '-',
                 ]),
 
@@ -1036,6 +1036,125 @@ class StaffMovementReportController extends Controller
                 'deadline_on' => $startDate ? $startDate->isoFormat('D MMMM YYYY') : 'N/A',
                 'deadline_post' => $deadlinePostText,
 
+                // --- Create Employee ---
+                'create_employee' => $this->checkStepStatus($job, fn($u, $j) => $u->created_at, '-1 day'),
+                'create_employee_overdue_days' => $this->getOverdueDays($job, fn($u, $j) => $u->created_at, '-1 day'),
+                'create_employee_completion_date' => optional($user->created_at)->format('Y-m-d') ?? '-',
+
+                // --- Employment Data ---
+                'employment_data' => $this->checkStepStatus($job, fn($u, $j) => $u->progressOnboardingAdmin()['progress'] >= 17 ? $j->created_at : null, '-1 day'),
+                'employment_data_overdue_days' => $this->getOverdueDays($job, fn($u, $j) => $u->progressOnboardingAdmin()['progress'] >= 17 ? $j->created_at : null, '-1 day'),
+                'employment_data_completion_date' => ($user->progressOnboardingAdmin()['progress'] >= 17 && $job->created_at) ? $job->created_at->format('Y-m-d') : '-',
+
+                // --- Starter Kit ---
+                'starter_kit' => $this->checkStepStatus($job, function ($u, $j) {
+                    return $j->inventory->where('employee_job_id', $j->id)->last()?->created_at;
+                }, '-1 day'),
+                'starter_kit_overdue_days' => $this->getOverdueDays($job, function ($u, $j) {
+                    return $j->inventory->where('employee_job_id', $j->id)->last()?->created_at;
+                }, '-1 day'),
+                'starter_kit_completion_date' => $job->inventory->where('employee_job_id', $job->id)->last()?->created_at?->format('Y-m-d') ?? '-',
+                
+                // --- Starter Kit Acc ---
+                'starter_kit_acc' => $this->checkStepStatus($job, function ($u, $j) {
+                    return $j->inventory->where('employee_job_id', $j->id)->where('status', 'Diterima')->last()?->updated_at;
+                }, '0 day'),
+                'starter_kit_acc_overdue_days' => $this->getOverdueDays($job, function ($u, $j) {
+                    return $j->inventory->where('employee_job_id', $j->id)->where('status', 'Diterima')->last()?->updated_at;
+                }, '0 day'),
+                'starter_kit_acc_completion_date' => $job->inventory->where('employee_job_id', $job->id)->where('status', 'Diterima')->last()?->updated_at?->format('Y-m-d') ?? '-',
+
+                // --- Contract Signature ---
+                'contract_signature' => $this->checkStepStatus($job, function ($u, $j) {
+                    return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'contract')->whereNotNull('first_party_signature')->last()?->updated_at;
+                }, '0 day'),
+                'contract_signature_overdue_days' => $this->getOverdueDays($job, function ($u, $j) {
+                    return $j->jobDoc->where('employee_job_id', $j->id)->where('type', 'contract')->whereNotNull('first_party_signature')->last()?->updated_at;
+                }, '0 day'),
+                'contract_signature_completion_date' => $job->jobDoc->where('employee_job_id', $job->id)->where('type', 'contract')->whereNotNull('first_party_signature')->last()?->updated_at?->format('Y-m-d') ?? '-',
+
+                // --- Account & BPJS Post-Onboarding ---
+                'greatday' => $this->checkStepStatus($job, fn($u, $j) => $this->getItemCompletion($u, 'User Account Great Day'), '30 day', true),
+                'greatday_overdue_days' => $this->getOverdueDays($job, fn($u, $j) => $this->getItemCompletion($u, 'User Account Great Day'), '30 day', true),
+                'greatday_completion_date' => $this->getItemCompletion($user, 'User Account Great Day')?->format('Y-m-d') ?? '-',
+
+                'eslip'    => $this->checkStepStatus($job, fn($u, $j) => $this->getItemCompletion($u, 'User Account E-Slip'), '30 day', true),
+                'eslip_overdue_days' => $this->getOverdueDays($job, fn($u, $j) => $this->getItemCompletion($u, 'User Account E-Slip'), '30 day', true),
+                'eslip_completion_date' => $this->getItemCompletion($user, 'User Account E-Slip')?->format('Y-m-d') ?? '-',
+
+                'bpjskes'  => $this->checkStepStatus($job, fn($u, $j) => $this->getItemCompletion($u, 'BPJS Kesehatan'), '30 day', true),
+                'bpjskes_overdue_days' => $this->getOverdueDays($job, fn($u, $j) => $this->getItemCompletion($u, 'BPJS Kesehatan'), '30 day', true),
+                'bpjskes_completion_date'  => $this->getItemCompletion($user, 'BPJS Kesehatan')?->format('Y-m-d') ?? '-',
+
+                'bpjstk'   => $this->checkStepStatus($job, fn($u, $j) => $this->getItemCompletion($u, 'BPJS TK'), '30 day', true),
+                'bpjstk_overdue_days' => $this->getOverdueDays($job, fn($u, $j) => $this->getItemCompletion($u, 'BPJS TK'), '30 day', true),
+                'bpjstk_completion_date' => $this->getItemCompletion($user, 'BPJS TK')?->format('Y-m-d') ?? '-',
+            ];
+        });
+
+        return DataTables::of($report)
+            ->addIndexColumn()
+            ->rawColumns(['create_employee', 'employment_data', 'starter_kit', 'greatday', 'eslip', 'bpjskes', 'bpjstk', 'starter_kit_acc', 'contract_signature'])
+            ->make(true);
+    }
+
+    public function onboardingReportOld(Request $request)
+    {
+        $date = $request->input('date')
+            ? Carbon::parse($request->input('date'))->startOfMonth()
+            : Carbon::now()->startOfMonth();
+
+        $endDate = $date->copy()->endOfMonth();
+
+        $query = User::whereHas('employeeJob', function ($q) use ($date, $endDate) {
+            $q->whereIn('notes', [
+                'New Employee Kontrak',
+                'New Employee Tetap',
+                'New Employee Pemagangan',
+                'New Employee Internship'
+            ])
+            ->whereBetween('start_date', [$date, $endDate]);
+        })->with([
+            'employeeJob.department', 
+            'employeeJob.section', 
+            'employeeJob.position',
+            'employeeJob.inventory',
+            'employeeJob.jobDoc',
+            'dakarRole'
+        ]);
+
+        $users = $query->get();
+
+        $report = $users->transform(function ($user) use ($date, $endDate) {
+            $job = $user->employeeJob
+                ->whereIn('notes', [
+                    'New Employee Kontrak',
+                    'New Employee Tetap',
+                    'New Employee Pemagangan',
+                    'New Employee Internship'
+                ])
+                ->whereBetween('start_date', [$date, $endDate])
+                ->first();
+
+            $startDate = $job->start_date ? Carbon::parse($job->start_date) : null;
+            $deadlinePreText = $startDate ? $startDate->copy()->subDay()->isoFormat('D MMMM YYYY') : 'N/A';
+            
+            $isKaryawan = $user->dakarRole->contains(fn($role) => strtolower($role->role_name) === 'karyawan');
+            $deadlinePostText = ($isKaryawan && $startDate) ? $startDate->copy()->addMonth()->subDay()->isoFormat('D MMMM YYYY') : 'N/A';
+
+            return [
+                'npk' => $user->npk,
+                'fullname' => $user->fullname,
+                'department' => $job->department?->department_name ?? 'N/A',
+                'section' => $job->section?->section_name ?? 'N/A',
+                'position' => $job->position?->position_name ?? 'N/A',
+                'start_date' => $startDate ? $startDate->isoFormat('D MMM Y') : 'N/A',
+                'status' => $job->contract ?? 'N/A',
+                
+                'deadline_pre' => $deadlinePreText,
+                'deadline_on' => $startDate ? $startDate->isoFormat('D MMMM YYYY') : 'N/A',
+                'deadline_post' => $deadlinePostText,
+
                 'create_employee' => $this->checkStepStatus($job, fn($u, $j) => $u->created_at, '-1 day'),
                 'create_employee_overdue_days' => $this->getOverdueDays($job, fn($u, $j) => $u->created_at, '-1 day'),
                 'create_employee_completion_date' => optional($user->created_at)->format('Y-m-d') ?? '-',
@@ -1282,8 +1401,111 @@ class StaffMovementReportController extends Controller
             ->rawColumns(['exit_interview', 'starter_kit_return', 'sksmk_signature_1', 'sksmk_signature_2'])
             ->make(true);
     }
-    
+
     private function checkStepStatus($job, $completionCallback, $deadlineDiff, $onlyKaryawan = false)
+    {
+        $user = $job->user;
+        if ($onlyKaryawan && !$user->dakarRole->contains(fn($role) => strtolower($role->role_name) === 'karyawan')) {
+            return 'N/A';
+        }
+
+        $job = $user->firstEmployeeJob;
+        if (!$job || !$job->start_date) return 'N/A';
+
+        $deadline = Carbon::parse($job->start_date)->add($deadlineDiff);
+        $completionDate = $completionCallback($user, $job);
+
+        // Jika tanggal selesai (completion date) ada, berarti task SUDAH dilakukan (Completed)
+        if ($completionDate) {
+            $completion = Carbon::parse($completionDate)->startOfDay();
+            if ($completion->lte($deadline)) {
+                return '<span class="badge bg-success">On Time (Completed)</span><br><small>' . $completion->format('d M Y') . '</small>';
+            } else {
+                $overdueDays = $deadline->diffInDays($completion);
+                // Status: Sudah selesai tapi terlambat
+                return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari (Completed)</span><br><small>' . $completion->format('d M Y') . '</small>';
+            }
+        } else {
+            // Jika tidak ada completion date, berarti task BELUM dilakukan (Incomplete)
+            $now = Carbon::now()->startOfDay();
+            if ($now->lte($deadline)) {
+                return '<span class="badge bg-warning">Deadline: ' . $deadline->format('d M Y') . ' (Incomplete)</span><br><small> Today: ' . $now->format('d M Y') . '</small>';
+            } else {
+                $overdueDays = $deadline->diffInDays($now);
+                // Status: Belum selesai dan sudah lewat batas waktu
+                return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari (Incomplete)</span><br><small> Today: ' . $now->format('d M Y') . '</small>';
+            }
+        }
+    }
+
+    private function checkStepStatusOff($job, $completionCallback, $deadlineDiff, $onlyKaryawan = false)
+    {
+        $user = $job->user;
+        if ($onlyKaryawan && !$user->dakarRole->contains(fn($role) => strtolower($role->role_name) === 'karyawan')) {
+            return 'N/A';
+        }
+
+        if (!$job || !$job->start_date) return 'N/A';
+
+        $offboard = $user->offboarding->first();
+        $deadline = $job->resign_date ? Carbon::parse($job->resign_date)->addDays(2) : Carbon::parse($job->end_date)->addDays(2);
+        
+        $completionDate = $completionCallback($user, $job);
+
+        // Jika tanggal selesai (completion date) ada, berarti task SUDAH dilakukan (Completed)
+        if ($completionDate) {
+            $completion = Carbon::parse($completionDate)->startOfDay();
+            if ($completion->lte($deadline)) {
+                return '<span class="badge bg-success">On Time (Completed)</span><br><small>' . $completion->format('d M Y') . '</small>';
+            } else {
+                $overdueDays = $deadline->diffInDays($completion);
+                // Status: Sudah selesai tapi terlambat
+                return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari (Completed)</span><br><small>' . $completion->format('d M Y') . '</small>';
+            }
+        } else {
+            // Jika tidak ada completion date, berarti task BELUM dilakukan (Incomplete)
+            $now = Carbon::now()->startOfDay();
+            if ($now->lte($deadline)) {
+                return '<span class="badge bg-warning">Deadline: ' . $deadline->format('d M Y') . ' (Incomplete)</span><br><small> Today: ' . $now->format('d M Y') . '</small>';
+            } else {
+                $overdueDays = $deadline->diffInDays($now);
+                // Status: Belum selesai dan sudah lewat batas waktu
+                return '<span class="badge bg-danger">Overdue ' . $overdueDays . ' hari (Incomplete)</span><br><small> Today: ' . $now->format('d M Y') . '</small>';
+            }
+        }
+    }
+
+    private function getOverdueDays($job, $completionCallback, $deadlineDiff, $onlyKaryawan = false)
+    {
+        $user = $job->user;
+        if ($onlyKaryawan && !$user->dakarRole->contains(fn($role) => strtolower($role->role_name) === 'karyawan')) {
+            return '-';
+        }
+
+        $job = $user->firstEmployeeJob;
+        if (!$job || !$job->start_date) return '-';
+
+        $deadline = Carbon::parse($job->start_date)->add($deadlineDiff);
+        $completionDate = $completionCallback($user, $job);
+
+        // Jika ada completion date, berarti task SUDAH dilakukan (Completed)
+        if ($completionDate) {
+            $completion = Carbon::parse($completionDate)->startOfDay();
+            if ($completion->lte($deadline)) return '-'; // Tidak overdue
+            
+            // Format output ke Excel jika overdue tapi sudah selesai
+            return $deadline->diffInDays($completion) . ' hari (Completed)';
+        } else {
+            // Jika tidak ada completion date, berarti task BELUM dilakukan (Incomplete)
+            $now = Carbon::now()->startOfDay();
+            if ($now->lte($deadline)) return '-'; // Belum deadline
+            
+            // Format output ke Excel jika overdue dan belum selesai
+            return $deadline->diffInDays($now) . ' hari (Incomplete)';
+        }
+    }
+    
+    private function checkStepStatusOld($job, $completionCallback, $deadlineDiff, $onlyKaryawan = false)
     {
         $user = $job->user;
         if ($onlyKaryawan && !$user->dakarRole->contains(fn($role) => strtolower($role->role_name) === 'karyawan')) {
@@ -1315,7 +1537,7 @@ class StaffMovementReportController extends Controller
         }
     }
 
-    private function checkStepStatusOff($job, $completionCallback, $deadlineDiff, $onlyKaryawan = false)
+    private function checkStepStatusOffOld($job, $completionCallback, $deadlineDiff, $onlyKaryawan = false)
     {
         $user = $job->user;
         if ($onlyKaryawan && !$user->dakarRole->contains(fn($role) => strtolower($role->role_name) === 'karyawan')) {
@@ -1351,7 +1573,7 @@ class StaffMovementReportController extends Controller
         }
     }
 
-    private function getOverdueDays($job, $completionCallback, $deadlineDiff, $onlyKaryawan = false)
+    private function getOverdueDaysOld($job, $completionCallback, $deadlineDiff, $onlyKaryawan = false)
     {
         $user = $job->user;
         if ($onlyKaryawan && !$user->dakarRole->contains(fn($role) => strtolower($role->role_name) === 'karyawan')) {

@@ -318,6 +318,16 @@
                         @enderror
                     </div>
 
+                    <div class="col-sm-6 col-md-4 col-lg-4 mb-3 d-flex align-items-end">
+                        <div class="form-check form-switch mt-4">
+                            <input class="form-check-input" type="checkbox" role="switch" name="flag_wfh" id="flag_wfh" value="1"
+                                @if (optional($job)->flag_wfh) checked @endif>
+                            <label class="form-check-label" for="flag_wfh">
+                                Flag WFH
+                            </label>
+                        </div>
+                    </div>
+
                 </div>
 
                 @if ($user->firstEmployeeJob === null && Request::is('*onboarding*'))
