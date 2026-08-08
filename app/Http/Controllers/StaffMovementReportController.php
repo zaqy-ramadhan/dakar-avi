@@ -1269,16 +1269,13 @@ class StaffMovementReportController extends Controller
 
     public function offboardingReport(Request $request)
     {
-        // 1. Gunakan parse()->format() agar kita punya string murni, bukan objek yang bisa berubah-ubah
         $requestedDate = $request->input('date') ? Carbon::parse($request->input('date')) : Carbon::now();
         
-        $startDateString = $requestedDate->copy()->startOfMonth()->toDateString(); // Contoh: 2026-03-01
-        $endDateString = $requestedDate->copy()->endOfMonth()->toDateString();   // Contoh: 2026-03-31
+        $startDateString = $requestedDate->copy()->startOfMonth()->toDateString(); 
+        $endDateString = $requestedDate->copy()->endOfMonth()->toDateString(); 
 
-        // 2. Query Utama - Load semua employeeJob bukan hanya latestEmployeeJob
         $users = User::whereHas('latestEmployeeJob')
             ->whereHas('offboardingMany', function($q) use ($startDateString, $endDateString) {
-                // Gunakan string mentah agar tidak ada mutasi objek
                 $q->whereBetween('resign_date', [$startDateString, $endDateString]);
             })
             // ->whereHas('dakarRole', function($q){
@@ -1298,14 +1295,11 @@ class StaffMovementReportController extends Controller
             ])
             ->get();
 
-        // 3. Transformasi
         $report = $users->map(function ($user) use ($startDateString, $endDateString) {
-            // Cari offboardingMany yang masuk dalam range bulan ini saja dari koleksi yang sudah di-load
             $offboard = $user->offboardingMany
                 ->whereBetween('resign_date', [$startDateString, $endDateString])
                 ->first();
 
-            // Jika offboard null karena alasan teknis, ambil yang paling pertama tersedia
             if (!$offboard) {
                 $offboard = $user->offboardingMany->first();
             }
@@ -1374,23 +1368,23 @@ class StaffMovementReportController extends Controller
                     return $j->user->offboardingMany->where('exit_interview', true)->first()?->updated_at;
                 }, '2 day') : '-',
 
-                'exit_interview_date' => $user->offboardingMany->where('exit_interview', true)->first()?->updated_at?->format('d M Y') ?? '-',
+                'exit_interview_date' => ($offboard?->reason != 'Join AVI') ? $user->offboardingMany->where('exit_interview', true)->first()?->updated_at?->format('d M Y') ?? '-' : '-',
                 
-                'starter_kit_return' => $this->checkStepStatusOff($job, function ($u, $j) {
+                'starter_kit_return' => ($offboard?->reason === 'Join AVI') ? '-' : $this->checkStepStatusOff($job, function ($u, $j) {
                     return $j->inventory->where('status', '!=', 'Diterima')->first()?->updated_at;
                 }, '2 day'),
 
-                'starter_kit_date'   => $job->inventory->where('status', '!=', 'Diterima')->first()?->updated_at?->format('d M Y') ?? '-',
+                'starter_kit_date'   => ($offboard?->reason === 'Join AVI') ? '-' : $job->inventory->where('status', '!=', 'Diterima')->first()?->updated_at?->format('d M Y') ?? '-',
 
-                'sksmk_signature_1'  => $job->user_dakar_role === 'internship' ? '-' : $this->checkStepStatusOff($job, function ($u, $j) {
+                'sksmk_signature_1'  => ($job->user_dakar_role === 'internship' || $offboard?->reason === 'Join AVI') ? '-' : $this->checkStepStatusOff($job, function ($u, $j) {
                     return $j->jobDoc->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()?->first_party_signature_date;
                 }, '2 day'),
 
-                'signature_1_date'   => $job->user_dakar_role === 'internship' ? '-' : ($job->jobDoc->where('type', 'sksmk')->whereNotNull('first_party_signature')->first() ? Carbon::parse($job->jobDoc->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()->first_party_signature_date)->format('d M Y') : '-'),
-
-                'sksmk_signature_2'  => $job->user_dakar_role === 'internship' ? '-' : $this->checkStepStatusOff($job, function ($u, $j) {
+                'sksmk_signature_2'  => ($job->user_dakar_role === 'internship' || $offboard?->reason === 'Join AVI') ? '-' : $this->checkStepStatusOff($job, function ($u, $j) {
                     return $j->jobDoc->where('type', 'sksmk')->whereNotNull('second_party_signature')->first()?->second_party_signature_date;
                 }, '2 day'),
+
+                'signature_1_date'   => $job->user_dakar_role === 'internship' ? '-' : ($job->jobDoc->where('type', 'sksmk')->whereNotNull('first_party_signature')->first() ? Carbon::parse($job->jobDoc->where('type', 'sksmk')->whereNotNull('first_party_signature')->first()->first_party_signature_date)->format('d M Y') : '-'),
 
                 'signature_2_date'   => $job->user_dakar_role === 'internship' ? '-' : ($job->jobDoc->where('type', 'sksmk')->whereNotNull('second_party_signature')->first() ? Carbon::parse($job->jobDoc->where('type', 'sksmk')->whereNotNull('second_party_signature')->first()->second_party_signature_date)->format('d M Y') : '-'),
             ];
