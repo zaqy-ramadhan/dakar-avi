@@ -22,7 +22,8 @@ use App\Models\{
     Position,
     User,
     JobDoc,
-    Station
+    Station,
+    WorkHour
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
