@@ -65,6 +65,17 @@
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div class="col-sm-6 col-md-3 col-lg-3 mb-3">
+                        <label for="station_id" class="form-label">Station</label>
+                        <select name="station_id" id="station_id" class="form-select"
+                            @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
+                            <option value="">Select Station</option>
+                        </select>
+                        @error('station_id')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
                 <div id="internship_fields" style="display: none;">
@@ -388,11 +399,13 @@
             const divisionSelect = $("#division_id");
             const departmentSelect = $("#department_id");
             const sectionSelect = $("#section_id");
+            const stationSelect = $("#station_id");
             const positionSelect = $("#position_id");
 
             // Data dari backend
             const positionsData = @json($positions);
             const sectionsData = @json($sections);
+            const stationsData = @json($stations);
             const departmentsData = @json($departments);
             const divisionsData = @json($divisions);
 
@@ -403,6 +416,7 @@
                 "{{ optional($job)->department_id }}";
             const oldPositionId = "{{ optional($job)->position_id }}";
             const oldSectionId = "{{ optional($job)->section_id }}";
+            const oldStationId = "{{ optional($job)->station_id }}";
 
             // Inisialisasi Select2
             function initSelect2(element) {
@@ -417,6 +431,7 @@
             initSelect2(departmentSelect);
             initSelect2(positionSelect);
             initSelect2(sectionSelect);
+            initSelect2(stationSelect);
 
             // Load data department berdasarkan division yang dipilih
             function loadDepartments(divisionId, selectedDepartment = null) {
@@ -452,6 +467,23 @@
                 sectionSelect.trigger('change');
             }
 
+            // Load data station berdasarkan department yang dipilih
+            function loadStations(departmentId, selectedStation = null) {
+                stationSelect.empty().append(new Option('Select Station', '', true, true));
+
+                stationsData.forEach(station => {
+                    if (station.department_id == departmentId) {
+                        const option = new Option(station.station_name, station.id);
+                        stationSelect.append(option);
+                        if (selectedStation && station.id == selectedStation) {
+                            $(option).prop("selected", true);
+                        }
+                    }
+                });
+
+                stationSelect.trigger('change');
+            }
+
             // Load data position berdasarkan department yang dipilih
             function loadPositions(departmentId, selectedPosition = null) {
                 positionSelect.empty().append(new Option('Select Position', '', true, true));
@@ -479,7 +511,8 @@
             departmentSelect.on("change", function() {
                 const departmentId = $(this).val();
                 loadPositions(departmentId);
-                loadSections(departmentId)
+                loadSections(departmentId);
+                loadStations(departmentId);
             });
 
             // Jika ada data lama, isi otomatis
@@ -491,6 +524,7 @@
             if (oldDepartmentId) {
                 loadPositions(oldDepartmentId, oldPositionId);
                 loadSections(oldDepartmentId, oldSectionId);
+                loadStations(oldDepartmentId, oldStationId);
             }
         });
     </script>

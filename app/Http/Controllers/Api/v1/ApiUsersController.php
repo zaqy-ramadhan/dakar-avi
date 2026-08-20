@@ -27,7 +27,7 @@ class ApiUsersController extends Controller
 
             $apiKey = str_replace('Bearer ', '', $authHeader);
 
-             $isValid = env('API_KEY') === $apiKey;
+            $isValid = env('API_KEY') === $apiKey;
 
             if (!$isValid) {
                 return response()->json(['error' => 'Unauthorized. Invalid API key.'], 401);
@@ -39,9 +39,9 @@ class ApiUsersController extends Controller
 
             if ($request->has('search')) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('npk', 'like', "%{$search}%")
-                    ->orWhere('fullname', 'like', "%{$search}%");
+                        ->orWhere('fullname', 'like', "%{$search}%");
                 });
             }
 
@@ -49,24 +49,24 @@ class ApiUsersController extends Controller
             $filter = $request->filter ?? null;
 
             $users = $query
-                ->whereHas('employeeJob', function ($q) use ($showAll,$filter) {
+                ->whereHas('employeeJob', function ($q) use ($showAll, $filter) {
                     if (!$showAll) {
                         $q->where('employment_status', true);
                     }
 
-                    if($filter){
+                    if ($filter) {
                         $q->where('user_dakar_role', strtolower($filter));
                     }
                 })
                 ->whereHas('dakarRole', function ($q) {
                     $q->whereNotIn('role_name', ['admin', 'admin 2', 'admin 3', 'admin 4']);
                 })
-                ->with(['latestEmployeeJob', 'firstEmployeeJob','employeeInventoryNumber'])
+                ->with(['latestEmployeeJob', 'firstEmployeeJob', 'employeeInventoryNumber'])
                 ->get();
 
             $data = $users->map(function ($user) use ($id_email_avi) {
                 $job = $user->latestEmployeeJob;
-                $email_avi = $user->employeeInventoryNumber->filter(function($q)use($id_email_avi){
+                $email_avi = $user->employeeInventoryNumber->filter(function ($q) use ($id_email_avi) {
                     return $q->item_id == $id_email_avi;
                 })->first();
                 return [
@@ -75,11 +75,13 @@ class ApiUsersController extends Controller
                     'npk' => $user->npk,
                     'fullname' => $user->fullname,
                     'email_avi' => $email_avi ? $email_avi->number : null,
-                    'email'=> $user->email ?? null,
+                    'email' => $user->email ?? null,
                     'position_id' => $job->position->id ?? null,
                     'position' => $job->position->position_name ?? null,
                     'section_id' => $job->section->id ?? null,
                     'section' => $job->section->section_name ?? null,
+                    'station_id' => $job->station->id ?? null,
+                    'station' => $job->station->station_name ?? null,
                     'department_id' => $job->department->id ?? null,
                     'department' => $job->department->department_name ?? null,
                     'division_id' => $job->division->id ?? null,
@@ -133,7 +135,7 @@ class ApiUsersController extends Controller
 
             $apiKey = str_replace('Bearer ', '', $authHeader);
 
-             $isValid = env('API_KEY') === $apiKey;
+            $isValid = env('API_KEY') === $apiKey;
 
             if (!$isValid) {
                 return response()->json(['error' => 'Unauthorized. Invalid API key.'], 401);
@@ -149,7 +151,7 @@ class ApiUsersController extends Controller
             $id_email_avi = Item::where('item_name', 'Email AVI')->first()?->id;
 
             $job = $user->latestEmployeeJob;
-            $email_avi = $user->employeeInventoryNumber->filter(function($q)use($id_email_avi){
+            $email_avi = $user->employeeInventoryNumber->filter(function ($q) use ($id_email_avi) {
                 return $q->item_id == $id_email_avi;
             })->first();
 
@@ -161,6 +163,7 @@ class ApiUsersController extends Controller
                 'email_avi' => $email_avi ? $email_avi->number : null,
                 'position' => $job->position->position_name ?? null,
                 'section' => $job->section->section_name ?? null,
+                'station' => $job->station->station_name ?? null,
                 'department' => $job->department->department_name ?? null,
                 'division' => $job->division->division_name ?? null,
                 'cost_center' => $job->costCenter->cost_center_name ?? null,

@@ -21,8 +21,8 @@ use App\Models\{
     Line,
     Position,
     User,
-    WorkHour,
     JobDoc,
+    Station
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,6 +72,7 @@ class EmploymentController extends Controller
                 'jobStatus'      => JobStatus::all(),
                 'positions'      => Position::with(['department.division'])->get(),
                 'sections'       => Section::with(['department.division'])->get(),
+                'stations'       => Station::with(['department'])->get(),
                 'workHour'       => WorkHour::all(),
                 'departments'    => Department::with('division')->get(),
                 'divisions'      => Division::all(),

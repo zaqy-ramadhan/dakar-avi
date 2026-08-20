@@ -53,4 +53,9 @@ class Department extends Model
     public function inventory(){
         return $this->hasMany(Inventory::class);
     }
+
+    public function station()
+    {
+        return $this->hasMany(Station::class);
+    }
 }

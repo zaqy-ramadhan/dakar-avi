@@ -1,0 +1,232 @@
+{
+	"info": {
+		"_postman_id": "dakar-avi-api-v1-collection",
+		"name": "Dakar-AVI API v1",
+		"description": "Postman collection for Dakar-AVI API v1 endpoints (Users, Departments, Positions)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{api_key}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "YOUR_API_KEY_HERE",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get Users (List)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users?search=&showAll=false&filter=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"description": "Filter by NPK or Fullname"
+								},
+								{
+									"key": "showAll",
+									"value": "false",
+									"description": "Set to true to include inactive employees"
+								},
+								{
+									"key": "filter",
+									"value": "",
+									"description": "Filter by user_dakar_role"
+								}
+							]
+						},
+						"description": "Fetch employees list with pagination/filter options."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Detail by NPK",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/:npk",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								":npk"
+							],
+							"variable": [
+								{
+									"key": "npk",
+									"value": "12345",
+									"description": "Employee NPK"
+								}
+							]
+						},
+						"description": "Fetch detailed information for a specific employee by NPK."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Department",
+			"item": [
+				{
+					"name": "Get Departments (List)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/department",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"department"
+							]
+						},
+						"description": "Fetch active departments with division and manager."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/department/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"department",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Department ID"
+								}
+							]
+						},
+						"description": "Fetch specific department details."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Position",
+			"item": [
+				{
+					"name": "Get Positions (List)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/position",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"position"
+							]
+						},
+						"description": "Fetch active positions with department and employee list."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Position Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/position/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"position",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Position ID"
+								}
+							]
+						},
+						"description": "Fetch specific position details."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

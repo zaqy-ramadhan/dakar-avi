@@ -22,6 +22,7 @@ use App\Models\EmployeeTraining;
 use App\Models\Golongan;
 use App\Models\JobStatus;
 use App\Models\Section;
+use App\Models\Station;
 use App\Models\SubGolongan;
 use App\Models\Group;
 use App\Models\InventoryRule;
@@ -1838,6 +1839,7 @@ class UsersController extends Controller
         $user = $job->user;
         $positions = Position::all();
         $sections = Section::all();
+        $stations = Station::all();
         $departments = Department::all();
         $divisions = Division::all();
         $costCenters = CostCenter::all();
@@ -1856,6 +1858,7 @@ class UsersController extends Controller
             'job',
             'positions',
             'sections',
+            'stations',
             'departments',
             'divisions',
             'costCenters',

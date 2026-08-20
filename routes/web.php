@@ -30,6 +30,7 @@ use App\Http\Controllers\OffboardingController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\StationController;
 use App\Http\Controllers\UniversalCrudController;
 use App\Http\Controllers\WorkHourController;
 use App\Http\Controllers\Api\v1\ApiDepartmentController;
@@ -85,7 +86,7 @@ Route::post('/offboarding/exit-interview/{id}', [OffboardingController::class, '
     ->name('offboarding.exit-interview')
     ->middleware('auth');
 
-    
+
 Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['role:admin,admin 2,admin 3,admin 4'])->group(function () {
@@ -105,7 +106,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/employment/{id}/detail', [EmploymentController::class, 'index'])->name('users.index.employment.detail');
         Route::get('/admin/offboarding/{id}/detail', [OffboardingController::class, 'index'])->name('users.index.offboarding.detail');
 
-        
+
         Route::get('/employment/complete-onboarding/{id}/', [EmploymentController::class, 'completeOnboarding'])->name('complete.onboarding');
         Route::get('/employment/complete-contract-signature/{id}', [EmploymentController::class, 'completeContractSignature'])->name('complete.contract.signature');
         Route::get('/employment/complete-compensation-signature/{id}', [EmploymentController::class, 'completeCompensationSignature'])->name('complete.compensation.signature');
@@ -145,6 +146,7 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('departments', DepartmentController::class);
             Route::resource('positions', PositionController::class);
             Route::resource('sections', SectionController::class);
+            Route::resource('stations', StationController::class);
             Route::resource('entity', UniversalCrudController::class);
             Route::resource('line', LineController::class);
             Route::resource('work_hour', WorkHourController::class);
@@ -185,7 +187,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/payroll-export/{id}', [PayrollController::class, 'exportExcel'])->name('payroll.export');
         Route::delete('/payroll-pemagangan/{id}', [PayrollController::class, 'destroy'])->name('payroll.destroy');
         Route::post('/payroll/calculate-workdays', [PayrollController::class, 'calculateWorkdays'])->name('payroll.calculateWorkdays');
-        
+
         Route::post('/get-pemagangan', [PayrollController::class, 'getPemagangan']);
 
         //seeding role to users

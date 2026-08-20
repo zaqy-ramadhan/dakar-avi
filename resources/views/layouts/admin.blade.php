@@ -11,7 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if (Auth::check())
@@ -71,17 +71,17 @@
                             </a>
                         </li>
                         <ul id="sidebarnav">
-                        
-                        @if (in_array(Auth::user()->getRole(), ['admin']))
-                            <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ route('admin.index') }}" aria-expanded="false">
-                                    <span>
-                                        <i class="ti ti-user-check"></i>
-                                    </span>
-                                    <span class="hide-menu">Manage Admin</span>
-                                </a>
-                            </li>
-                        @endif
+
+                            @if (in_array(Auth::user()->getRole(), ['admin']))
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="{{ route('admin.index') }}" aria-expanded="false">
+                                        <span>
+                                            <i class="ti ti-user-check"></i>
+                                        </span>
+                                        <span class="hide-menu">Manage Admin</span>
+                                    </a>
+                                </li>
+                            @endif
 
                             <li class="nav-small-cap">
                                 <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -137,43 +137,43 @@
 
                         {{-- @if (Auth::user()->getRole() != 'admin 4') --}}
 
-                            <ul id="sidebarnav">
-                                <li class="nav-small-cap">
-                                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                                    <span class="hide-menu">User Career</span>
-                                </li>
+                        <ul id="sidebarnav">
+                            <li class="nav-small-cap">
+                                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                                <span class="hide-menu">User Career</span>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link {{ Request::is('*onboarding*') ? 'active' : '' }}"
+                                    href="/admin/onboarding" aria-expanded="false">
+                                    <span>
+                                        <i class="ti ti-briefcase"></i>
+                                    </span>
+                                    <span class="hide-menu">Onboarding</span>
+                                </a>
+                            </li>
+
+                            @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link {{ Request::is('*onboarding*') ? 'active' : '' }}"
-                                        href="/admin/onboarding" aria-expanded="false">
+                                    <a class="sidebar-link {{ Request::is('*employment*') ? 'active' : '' }}"
+                                        href="{{ route('users.index.employment') }}" aria-expanded="false">
                                         <span>
-                                            <i class="ti ti-briefcase"></i>
+                                            <i class="ti ti-script"></i>
                                         </span>
-                                        <span class="hide-menu">Onboarding</span>
+                                        <span class="hide-menu">Employment</span>
                                     </a>
                                 </li>
+                            @endif
 
-                                @if (!in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3', 'admin 4']))
-                                    <li class="sidebar-item">
-                                        <a class="sidebar-link {{ Request::is('*employment*') ? 'active' : '' }}"
-                                            href="{{ route('users.index.employment') }}" aria-expanded="false">
-                                            <span>
-                                                <i class="ti ti-script"></i>
-                                            </span>
-                                            <span class="hide-menu">Employment</span>
-                                        </a>
-                                    </li>
-                                @endif
-
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link {{ Request::is('*offboarding*') ? 'active' : '' }}"
-                                        href="/admin/offboarding" aria-expanded="false">
-                                        <span>
-                                            <i class="ti ti-briefcase-off"></i>
-                                        </span>
-                                        <span class="hide-menu">Offboarding</span>
-                                    </a>
-                                </li>
-                            </ul>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link {{ Request::is('*offboarding*') ? 'active' : '' }}"
+                                    href="/admin/offboarding" aria-expanded="false">
+                                    <span>
+                                        <i class="ti ti-briefcase-off"></i>
+                                    </span>
+                                    <span class="hide-menu">Offboarding</span>
+                                </a>
+                            </li>
+                        </ul>
 
                         {{-- @endif --}}
 
@@ -230,17 +230,17 @@
                                 </li>
 
                                 @if (in_array(Auth::user()->getRole(), ['admin', 'admin 2', 'admin 3']))
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link {{ Request::is('*payroll-pemagangan*') ? 'active' : '' }}"
-                                        href="/payroll-pemagangan" aria-expanded="false">
-                                        <span>
-                                            <i class="ti ti-cash-banknote"></i>
-                                        </span>
-                                        <span class="hide-menu">Payroll Pemagangan</span>
-                                    </a>
-                                </li>
+                                    <li class="sidebar-item">
+                                        <a class="sidebar-link {{ Request::is('*payroll-pemagangan*') ? 'active' : '' }}"
+                                            href="/payroll-pemagangan" aria-expanded="false">
+                                            <span>
+                                                <i class="ti ti-cash-banknote"></i>
+                                            </span>
+                                            <span class="hide-menu">Payroll Pemagangan</span>
+                                        </a>
+                                    </li>
                                 @endif
-                                 <li class="sidebar-item">
+                                <li class="sidebar-item">
                                     <a class="sidebar-link {{ Request::is('*inventory.export.view') ? 'active' : '' }}"
                                         href="/admin/inventory/export" aria-expanded="false">
                                         <span>
@@ -290,6 +290,14 @@
                                                         <i class="ti ti-section"></i>
                                                     </span>
                                                     <span class="hide-menu">Section</span>
+                                                </a>
+                                            </li>
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/stations" aria-expanded="false">
+                                                    <span>
+                                                        <i class="ti ti-map-pin"></i>
+                                                    </span>
+                                                    <span class="hide-menu">Station</span>
                                                 </a>
                                             </li>
                                             <li class="sidebar-item">
@@ -377,9 +385,8 @@
                                                     <span class="hide-menu">Work Hour</span>
                                                 </a>
                                             </li>
-                                             <li class="sidebar-item">
-                                                <a class="sidebar-link" href="/admin/holidays"
-                                                    aria-expanded="false">
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link" href="/admin/holidays" aria-expanded="false">
                                                     <span>
                                                         <i class="ti ti-calendar-off"></i>
                                                     </span>
@@ -455,17 +462,16 @@
                                     <div class="notification bg-primary rounded-circle"></div>
                                 </a>
                                 @php
-                                   $adminNotifications = [
-                                        'personal_completed'      => 'Waiting Employment Data',
-                                        'employment_completed'    => 'Waiting Wage Filling',
-                                        'wage_filled'             => 'Waiting Starter Kit',
-                                        'starterkit_given'        => 'Waiting Starter Kit Acceptance',
-                                        'starterkit_accepted'     => 'Waiting Contract Signing',
-                                        'contract_signed'         => 'Waiting Compensation Signing',
-                                        'compensation_signed'     => 'Waiting Digital Account',
+                                    $adminNotifications = [
+                                        'personal_completed' => 'Waiting Employment Data',
+                                        'employment_completed' => 'Waiting Wage Filling',
+                                        'wage_filled' => 'Waiting Starter Kit',
+                                        'starterkit_given' => 'Waiting Starter Kit Acceptance',
+                                        'starterkit_accepted' => 'Waiting Contract Signing',
+                                        'contract_signed' => 'Waiting Compensation Signing',
+                                        'compensation_signed' => 'Waiting Digital Account',
                                         // 'digital_account_given'   => 'Completed All Steps',
                                     ];
-
 
                                     $notifications = Auth::user()->adminNotif();
                                 @endphp
@@ -495,7 +501,8 @@
                                                         data-bs-parent="#notificationAccordion">
                                                         <div class="accordion-body p-0">
                                                             @if (count($notifications[$key]) > 0)
-                                                                <ul class="list-group" style="max-height: 200px; overflow-y: auto;">
+                                                                <ul class="list-group"
+                                                                    style="max-height: 200px; overflow-y: auto;">
                                                                     @foreach ($notifications[$key] as $personal)
                                                                         <li
                                                                             class="list-group-item d-flex justify-content-between align-items-center">

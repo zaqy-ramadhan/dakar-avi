@@ -21,6 +21,7 @@ class EmployeeJob extends Model
         'resign_date',
         'position_id',
         'section_id',
+        'station_id',
         'division_id',
         'department_id',
         'cost_center_id',
@@ -470,6 +471,11 @@ class EmployeeJob extends Model
     public function section()
     {
         return $this->belongsTo(Section::class, 'section_id', 'id');
+    }
+
+    public function station()
+    {
+        return $this->belongsTo(Station::class, 'station_id', 'id');
     }
 
     public function workHour()

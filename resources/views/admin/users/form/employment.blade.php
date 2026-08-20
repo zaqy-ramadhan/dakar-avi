@@ -50,6 +50,17 @@
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
+
+        <div class="col-sm-6 col-md-3 col-lg-3 mb-3">
+            <label for="station_id" class="form-label">Station</label>
+            <select name="station_id" id="station_id" class="form-select"
+                @if (Request::is('*onboarding*') && $user->firstEmployeeJob != null) disabled @endif>
+                <option value="">Select Station</option>
+            </select>
+            @error('station_id')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
 
     <div id="internship_fields" style="display: none;">

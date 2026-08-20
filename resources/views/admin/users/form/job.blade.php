@@ -62,7 +62,7 @@
             color: #495057;
         }
 
-        span #select2-section_id-container{
+        span #select2-section_id-container {
             font-size: 14px;
         }
     </style>
@@ -227,8 +227,8 @@
         @elseif(Request::is('*employment*'))
             @if (optional($user->latestEmployeeJob)->user_dakar_role === 'karyawan')
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#ga"
-                        type="button" role="tab" aria-controls="ga" aria-selected="false">Digital
+                    <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#ga" type="button"
+                        role="tab" aria-controls="ga" aria-selected="false">Digital
                         Account</button>
                 </li>
             @endif
@@ -525,7 +525,7 @@
                         searchable: true,
                         orderable: true
                     },
-                     {
+                    {
                         data: 'job_status',
                         name: 'job_status',
                         title: 'Job Status',
@@ -555,11 +555,13 @@
             const divisionSelect = $("#division_id");
             const departmentSelect = $("#department_id");
             const sectionSelect = $("#section_id");
+            const stationSelect = $("#station_id");
             const positionSelect = $("#position_id");
 
             // Data dari backend
             const positionsData = @json($positions);
             const sectionsData = @json($sections);
+            const stationsData = @json($stations);
             const departmentsData = @json($departments);
             const divisionsData = @json($divisions);
 
@@ -570,6 +572,7 @@
                 "{{ optional($user->employeeJob->last())->department_id }}";
             const oldPositionId = "{{ optional($user->employeeJob->last())->position_id }}";
             const oldSectionId = "{{ optional($user->employeeJob->last())->section_id }}";
+            const oldStationId = "{{ optional($user->employeeJob->last())->station_id }}";
 
             // Inisialisasi Select2
             function initSelect2(element) {
@@ -584,6 +587,7 @@
             initSelect2(departmentSelect);
             initSelect2(positionSelect);
             initSelect2(sectionSelect);
+            initSelect2(stationSelect);
 
             // Load data department berdasarkan division yang dipilih
             function loadDepartments(divisionId, selectedDepartment = null) {
@@ -619,6 +623,23 @@
                 sectionSelect.trigger('change');
             }
 
+            // Load data station berdasarkan department yang dipilih
+            function loadStations(departmentId, selectedStation = null) {
+                stationSelect.empty().append(new Option('Select Station', '', true, true));
+
+                stationsData.forEach(station => {
+                    if (station.department_id == departmentId) {
+                        const option = new Option(station.station_name, station.id);
+                        stationSelect.append(option);
+                        if (selectedStation && station.id == selectedStation) {
+                            $(option).prop("selected", true);
+                        }
+                    }
+                });
+
+                stationSelect.trigger('change');
+            }
+
             // Load data position berdasarkan department yang dipilih
             function loadPositions(departmentId, selectedPosition = null) {
                 positionSelect.empty().append(new Option('Select Position', '', true, true));
@@ -646,7 +667,8 @@
             departmentSelect.on("change", function() {
                 const departmentId = $(this).val();
                 loadPositions(departmentId);
-                loadSections(departmentId)
+                loadSections(departmentId);
+                loadStations(departmentId);
             });
 
             // Jika ada data lama, isi otomatis
@@ -658,6 +680,7 @@
             if (oldDepartmentId) {
                 loadPositions(oldDepartmentId, oldPositionId);
                 loadSections(oldDepartmentId, oldSectionId);
+                loadStations(oldDepartmentId, oldStationId);
             }
         });
     </script>
@@ -718,45 +741,47 @@
         });
     </script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkbox = document.getElementById('exit_gform_checked');
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkbox = document.getElementById('exit_gform_checked');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        checkbox.addEventListener('change', function() {
-            const isChecked = this.checked ? 1 : 0;
+            checkbox.addEventListener('change', function() {
+                const isChecked = this.checked ? 1 : 0;
 
-            fetch("{{ route('offboarding.exit-interview', $user->id) }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": csrfToken,
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({ exit_gform: isChecked })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                if(data.success) {
-                    console.log("Berhasil:", data.message);
-                } else {
-                    console.error("Gagal:", data.message);
-                    this.checked = !this.checked; // Balikkan posisi checkbox jika gagal
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                this.checked = !this.checked; // Balikkan posisi checkbox jika error koneksi
-                alert("Terjadi kesalahan, pastikan alasan offboarding sudah disubmit");
+                fetch("{{ route('offboarding.exit-interview', $user->id) }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": csrfToken,
+                            "Content-Type": "application/json",
+                            "Accept": "application/json"
+                        },
+                        body: JSON.stringify({
+                            exit_gform: isChecked
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            console.log("Berhasil:", data.message);
+                        } else {
+                            console.error("Gagal:", data.message);
+                            this.checked = !this.checked; // Balikkan posisi checkbox jika gagal
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        this.checked = !this.checked; // Balikkan posisi checkbox jika error koneksi
+                        alert("Terjadi kesalahan, pastikan alasan offboarding sudah disubmit");
+                    });
             });
         });
-    });
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const reasonSelect = document.getElementById('reason');
             const exitIntvLi = document.getElementById('exit-intv-li');
 
