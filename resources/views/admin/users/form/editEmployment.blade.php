@@ -405,7 +405,7 @@
             // Data dari backend
             const positionsData = @json($positions);
             const sectionsData = @json($sections);
-            const stationsData = @json($stations);
+            const stationsData = @json($stations ?? []);
             const departmentsData = @json($departments);
             const divisionsData = @json($divisions);
 

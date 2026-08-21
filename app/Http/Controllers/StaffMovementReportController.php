@@ -659,7 +659,7 @@ class StaffMovementReportController extends Controller
             })
             ->get()
             ->filter(function ($user) use ($oneYearAgo, $date) {
-                $firstJob = $user->firstEmployeeJob;
+                $firstJob = $user->firstPkwt();
                 $currentJob = $user->currentEmployeeJob($date);
                 if (!$firstJob) return false;
                 $startDate = Carbon::parse($firstJob->start_date);
@@ -678,12 +678,12 @@ class StaffMovementReportController extends Controller
             ->addColumn('section', fn($user) => $user->currentEmployeeJob($date)?->section->section_name ?? 'N/A')
             ->addColumn('position', fn($user) => $user->currentEmployeeJob($date)?->position->position_name ?? 'N/A')
             ->addColumn('start_date', fn($user) =>
-            optional($user->employeeJob->first())
-                ? Carbon::parse($user->employeeJob->first()->start_date)->isoFormat('D MMM Y')
+            optional($user->firstPkwt())
+                ? Carbon::parse($user->firstPkwt()->start_date)->isoFormat('D MMM Y')
                 : 'N/A')
 
             ->addColumn('age_in_months', function ($user) use ($date) {
-                $firstJob = $user->employeeJob->first();
+                $firstJob = $user->firstPkwt();
                 return $firstJob
                     ? Carbon::parse($firstJob->start_date)->diffInMonths($date) . ' bulan'
                     : 'N/A';

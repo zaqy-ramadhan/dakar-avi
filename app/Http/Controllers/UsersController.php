@@ -428,6 +428,7 @@ class UsersController extends Controller
                 $positions = Position::with(['department.division'])->get();
                 $workHour = WorkHour::get();
                 $sections = Section::with(['department.division'])->get();
+                $stations = Station::with(['department'])->get();
                 $departments = Department::with('division')->get();
                 $divisions = Division::all();
                 $roles = DakarRole::whereIn('role_name', ['karyawan', 'pemagangan', 'internship'])->get();
@@ -439,6 +440,7 @@ class UsersController extends Controller
                     'departments',
                     'positions',
                     'sections',
+                    'stations',
                     'costCenters',
                     'levels',
                     'types',
@@ -532,6 +534,7 @@ class UsersController extends Controller
             $positions = Position::with(['department.division'])->get();
             $workHour = WorkHour::get();
             $sections = Section::with(['department.division'])->get();
+            $stations = Station::with(['department'])->get();
 
             $departments = Department::with('division')->get();
             $divisions = Division::all();
@@ -549,6 +552,7 @@ class UsersController extends Controller
                 'departments',
                 'positions',
                 'sections',
+                'stations',
                 'costCenters',
                 'levels',
                 'types',

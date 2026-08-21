@@ -10,6 +10,7 @@ use App\Models\Division;
 use App\Models\EmployeeInventoryNumber;
 use App\Models\Golongan;
 use App\Models\Section;
+use App\Models\Station;
 use App\Models\SubGolongan;
 use App\Models\Group;
 use App\Models\InventoryRule;
@@ -122,6 +123,7 @@ class OnboardingController extends Controller
             $jobStatus = JobStatus::all();
             $positions = Position::with(['department.division'])->get();
             $sections = Section::with(['department.division'])->get();
+            $stations = Station::with(['department'])->get();
             $workHour = WorkHour::get();
             $departments = Department::with('division')->get();
             $divisions = Division::all();
@@ -164,6 +166,7 @@ class OnboardingController extends Controller
                 'departments',
                 'positions',
                 'sections',
+                'stations',
                 'costCenters',
                 'levels',
                 'types',
