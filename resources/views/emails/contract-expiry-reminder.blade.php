@@ -62,15 +62,15 @@
                             <tbody>
                                 @foreach($employees->take(5) as $employee)
                                     @php
-                                        $job = $employee->current_job ?? $employee->employeeJob?->first();
+                                        $job = $employee->current_job ?? optional($employee->employeeJob)->first();
                                     @endphp
                                     <tr style="background-color: {{ $loop->iteration % 2 == 0 ? '#f5f5f5' : 'white' }}; border-bottom: 1px solid #ddd;">
                                         <td style="padding: 10px; border: 1px solid #ddd;">{{ $employee->npk ?? '-' }}</td>
                                         <td style="padding: 10px; border: 1px solid #ddd;"><strong>{{ $employee->fullname ?? $employee->name ?? '-' }}</strong></td>
-                                        <td style="padding: 10px; border: 1px solid #ddd;">{{ $employee->position_name ?? $job?->position?->name ?? '-' }}</td>
-                                        <td style="padding: 10px; border: 1px solid #ddd;">{{ $employee->department_name ?? $job?->department?->name ?? '-' }}</td>
+                                        <td style="padding: 10px; border: 1px solid #ddd;">{{ $employee->position_name ?? optional(optional($job)->position)->name ?? '-' }}</td>
+                                        <td style="padding: 10px; border: 1px solid #ddd;">{{ $employee->department_name ?? optional(optional($job)->department)->name ?? '-' }}</td>
                                         <td style="padding: 10px; text-align: center; border: 1px solid #ddd; color: #d9534f; font-weight: bold;">
-                                            {{ $job?->end_date?->format('d/m/Y') ?? '-' }}
+                                            {{ optional(optional($job)->end_date)->format('d/m/Y') ?? '-' }}
                                         </td>
                                         <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
                                             <span style="background-color: #d9534f; color: white; padding: 4px 8px; border-radius: 3px; font-weight: bold;">

@@ -18,7 +18,7 @@ class SendContractExpiryReminder extends Command
      *
      * @var string
      */
-    protected $signature = 'email:contract-expiry-reminder {--recipients=}';
+    protected $signature = 'email:contract-expiry-reminder {--recipients=} {--cc=}';
 
     /**
      * The console command description.
@@ -57,14 +57,16 @@ class SendContractExpiryReminder extends Command
                     $employee->remaining_days = $job->end_date ? now()->diffInDays($job->end_date) : 0;
                     $employee->npk = $employee->npk ?? $employee->id;
                     $employee->employment_status = $job->employment_status ?? 'Kontrak';
-                    $employee->position_name = $job->position?->position_name ?? '-';
-                    $employee->department_name = $job->department?->department_name ?? '-';
-                    $employee->division_name = $job->division?->division_name ?? '-';
+                    $employee->position_name = optional($job->position)->position_name ?? '-';
+                    $employee->department_name = optional($job->department)->department_name ?? '-';
+                    $employee->division_name = optional($job->division)->division_name ?? '-';
                     $employee->current_job = $job;
                 }
                 
                 return $employee;
-            });
+            })
+            ->sortBy('remaining_days')
+            ->values();
 
             if ($employees->isEmpty()) {
                 $this->warn('No employees found with contracts expiring in the next 3 months.');
@@ -95,13 +97,26 @@ class SendContractExpiryReminder extends Command
                 ]);
 
             // Remove whitespace from emails
-            $recipients = array_map('trim', $recipients);
+            $recipients = array_map('trim', array_filter($recipients));
+
+            // Get CC recipients from command option or use default from config
+            $ccRecipients = $this->option('cc')
+                ? explode(',', $this->option('cc'))
+                : config('mail.contract_expiry_cc', []);
+
+            $ccRecipients = array_map('trim', array_filter($ccRecipients));
 
             // Send email to all recipients
             foreach ($recipients as $recipient) {
                 try {
-                    Mail::to($recipient)->send(new ContractExpiryReminder($employees, $fullPath));
-                    $this->info("✉️ Email sent to: {$recipient}");
+                    $mailable = Mail::to($recipient);
+                    if (!empty($ccRecipients)) {
+                        $mailable->cc($ccRecipients);
+                    }
+                    $mailable->send(new ContractExpiryReminder($employees, $fullPath));
+
+                    $ccInfo = !empty($ccRecipients) ? " (CC: " . implode(', ', $ccRecipients) . ")" : "";
+                    $this->info("✉️ Email sent to: {$recipient}{$ccInfo}");
                 } catch (\Exception $e) {
                     $this->error("Failed to send email to {$recipient}: " . $e->getMessage());
                 }

@@ -141,7 +141,17 @@ class ApiUsersController extends Controller
                 return response()->json(['error' => 'Unauthorized. Invalid API key.'], 401);
             }
 
-            $user = User::with([
+            $showAll = $request->boolean('showAll', false);
+
+            $query = User::query();
+
+            if (!$showAll) {
+                $query->whereHas('employeeJob', function ($q) {
+                    $q->where('employment_status', true);
+                });
+            }
+
+            $user = $query->with([
                 'latestEmployeeJob',
                 'firstEmployeeJob',
                 'employeeInventoryNumber',
@@ -180,6 +190,7 @@ class ApiUsersController extends Controller
                 'end_date' => $job->end_date ? $job->end_date->format('Y-m-d') : null,
                 'contract' => $job->contract ?? null,
                 'no_telp' => $user->employeeDetail?->no_phone ?? null,
+                'employment_status' => (bool)($job->employment_status ?? false),
             ];
 
             return response()->json(

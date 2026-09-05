@@ -23,16 +23,16 @@ class ContractExpiryReminderExport implements FromCollection, WithHeadings, With
     public function collection()
     {
         return collect($this->employees)->map(function ($employee) {
-            $job = $employee->current_job ?? $employee->employeeJob?->first();
+            $job = $employee->current_job ?? optional($employee->employeeJob)->first();
             
             return [
                 'NPK' => $employee->npk ?? '-',
                 'Nama' => $employee->fullname ?? '-',
-                'Posisi' => $employee->position_name ?? $job?->position?->position_name ?? '-',
-                'Departemen' => $employee->department_name ?? $job?->department?->department_name ?? '-',
-                'Divisi' => $employee->division_name ?? $job?->division?->division_name ?? '-',
-                'Tanggal Mulai Kontrak' => $job?->start_date?->format('d/m/Y') ?? '-',
-                'Tanggal Akhir Kontrak' => $job?->end_date?->format('d/m/Y') ?? '-',
+                'Posisi' => $employee->position_name ?? optional(optional($job)->position)->position_name ?? '-',
+                'Departemen' => $employee->department_name ?? optional(optional($job)->department)->department_name ?? '-',
+                'Divisi' => $employee->division_name ?? optional(optional($job)->division)->division_name ?? '-',
+                'Tanggal Mulai Kontrak' => optional(optional($job)->start_date)->format('d/m/Y') ?? '-',
+                'Tanggal Akhir Kontrak' => optional(optional($job)->end_date)->format('d/m/Y') ?? '-',
                 'Sisa Hari' => (int)($employee->remaining_days ?? 0),
             ];
         });
