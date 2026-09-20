@@ -337,6 +337,42 @@ class User extends Authenticatable
         })->first();
     }
 
+    public function sd()
+    {
+        return $this->hasOne(EmployeeEducation::class, 'user_id', 'id')->where('education_level', 'SD');
+    }
+
+    public function smp()
+    {
+        return $this->hasOne(EmployeeEducation::class, 'user_id', 'id')->where('education_level', 'SMP');
+    }
+
+    public function sma()
+    {
+        return $this->hasOne(EmployeeEducation::class, 'user_id', 'id')->where('education_level', 'SMA');
+    }
+
+
+    public function d3()
+    {
+        return $this->hasOne(EmployeeEducation::class, 'user_id', 'id')->where('education_level', 'D3');
+    }
+
+    public function s1()
+    {
+        return $this->hasOne(EmployeeEducation::class, 'user_id', 'id')->where('education_level', 'S1');
+    }
+
+    public function s2()
+    {
+        return $this->hasOne(EmployeeEducation::class, 'user_id', 'id')->where('education_level', 'S2');
+    }
+
+    public function s3()
+    {
+        return $this->hasOne(EmployeeEducation::class, 'user_id', 'id')->where('education_level', 'S3');
+    }
+
 
     public function firstEmployeeJob()
     {

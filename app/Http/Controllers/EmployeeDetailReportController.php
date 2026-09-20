@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Exports\EmployeeDataReport;
 use App\Exports\EmployeeExportMin;
+use App\Exports\EmployeeEducationReport;
 use App\Models\DakarRole;
 use App\Models\Department;
+use App\Models\EmployeeEducation;
 use App\Models\Golongan;
 use App\Models\JobStatus;
 use App\Models\JobType;
@@ -43,6 +45,13 @@ class EmployeeDetailReportController extends Controller
             'employeeJob.golongan',
             'employeeDetail',
             'employeeEducations',
+            'sd',
+            'smp',
+            'sma',
+            'd3',
+            's1',
+            's2',
+            's3',
         ])->whereHas('employeeJob', function ($q) use ($endOfMonth) {
             $q->whereDate('start_date', '<=', $endOfMonth);
         })
@@ -123,7 +132,7 @@ class EmployeeDetailReportController extends Controller
             $joinDateParsed = $employee->join_date
                 ? Carbon::parse($employee->join_date)->startOfDay()
                 : Carbon::parse($firstJob->start_date)->startOfDay();
-            
+
             return [
                 'npk' => $employee->npk,
                 'fullname' => $employee->fullname,
@@ -150,6 +159,16 @@ class EmployeeDetailReportController extends Controller
                 //addition
                 'nik' => (string)$detail->no_ktp ?? 'N/A',
                 'no_phone' => $detail->no_phone ?? 'N/A',
+
+                //education detail
+                'sd' => $employee->sd,
+                'smp' => $employee->smp,
+                'sma' => $employee->sma,
+                'd3' => $employee->d3,
+                's1' => $employee->s1,
+                's2' => $employee->s2,
+                's3' => $employee->s3,
+                
             ];
         })
     //    ->filter(function ($item) {
@@ -210,6 +229,10 @@ class EmployeeDetailReportController extends Controller
             return Excel::download(new EmployeeExportMin($employees), 'employee-report-min-' . $startOfMonth->isoFormat('MMMM Y') . '-' . $endOfMonth->isoFormat('MMMM Y') . '.xlsx');
         }
 
+        if (request()->has('export_edu') && request('export_edu') == 'excel') {
+            return Excel::download(new EmployeeEducationReport($employees), 'employee-education-' . $startOfMonth->isoFormat('MMMM Y') . '-' . $endOfMonth->isoFormat('MMMM Y') . '.xlsx');
+        }
+
         if (request()->ajax()) {
             return DataTables::of($employees)
                 ->addIndexColumn()
@@ -232,6 +255,7 @@ class EmployeeDetailReportController extends Controller
 
         return view('admin.reporting.employee', compact('departments', 'roles', 'jobStatus', 'jobType', 'golongan'));
     }
+
 
 
     // public function index()

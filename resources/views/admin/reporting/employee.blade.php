@@ -98,6 +98,10 @@
                     <button type="button" id="exportExcelMin" class="btn btn-primary w-fit"><i
                             class="ti ti-file-spreadsheet fs-4"></i>Export Excel Min</button>
                 </div>
+                 <div class="col-auto d-flex w-auto">
+                    <button type="button" id="exportEdu" class="btn btn-primary w-fit"><i
+                            class="ti ti-school fs-4 me-1"></i>Export Education Detail</button>
+                </div>
             </form>
         </div>
     </div>
@@ -279,6 +283,16 @@
                     params += '&export=excel';
                 } else {
                     params = 'export=excel';
+                }
+                window.location.href = "{{ route('employee-detail') }}" + "?" + params;
+            });
+
+             $('#exportEdu').on('click', function() {
+                var params = $('#filterForm').serialize();
+                if (params.length > 0) {
+                    params += '&export_edu=excel';
+                } else {
+                    params = 'export_edu=excel';
                 }
                 window.location.href = "{{ route('employee-detail') }}" + "?" + params;
             });
