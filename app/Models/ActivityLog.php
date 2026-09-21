@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Mail\ActivityLogNotification;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ActivityLog extends Model
@@ -38,8 +39,13 @@ class ActivityLog extends Model
 
                 // Send email ke semua recipients
                 foreach ($recipients as $recipient) {
-                    Mail::to($recipient)
-                        ->queue(new ActivityLogNotification($activityLog));
+                    try {
+                        Mail::to($recipient)
+                            ->queue(new ActivityLogNotification($activityLog));
+                    } catch (\Exception $e) {
+                        // Tangkap error dan catat di log sistem, agar tidak menyebabkan kegagalan proses utama
+                        Log::error('Failed to send activity log email to ' . $recipient . ': ' . $e->getMessage());
+                    }
                 }
             }
         });
