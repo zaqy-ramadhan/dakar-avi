@@ -14,10 +14,10 @@
 @endphp
 
 <div class="row mb-3">
-       <div class="col-sm-3">
+    <div class="col-sm-3">
         {{-- <label for="permission" class="form-label">Dokumen</label><br> --}}
         <a href="{{ route('user.data-permission-pdf', $user->id) }}" target="_blank"
-                            class="btn btn-outline-primary">Persetujuan Data Pribadi</a>
+            class="btn btn-outline-primary">Persetujuan Data Pribadi</a>
     </div>
 </div>
 
@@ -125,8 +125,7 @@
     </div>
 
     <div class="col-sm-6 col-md-6 col-lg-4 mb-3">
-        <label for="photo_file" class="form-label">Foto Rekening Bank <span
-                class="text-danger">*</span></label>
+        <label for="photo_file" class="form-label">Foto Rekening Bank <span class="text-danger">*</span></label>
         <input type="file" class="form-control" id="bank_file" name="bank_file">
         <small class="text-muted">Wajib diisi</small>
         @if ($bank)
@@ -142,6 +141,7 @@
                 class="text-danger">*</span></label>
         <input type="file" class="form-control" id="photo_file" name="photo_file" accept=".jpeg">
         <small class="text-muted">Wajib diisi</small>
+        <p id="statusValidasi" style="color: blue; font-weight: bold;"></p>
         @if ($photo)
             <p>File yang ada: <a href="{{ asset('storage/' . $photo->doc_path) }}" target="_blank">Lihat File</a></p>
         @endif
@@ -151,6 +151,7 @@
     </div>
 </div>
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script>
         function autosaveDocument() {
             const formData = new FormData(document.getElementById('userDetailsForm'));
@@ -184,5 +185,90 @@
         document.querySelectorAll('input[type="file"]').forEach(input => {
             input.addEventListener('change', debounce(autosaveDocument, 1000));
         });
+
+        let isModelLoaded = false;
+        let isFaceValid = true; // Default true if no new photo selected yet
+
+        function getSubmitButton() {
+            return document.getElementById('submitBtn') || document.getElementById('btnSubmit') || document.querySelector(
+                'button[type="submit"]');
+        }
+
+        async function loadFaceModel() {
+            if (!isModelLoaded) {
+                await faceapi.nets.tinyFaceDetector.loadFromUri(
+                    'https://justadudewhohacks.github.io/face-api.js/models');
+                isModelLoaded = true;
+            }
+        }
+
+        document.getElementById('photo_file').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            const statusText = document.getElementById('statusValidasi');
+            const btnSubmit = getSubmitButton();
+
+            if (!file) {
+                isFaceValid = true;
+                if (btnSubmit) btnSubmit.disabled = false;
+                statusText.innerText = "";
+                return;
+            }
+
+            statusText.innerText = "Sedang memindai foto... mohon tunggu...";
+            statusText.style.color = "blue";
+            if (btnSubmit) btnSubmit.disabled = true;
+            isFaceValid = false;
+
+            try {
+                // 1. Ambil model deteksi AI ringan
+                await loadFaceModel();
+
+                // 2. Ubah file upload menjadi objek gambar yang bisa dibaca AI
+                const image = await faceapi.bufferToImage(file);
+
+                // 3. Cari wajah pada gambar
+                const detections = await faceapi.detectAllFaces(image, new faceapi.TinyFaceDetectorOptions({
+                    inputSize: 320,
+                    scoreThreshold: 0.4
+                }));
+
+                // 4. Cek hasil deteksi
+                if (detections.length > 0) {
+                    statusText.innerText = "✓ Foto Valid! (Wajah terdeteksi)";
+                    statusText.style.color = "green";
+                    isFaceValid = true;
+                    if (btnSubmit) btnSubmit.disabled = false; // Aktifkan tombol submit
+                } else {
+                    statusText.innerText =
+                        "✗ Gagal! Wajah tidak terdeteksi pada foto ini. Silakan pilih foto dengan wajah yang jelas.";
+                    statusText.style.color = "red";
+                    isFaceValid = false;
+                    e.target.value = ""; // Kosongkan file input yang tidak valid
+                    if (btnSubmit) btnSubmit.disabled = true; // Kunci tombol submit
+                    alert("Wajah tidak terdeteksi pada Pas Foto! File dibatalkan.");
+                }
+            } catch (error) {
+                console.error("Face detection error:", error);
+                statusText.innerText = "⚠️ Gagal memuat deteksi wajah (Pastikan koneksi internet stabil).";
+                statusText.style.color = "orange";
+                isFaceValid = true; // Izinkan fallback jika library CDN offline
+                if (btnSubmit) btnSubmit.disabled = false;
+            }
+        });
+
+        // Cegah submit form jika foto dipindai dan tidak valid
+        const formElement = document.getElementById('userDetailsForm') || document.querySelector('form');
+        if (formElement) {
+            formElement.addEventListener('submit', function(e) {
+                if (!isFaceValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert("Form tidak dapat dikirim karena Pas Foto tidak memiliki wajah yang valid!");
+                    const btnSubmit = getSubmitButton();
+                    if (btnSubmit) btnSubmit.disabled = true;
+                    return false;
+                }
+            }, true);
+        }
     </script>
 @endpush
