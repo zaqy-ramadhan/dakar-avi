@@ -478,7 +478,7 @@ class PayrollController extends Controller
             ])
             ->get()
             ->map(function ($user) {
-                $wage = $user->pemaganganOrInternshipJob()->first()->jobWageAllowance[0]->amount ?? 0;
+                $wage = $user->pemaganganOrInternshipJob()->first()->jobWageAllowance[0]?->amount ?? 0;
                 //dd($user->pemaganganOrInternshipJob()->first()->jobWageAllowance[0]?->amount ?? 0);
                 // dd($wage);
                 $basic_salary = (int) preg_replace('/\D/', '', $wage);
